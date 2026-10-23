@@ -1,0 +1,239 @@
+<!doctype html>
+<html lang="en" data-lavish-annotate="on"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Who picks the tool?</title>
+<style>
+:root { --bg:#fbfaf7; --fg:#15161a; --dim:#6b6f78; --accent:#1d4ed8; --rule:#e6e2d8; }
+* { box-sizing:border-box; }
+html, body { margin:0; background:var(--bg); color:var(--fg); font-family: "Inter", "Helvetica Neue", Arial, sans-serif; font-size: clamp(16px, 1.6vw, 24px); }
+.deck { position:relative; width:100vw; height:100vh; overflow:hidden; }
+section { position:absolute; inset:0; padding: 6vh 8vw; display:none; flex-direction:column; justify-content:center; gap: 1.2em; }
+section.active { display:flex; }
+h1 { font-size: 3.2em; margin:0; letter-spacing:-0.02em; line-height:1.05; }
+h2 { font-size: 1.9em; margin:0 0 .2em; letter-spacing:-0.01em; }
+.title { align-items:flex-start; }
+.sub { font-size:1.4em; color:var(--dim); margin:0; }
+.by { margin-top:2em; color:var(--dim); }
+.kicker { text-transform:uppercase; letter-spacing:.12em; font-size:.7em; color:var(--dim); margin:0; }
+.dim { color:var(--dim); font-weight:400; font-size:.7em; }
+blockquote.big { font-size:1.8em; margin:0; font-weight:500; line-height:1.25; max-width: 22em; }
+.picks { display:flex; gap:1em; flex-wrap:wrap; }
+.pick { flex:1 1 10em; border:1px solid var(--rule); border-radius:.6em; padding:.8em 1em; background:#fff; }
+.pick .who { display:block; font-weight:600; font-size:.8em; margin-bottom:.3em; }
+.pick code { font-size:.85em; }
+.punch { font-size:1.6em; font-weight:600; margin:.2em 0 0; }
+.three { display:grid; grid-template-columns: repeat(3, 1fr); gap:2em; }
+.num { font-size:4em; font-weight:700; letter-spacing:-0.03em; line-height:1; color:var(--accent); }
+.three p { margin:.3em 0 0; }
+small { color:var(--dim); font-size:.75em; }
+.note { color:var(--fg); font-size:.95em; max-width: 36em; margin:0; }
+.fig { width:100%; max-height:58vh; }
+.fig .lbl { font-size:18px; fill:var(--fg); }
+.fig .val { font-size:18px; fill:var(--fg); font-weight:600; }
+.fig .tick { font-size:13px; fill:var(--dim); }
+.fig .axis { font-size:14px; fill:var(--dim); }
+.fig .pt { font-size:15px; fill:var(--fg); }
+.fig .grid { stroke:var(--rule); }
+.intents { display:grid; grid-template-columns: repeat(9, 1fr); gap:.4em; }
+.cell { border-radius:.4em; padding:.5em .6em; font-size:.62em; line-height:1.15; background:#dfe9d8; color:#1f3d1a; display:flex; flex-direction:column; gap:.2em; min-height:3.6em; }
+.cell.gap { background:#ece9e2; color:var(--dim); }
+.cell small { font-size:.85em; opacity:.7; }
+.morph rect { width: var(--w1); transition: width .7s ease; }
+.morph.on rect { width: var(--w2); }
+.morph .val { transition: opacity .4s, transform .7s ease; transform: translateX(var(--x1)); }
+.morph .va { opacity:1; } .morph .vb { opacity:0; }
+.morph.on .val { transform: translateX(var(--x2)); }
+.morph.on .va { opacity:0; } .morph.on .vb { opacity:1; }
+.morph .cb { display:none; } .morph.on .ca { display:none; } .morph.on .cb { display:inline; }
+.cap { text-align:center; color:var(--dim); font-size:.8em; margin:.2em 0 0; }
+table.cost { border-collapse:collapse; font-size:.95em; width:100%; max-width:40em; }
+table.cost th, table.cost td { text-align:left; padding:.45em .8em; border-bottom:1px solid var(--rule); }
+table.cost th { color:var(--dim); font-weight:500; font-size:.8em; text-transform:uppercase; letter-spacing:.08em; }
+table.small { font-size:.75em; }
+ol.check { font-size:1.05em; line-height:1.5; padding-left:1.2em; margin:0; max-width: 32em; }
+ol.check li { margin:.25em 0; }
+.appendix { justify-content:flex-start; gap:.8em; font-size:.85em; }
+.appendix h2 { font-size:1.5em; }
+.appendix ul { margin:0; padding-left:1.2em; line-height:1.45; }
+.appendix li { margin:.3em 0; }
+pre { white-space:pre-wrap; font-size:.7em; background:#fff; border:1px solid var(--rule); padding:.8em; border-radius:.4em; max-height:40vh; overflow:auto; }
+code { font-family: ui-monospace, "SF Mono", Menlo, Consolas, monospace; background:#f1eee6; padding:.05em .3em; border-radius:.25em; }
+.step { visibility:hidden; opacity:0; transition: opacity .25s; }
+.step.on { visibility:visible; opacity:1; }
+.counter { position:fixed; right:1.2em; bottom:.9em; font-size:.6em; color:var(--dim); }
+.hint { position:fixed; left:1.2em; bottom:.9em; font-size:.6em; color:var(--dim); }
+body.print .deck { height:auto; overflow:visible; }
+body.print section { position:relative; display:flex; height:100vh; page-break-after:always; border-bottom:1px solid var(--rule); }
+body.print .step { visibility:visible; opacity:1; }
+body.print .morph rect { width: var(--w2); } body.print .morph .val { transform: translateX(var(--x2)); } body.print .morph .va { opacity:0; } body.print .morph .vb { opacity:1; } body.print .morph .ca { display:none; } body.print .morph .cb { display:inline; }
+body.print .counter, body.print .hint { display:none; }
+@media print { body { font-size:18px; } .deck { height:auto; } section { position:relative; display:flex !important; height:100vh; page-break-after:always; } .step { visibility:visible !important; opacity:1 !important; } .morph rect { width: var(--w2) !important; } .morph .val { transform: translateX(var(--x2)) !important; } .morph .va { opacity:0 !important; } .morph .vb { opacity:1 !important; } .counter, .hint { display:none; } }
+</style></head>
+<body class="print">
+<p style="padding:1em 8vw;color:#6b6f78;font-size:.8em">Review copy: every click-to-reveal step is shown. The live deck is slides/index.html.</p><div class="deck">
+<section class="title">
+<p class="kicker">MeasureCamp Sydney · 24 October 2026</p>
+<h1>Who picks the tool?</h1>
+<p class="sub">Measuring tool selection on real MCP servers</p>
+<p class="by">Roger Yu</p>
+</section>
+<section>
+<p class="kicker">A customer writes</p>
+<blockquote class="big">“I want to nkow about subscribing to your company newsletter”</blockquote>
+<p class="kicker step">Four selectors, four answers</p>
+<div class="picks"><div class="pick step"><span class="who" style="color:#1d4ed8">Jev</span><code>hand_off_to_human</code></div><div class="pick step"><span class="who" style="color:#7c3aed">DeepSeek</span><code>search_shop_policies_and_faqs</code></div><div class="pick step"><span class="who" style="color:#d97706">Haiku 5.5</span><code>search_shop_policies_and_faqs</code></div><div class="pick step"><span class="who" style="color:#dc2626">Sonnet 5.5</span><code>search_shop_policies_and_faqs</code></div></div>
+<p class="punch step">Which one is right?</p>
+</section>
+<section>
+<h2>The test</h2>
+<div class="three">
+<div class="step"><div class="num">600</div><p>customer-support messages<br><small>Bitext, 27 intents</small></p></div>
+<div class="step"><div class="num">90</div><p>real tools from 7 official MCP servers<br><small>Shopify · Stripe · Intercom · GitHub · Notion, verbatim</small></p></div>
+<div class="step"><div class="num">4</div><p>selectors<br><small>Jev · DeepSeek V4.1 Flash · Claude Haiku 5.5 · Claude Sonnet 5.5</small></p></div>
+</div>
+<p class="note step">Each picks <b>the one tool to call first</b>. Scored against a set of acceptable tools per intent, not one gold answer.</p>
+</section>
+<section>
+<h2>Real servers cover 12 of 27 intents</h2>
+<div class="intents"><div class="cell cov"><span>check cancellation fee</span><small>29</small></div><div class="cell cov"><span>check invoice</span><small>24</small></div><div class="cell cov"><span>check payment methods</span><small>20</small></div><div class="cell cov"><span>check refund policy</span><small>26</small></div><div class="cell cov"><span>contact customer service</span><small>28</small></div><div class="cell cov"><span>delivery options</span><small>13</small></div><div class="cell cov"><span>delivery period</span><small>29</small></div><div class="cell cov"><span>get invoice</span><small>21</small></div><div class="cell cov"><span>get refund</span><small>19</small></div><div class="cell cov"><span>payment issue</span><small>29</small></div><div class="cell cov"><span>place order</span><small>27</small></div><div class="cell cov"><span>track order</span><small>24</small></div><div class="cell gap"><span>cancel order</span><small>13</small></div><div class="cell gap"><span>change order</span><small>22</small></div><div class="cell gap"><span>change shipping address</span><small>12</small></div><div class="cell gap"><span>complaint</span><small>24</small></div><div class="cell gap"><span>contact human agent</span><small>32</small></div><div class="cell gap"><span>create account</span><small>25</small></div><div class="cell gap"><span>delete account</span><small>15</small></div><div class="cell gap"><span>edit account</span><small>15</small></div><div class="cell gap"><span>newsletter subscription</span><small>26</small></div><div class="cell gap"><span>recover password</span><small>17</small></div><div class="cell gap"><span>registration problems</span><small>21</small></div><div class="cell gap"><span>review</span><small>26</small></div><div class="cell gap"><span>set up shipping address</span><small>22</small></div><div class="cell gap"><span>switch account</span><small>23</small></div><div class="cell gap"><span>track refund</span><small>18</small></div></div>
+<p class="note step">No official tool cancels or edits a placed order, opens a complaint, hands off, or touches an account.
+<b>52% of messages have no tool.</b> The right answer there is <code>hand_off_to_human</code>, the one tool we added.</p>
+</section>
+<section>
+<h2>Right first pick <span class="dim">(router mode, plain prompt)</span></h2>
+<svg viewBox="0 0 720 226" class="fig"><g class="step"><text x="136" y="38" text-anchor="end" class="lbl">Jev</text><rect x="150" y="15" width="354.4" height="34" rx="4" fill="#1d4ed8"/><text x="516.4" y="39" class="val">74%</text></g><g class="step"><text x="136" y="92" text-anchor="end" class="lbl">DeepSeek</text><rect x="150" y="69" width="318.4" height="34" rx="4" fill="#7c3aed"/><text x="480.4" y="93" class="val">66%</text></g><g class="step"><text x="136" y="146" text-anchor="end" class="lbl">Haiku 5.5</text><rect x="150" y="123" width="225.6" height="34" rx="4" fill="#d97706"/><text x="387.6" y="147" class="val">47%</text></g><g class="step"><text x="136" y="200" text-anchor="end" class="lbl">Sonnet 5.5</text><rect x="150" y="177" width="300.8" height="34" rx="4" fill="#dc2626"/><text x="462.8" y="201" class="val">63%</text></g></svg>
+<p class="note step">Jev beats DeepSeek by 8 points on the same 600 messages
+(only Jev right 89, only DeepSeek right 44; McNemar p = 0.00012).</p>
+</section>
+<section>
+<h2>Two ways to fail</h2>
+<svg viewBox="0 0 760 460" class="fig"><line x1="70" x2="740" y1="410" y2="410" class="grid"/><text x="62" y="414" text-anchor="end" class="tick">0%</text><line x1="70" x2="740" y1="312" y2="312" class="grid"/><text x="62" y="316" text-anchor="end" class="tick">25%</text><line x1="70" x2="740" y1="215" y2="215" class="grid"/><text x="62" y="219" text-anchor="end" class="tick">50%</text><line x1="70" x2="740" y1="118" y2="118" class="grid"/><text x="62" y="122" text-anchor="end" class="tick">75%</text><line x1="70" x2="740" y1="20" y2="20" class="grid"/><text x="62" y="24" text-anchor="end" class="tick">100%</text><text x="70" y="430" text-anchor="middle" class="tick">0%</text><text x="204" y="430" text-anchor="middle" class="tick">10%</text><text x="338" y="430" text-anchor="middle" class="tick">20%</text><text x="472" y="430" text-anchor="middle" class="tick">30%</text><text x="606" y="430" text-anchor="middle" class="tick">40%</text><text x="740" y="430" text-anchor="middle" class="tick">50%</text><text x="405" y="454" text-anchor="middle" class="axis">wrong tool called (share of all messages) →</text><text transform="translate(16,215) rotate(-90)" text-anchor="middle" class="axis">right ↑</text><g class="step"><circle cx="101.3" cy="122.1" r="11" fill="#1d4ed8" opacity=".92"/><text x="117.3" y="127.1" class="pt">Jev (router)</text></g><g class="step"><circle cx="284.4" cy="151.3" r="11" fill="#7c3aed" opacity=".92"/><text x="300.4" y="156.3" class="pt">DeepSeek (router)</text></g><g class="step"><circle cx="652.9" cy="226.7" r="11" fill="#d97706" opacity=".92"/><text x="668.9" y="231.7" class="pt">Haiku 5.5 (router)</text></g><g class="step"><circle cx="391.6" cy="165.6" r="11" fill="#dc2626" opacity=".92"/><text x="407.6" y="170.6" class="pt">Sonnet 5.5 (router)</text></g><g class="step"><rect x="441.9" y="288.2" width="20" height="20" fill="#7c3aed" opacity=".92"/><text x="467.9" y="303.2" class="pt">DeepSeek (native)</text></g><g class="step"><rect x="348.1" y="255.1" width="20" height="20" fill="#d97706" opacity=".92"/><text x="374.1" y="270.1" class="pt">Haiku 5.5 (native)</text></g><g class="step"><rect x="426.3" y="230.3" width="20" height="20" fill="#dc2626" opacity=".92"/><text x="452.3" y="245.3" class="pt">Sonnet 5.5 (native)</text></g></svg>
+<p class="note step">A <b>wrong call</b> is a tool that can't do the job: an order lookup for “cancel my order”.
+Squares are the LLMs with real tool calling; they ask a clarifying question on 24%–40% of messages.</p>
+</section>
+<section>
+<h2>Change the ruler</h2>
+<div class="morph"><svg viewBox="0 0 720 226" class="fig"><text x="136" y="38" text-anchor="end" class="lbl">Jev</text><rect x="150" y="15" height="34" rx="4" fill="#1d4ed8" style="--w1:354.4px;--w2:380.0px"/><text class="val va" x="0" style="--x1:516.4px;--x2:542.0px" y="39">74%</text><text class="val vb" x="0" style="--x1:516.4px;--x2:542.0px" y="39">79%</text><text x="136" y="92" text-anchor="end" class="lbl">DeepSeek</text><rect x="150" y="69" height="34" rx="4" fill="#7c3aed" style="--w1:318.4px;--w2:387.2px"/><text class="val va" x="0" style="--x1:480.4px;--x2:549.2px" y="93">66%</text><text class="val vb" x="0" style="--x1:480.4px;--x2:549.2px" y="93">81%</text><text x="136" y="146" text-anchor="end" class="lbl">Haiku 5.5</text><rect x="150" y="123" height="34" rx="4" fill="#d97706" style="--w1:225.6px;--w2:293.6px"/><text class="val va" x="0" style="--x1:387.6px;--x2:455.6px" y="147">47%</text><text class="val vb" x="0" style="--x1:387.6px;--x2:455.6px" y="147">61%</text><text x="136" y="200" text-anchor="end" class="lbl">Sonnet 5.5</text><rect x="150" y="177" height="34" rx="4" fill="#dc2626" style="--w1:300.8px;--w2:417.6px"/><text class="val va" x="0" style="--x1:462.8px;--x2:579.6px" y="201">63%</text><text class="val vb" x="0" style="--x1:462.8px;--x2:579.6px" y="201">87%</text></svg><p class="cap"><span class="ca">first-pass labels</span><span class="cb">revised labels: an FAQ search on a how-to question counts</span></p></div>
+<p class="note step">Same picks. One defensible change to what counts as right, and the ranking flips: the LLMs read “how do I…?” literally; Jev hands off.</p>
+</section>
+<section>
+<h2>State the rule</h2>
+<div class="morph"><svg viewBox="0 0 720 226" class="fig"><text x="136" y="38" text-anchor="end" class="lbl">Jev</text><rect x="150" y="15" height="34" rx="4" fill="#1d4ed8" style="--w1:354.4px;--w2:394.4px"/><text class="val va" x="0" style="--x1:516.4px;--x2:556.4px" y="39">74%</text><text class="val vb" x="0" style="--x1:516.4px;--x2:556.4px" y="39">82%</text><text x="136" y="92" text-anchor="end" class="lbl">DeepSeek</text><rect x="150" y="69" height="34" rx="4" fill="#7c3aed" style="--w1:318.4px;--w2:376.0px"/><text class="val va" x="0" style="--x1:480.4px;--x2:538.0px" y="93">66%</text><text class="val vb" x="0" style="--x1:480.4px;--x2:538.0px" y="93">78%</text><text x="136" y="146" text-anchor="end" class="lbl">Haiku 5.5</text><rect x="150" y="123" height="34" rx="4" fill="#d97706" style="--w1:225.6px;--w2:352.0px"/><text class="val va" x="0" style="--x1:387.6px;--x2:514.0px" y="147">47%</text><text class="val vb" x="0" style="--x1:387.6px;--x2:514.0px" y="147">73%</text><text x="136" y="200" text-anchor="end" class="lbl">Sonnet 5.5</text><rect x="150" y="177" height="34" rx="4" fill="#dc2626" style="--w1:300.8px;--w2:408.0px"/><text class="val va" x="0" style="--x1:462.8px;--x2:570.0px" y="201">63%</text><text class="val vb" x="0" style="--x1:462.8px;--x2:570.0px" y="201">85%</text></svg><p class="cap"><span class="ca">plain prompt</span><span class="cb">+ three sentences of routing policy</span></p></div>
+<p class="note step">Every selector gains 8–26 points.
+Jev 82% and Sonnet 85% are level (p = 0.05); Jev makes 1.0% wrong calls, Sonnet 6.0%.</p>
+</section>
+<section>
+<h2>What it costs to decide</h2>
+<table class="cost"><thead><tr><th>selector</th><th>input tokens</th><th>median latency</th><th>per 1,000 picks</th></tr></thead>
+<tbody><tr><td>Jev</td><td>6,921</td><td>0.29 s</td><td>$0.29</td></tr><tr><td>DeepSeek (router)</td><td>43,831</td><td>0.80 s</td><td>$0.36</td></tr><tr><td>Haiku 5.5 (router)</td><td>69,857</td><td>1.23 s</td><td>$0.74</td></tr><tr><td>Sonnet 5.5 (router)</td><td>69,858</td><td>1.60 s</td><td>$8.10</td></tr><tr class='step'><td>DeepSeek (native)</td><td>51,321</td><td>2.64 s</td><td>$0.29</td></tr><tr class='step'><td>Haiku 5.5 (native)</td><td>75,803</td><td>2.40 s</td><td>$0.83</td></tr><tr class='step'><td>Sonnet 5.5 (native)</td><td>75,804</td><td>3.00 s</td><td>$8.80</td></tr></tbody></table>
+<p class="note step">Jev sees names and descriptions (7k tokens); the LLMs see full schemas. Prompt caching is on for every LLM run; these are billed prices.</p>
+</section>
+<section>
+<h2>Measuring tool selection</h2>
+<ol class="check">
+<li class="step">Real tool text, not tools written to fit your test set.</li>
+<li class="step">Sets of acceptable answers, and <b>“no tool”</b> as a class.</li>
+<li class="step">Report <b>wrong calls</b> next to accuracy. A hand-off and a bluff are not the same miss.</li>
+<li class="step">Paired comparisons on the same messages (McNemar), not two accuracies.</li>
+<li class="step">Write the policy down and put it in the prompt. Then you're measuring the model.</li>
+<li class="step">Publish the labels. They decide the winner.</li>
+</ol>
+<p class="punch step">The score is a labelling decision. Make it on purpose.</p>
+</section>
+<section class="appendix">
+<h2>Appendix · A1 · The data</h2>
+<ul>
+<li><b>Messages:</b> 600 from Bitext's customer-support dataset (26,872 rows, 27 intents, hybrid synthetic with deliberate noise; CDLA-Sharing-1.0). 12–32 per intent.</li>
+<li><b>Tools:</b> 90 from 7 official servers, by running the vendor's package or docker image and calling <code>tools/list</code> (Stripe 0.2.5, GitHub 2.0.3, Notion 2.5.2), by <code>tools/list</code> on a live public Shopify store (storefront, UCP, customer account), or from official docs (Intercom). Plus <code>hand_off_to_human</code>.</li>
+<li><b>Stripe caveat:</b> the 22 per-task tools are the last per-task release (Oct 2025); the hosted server now exposes generic read/write tools.</li>
+</ul>
+<table class="cost small"><thead><tr><th>server</th><th>tools</th><th>share of tool JSON</th></tr></thead><tbody><tr><td>notion</td><td>24</td><td>41%</td></tr><tr><td>shopify_ucp</td><td>15</td><td>38%</td></tr><tr><td>stripe</td><td>22</td><td>10%</td></tr><tr><td>github</td><td>10</td><td>8%</td></tr><tr><td>intercom</td><td>14</td><td>1%</td></tr><tr><td>shopify_customer_account</td><td>4</td><td>1%</td></tr><tr><td>shopify_storefront</td><td>1</td><td>1%</td></tr></tbody></table>
+</section>
+<section class="appendix">
+<h2>A2 · Labels and scoring</h2>
+<ul>
+<li>A research pass mapped each intent to <b>acceptable</b> tools (a clean fit) and <b>partial</b> tools (a defensible first step). Four author overrides, each with a stated reason. 15 intents have no acceptable tool: only <code>hand_off_to_human</code> is right.</li>
+<li><b>Revised labels (v2)</b> also accept the store-FAQ search on the 15 gap intents, a hand-off on <code>payment_issue</code>, and the refund-policy FAQ on <code>get_refund</code>.</li>
+<li><b>Outcomes:</b> right · defensible · handed off (a tool could have done it) · asked (no tool call) · wrong · bluffed. Only <em>right</em> scores. Wrong + bluffed = the wrong-call rate.</li>
+<li><b>Statistics:</b> exact McNemar on paired right/wrong; 4,000-sample bootstrap for the difference; Wilson intervals for rates.</li>
+<li><b>Prompts:</b> identical text for the three LLMs; Jev gets the same question as a <code>choice</code> over names and descriptions. Temperature 0. Sonnet 5.5 can't disable reasoning, so it ran at low effort.</li>
+</ul>
+</section>
+<section class="appendix">
+<h2>A3 · Router against native tool calling</h2>
+<p>The router condition pastes the tool JSON into the prompt and asks for a name; it's the like-for-like test against Jev. Native tool calling puts the tools in the API's <code>tools</code> parameter with <code>tool_choice: auto</code>, which is how an agent really works, and it may answer in text instead.</p>
+<table class="cost"><thead><tr><th>native</th><th>right (plain → policy)</th><th>wrong calls</th><th>asked a question</th></tr></thead><tbody><tr><td>DeepSeek</td><td>29% → 34%</td><td>28% → 22%</td><td>40% → 42%</td></tr><tr><td>Haiku 5.5</td><td>37% → 70%</td><td>22% → 6%</td><td>38% → 17%</td></tr><tr><td>Sonnet 5.5</td><td>44% → 78%</td><td>27% → 7%</td><td>24% → 10%</td></tr></tbody></table>
+<p>Scoring the first tool call only; a second turn after a clarifying question was out of scope, so native accuracy is a lower bound. Tool names were sent as <code>server__tool</code> (dots aren't allowed).</p>
+</section>
+<section class="appendix">
+<h2>A4 · Can an optimiser find the policy?</h2>
+<p>DSPy GEPA rewrote the router preamble for DeepSeek on a 200-message development split (Claude Sonnet 5.5 as the reflection model),
+scored once on the 400 held-out messages.</p>
+<table class="cost"><thead><tr><th>DeepSeek router prompt</th><th>right (held-out 400)</th><th>wrong calls</th></tr></thead><tbody>
+<tr><td>plain</td><td>63.7%</td><td>18.0%</td></tr>
+<tr><td>hand-written policy</td><td>76.7%</td><td>4.8%</td></tr>
+<tr><td>GEPA-found</td><td>84.2%</td><td>12.0%</td></tr></tbody></table>
+<details><summary>The found preamble</summary><pre>You are the tool router for an online store&#x27;s customer-support assistant. The store runs on Shopify (storefront FAQ/policies, UCP cart/checkout/catalog/locations tools, customer-account tools), takes payments through Stripe, and uses Intercom as its helpdesk; staff also use GitHub and Notion. Input: `tools_json` (a JSON list of every available tool with name, description and input schema) and `message` (one customer message, often short, informal, typo-ridden, rude or oddly worded, sometimes using unusual synonyms such as &#x27;reimbursement&#x27; for refund, &#x27;bill&#x27; for invoice, &#x27;consumer reclamation&#x27; for complaint). Pick the ONE tool that should be called first. Reply with ONLY the tool&#x27;s exact name (e.g. shopify_storefront.search_shop_policies_and_faqs or hand_off_to_human), nothing else: no quotes, punctuation, JSON or explanation.
+
+First work out the customer&#x27;s underlying intent, translating odd wording into plain meaning. Messages come from intent categories such as check_cancellation_fee, check_refund_policy, set_up_shipping_address, edit_account, recover_password, payment_issue, track_order, get_invoice, complaint, etc. Then ask which listed tool can actually perform or answer that request.
+
+Routing rules, with the domain knowledge learned so far:
+1. shopify_storefront.search_shop_policies_and_faqs: use for questions about store policies, fees and charges, cancellation/return/refund/shipping/payment/terms rules, refund eligibility and timelines (e.g. &#x27;under what circumstances can I request a reimbursement&#x27;, &#x27;how long do refunds take&#x27; -&gt; check_refund_policy -&gt; this tool), contact details, hours, and general how-it-works questions. Cancellation fees, delivery charges and return windows are policy questions even when the customer is angry or vague. Do NOT hand off just because the customer is upset or the wording is rough.
+2. Payment problems: if the customer reports or asks how to report a problem with an online payment, a failed or wrong charge, or a payment that didn&#x27;t go through (intent payment_issue, e.g. &#x27;how do I inform of a problem with online payments?&#x27;), choose stripe.list_payment_intents, NOT the FAQ tool. Invoices/bills: &#x27;where do I get the bill/invoice&#x27; or similar (intent get_invoice) -&gt; stripe.list_invoices. Other Stripe uses: stripe.list_subscriptions / cancel_subscription for subscriptions, stripe.create_refund for refund execution, stripe.list_disputes for disputes. Distinguish: asking about refund POLICY or timing -&gt; FAQ tool; reporting a concrete payment problem -&gt; Stripe.
+3. shopify_customer_account tools: the customer&#x27;s own order status (get_order_status, get_most_recent_order_status), store credit balance, and return requests (request_return). shopify_ucp tools: browsing products, carts, checkouts, and store locations. Intercom tools are for helpdesk conversations/contacts/articles. GitHub and Notion tools are staff tooling and are almost never right for a customer message.
+4. hand_off_to_human: choose ONLY when no tool can do what the customer asks. Typical cases: (a) account modification the tools do not offer: changing or setting up a delivery/shipping address, editing/updating account profile data or account details (e.g. &#x27;update standard account&#x27;), recovering or resetting a password, PIN or login credentials (&#x27;retrieve the PIN of my user profile&#x27;); (b) complaints: where/how to lodge a complaint, claim, &#x27;consumer reclamation&#x27;, or file a grievance against the company (intent complaint) -&gt; hand_off_to_human, since searching the FAQ or looking up an order does not do what the customer asked; (c) requests needing human judgment. Examples: &#x27;where to submit a different delivery address&#x27; -&gt; hand_off_to_human; &#x27;where to lodge a consumer reclamation against ur company&#x27; -&gt; hand_off_to_human.
+5. Avoid both errors: do not use the FAQ tool for actions it cannot perform (address changes, credential recovery, account edits, filing complaints) or for concrete payment problems, and do not hand off when the FAQ/policy tool can answer (e.g. &#x27;checking the cancellation charge&#x27;, &#x27;how long refunds take&#x27;, &#x27;when can I get a reimbursement&#x27; -&gt; shopify_storefront.search_shop_policies_and_faqs). Key test: is the customer asking for information about a rule (FAQ) or asking to perform/submit/change something that no tool supports (hand off)?
+6. Output the exact tool name string only.</pre></details>
+</section>
+<section class="appendix">
+<h2>A5 · Caveats and links</h2>
+<ul>
+<li>“No tool” means none in this catalogue. Shopify's customer-account server may expose more once a customer signs in; a store can add servers.</li>
+<li>Bitext messages are template-generated and often vague; real tickets are longer and messier.</li>
+<li>Jev sees names and descriptions; the LLMs also see schemas. That is how each is used, but it isn't identical information.</li>
+<li>The routing policy lists example gap intents, which partly hands the models the labels. The GEPA appendix is the version that only saw a development split.</li>
+<li>Costs are OpenRouter's billed prices with caching; Jev at US$0.042 per million input tokens.</li>
+</ul>
+<p>Code, data and every run: <code>talks/measurecamp-2026</code> · marimo explorer: <code>uv run marimo edit notebooks/explore.py</code></p>
+</section>
+
+<section class="appendix review" id="feedback">
+<h2>Feedback</h2>
+<p>Annotate any slide above (select text or click an element), or answer here. Queue, then press Send in the Lavish bar.</p>
+<form data-lavish-question="deck" onsubmit="event.preventDefault(); const f = new FormData(this); const a = [...f.entries()].filter(([k, v]) => v).map(([k, v]) => k + ': ' + v).join(' | '); if (a) window.lavish?.queuePrompt('Deck decisions: ' + a, {tag: 'choice', text: 'Deck decisions', element: this, queueKey: 'deck'});">
+<p><b>Length.</b> <label><input type="radio" name="length" value="10 slides is right"> 10 slides is right</label>
+<label><input type="radio" name="length" value="cut to 8"> cut to 8</label>
+<label><input type="radio" name="length" value="allow 12"> allow 12</label></p>
+<p><b>Native tool calling.</b> <label><input type="radio" name="native" value="keep in slide 6 only"> keep it in slide 6 only</label>
+<label><input type="radio" name="native" value="give it its own slide"> give it its own slide</label>
+<label><input type="radio" name="native" value="appendix only"> appendix only</label></p>
+<p><b>GEPA.</b> <label><input type="radio" name="gepa" value="appendix only"> appendix only</label>
+<label><input type="radio" name="gepa" value="promote to main deck"> promote to the main deck</label></p>
+<p><b>Vendor names.</b> <label><input type="radio" name="names" value="name all"> name Jev, DeepSeek, Claude and the MCP vendors</label>
+<label><input type="radio" name="names" value="anonymise MCP vendors"> anonymise the MCP vendors</label></p>
+<p><label>Anything else: <input type="text" name="other" size="60"></label></p>
+<p><button type="submit">Queue answers</button></p>
+</form>
+</section>
+</div>
+<div class="counter"></div>
+<div class="hint">→ next · ← back · p print · a appendix</div>
+<script>
+const slides = [...document.querySelectorAll('section')];
+let i = Math.max(0, Math.min(slides.length - 1, parseInt(location.hash.slice(1) || '0', 10) || 0));
+function show(k) { slides.forEach((s, j) => s.classList.toggle('active', j === k)); i = k; location.hash = k;
+  document.querySelector('.counter').textContent = (k + 1) + ' / ' + slides.length; }
+function steps() { return [...slides[i].querySelectorAll('.step, .morph')]; }
+function next() { const s = steps().find(x => !x.classList.contains('on')); if (s) { s.classList.add('on'); return; } if (i < slides.length - 1) show(i + 1); }
+function prev() { const on = steps().filter(x => x.classList.contains('on')); if (on.length) { on[on.length - 1].classList.remove('on'); return; } if (i > 0) { show(i - 1); steps().forEach(x => x.classList.add('on')); } }
+document.addEventListener('keydown', ev => {
+  if (['ArrowRight', ' ', 'PageDown'].includes(ev.key)) { ev.preventDefault(); next(); }
+  else if (['ArrowLeft', 'PageUp'].includes(ev.key)) { ev.preventDefault(); prev(); }
+  else if (ev.key === 'Home') show(0); else if (ev.key === 'End') show(slides.length - 1);
+  else if (ev.key === 'p') document.body.classList.toggle('print');
+  else if (ev.key === 'a') show(slides.findIndex(s => s.classList.contains('appendix')));
+});
+void(, ev => { if (document.body.classList.contains('print')) return; if (ev.target.closest('a, details, summary')) return; next(); });
+show(i);
+if (location.search.includes('steps')) steps().forEach(x => x.classList.add('on'));
+</script>
+</body></html>

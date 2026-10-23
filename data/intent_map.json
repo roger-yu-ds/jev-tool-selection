@@ -1,0 +1,282 @@
+{
+ "cancel_order": {
+  "acceptable": [],
+  "partial": [
+   "shopify_storefront.search_shop_policies_and_faqs"
+  ],
+  "near_miss_distractors": [
+   "shopify_ucp.cancel_checkout",
+   "shopify_ucp.cancel_cart",
+   "stripe.create_refund",
+   "stripe.cancel_subscription"
+  ],
+  "notes": "GAP. No official customer-facing MCP tool cancels a placed Shopify order (Customer Account MCP has only order status, store credit and request_return; UCP cancel_checkout/cancel_cart act on an unsubmitted checkout/cart, not an order). Policy lookup (policy_types terms_of_sale/refund) is the only defensible call; otherwise the right behaviour is no tool / hand off."
+ },
+ "change_order": {
+  "acceptable": [],
+  "partial": [
+   "shopify_ucp.update_checkout",
+   "shopify_ucp.update_cart"
+  ],
+  "near_miss_distractors": [
+   "stripe.update_subscription"
+  ],
+  "notes": "GAP for placed orders: no order-edit tool. update_checkout/update_cart only apply if the 'order' is still an open checkout/cart (pre-purchase); Bitext utterances are mostly post-purchase."
+ },
+ "change_shipping_address": {
+  "acceptable": [],
+  "partial": [
+   "shopify_ucp.update_checkout"
+  ],
+  "near_miss_distractors": [],
+  "notes": "GAP for placed orders. update_checkout accepts fulfillment destinations (street_address) but only for an open checkout."
+ },
+ "check_cancellation_fee": {
+  "acceptable": [
+   "shopify_storefront.search_shop_policies_and_faqs"
+  ],
+  "partial": [],
+  "near_miss_distractors": [
+   "stripe.search_stripe_documentation"
+  ],
+  "notes": "Store policy question; policy_types e.g. terms_of_sale/refund. stripe.search_stripe_documentation is a distractor (Stripe integration docs, not store policy)."
+ },
+ "check_invoice": {
+  "acceptable": [
+   "stripe.list_invoices"
+  ],
+  "partial": [
+   "shopify_ucp.get_order"
+  ],
+  "near_miss_distractors": [
+   "stripe.finalize_invoice",
+   "stripe.create_invoice"
+  ],
+  "notes": "Assumes invoices are issued via Stripe Billing. If the store's 'invoice' is just the Shopify order receipt, shopify_ucp.get_order is equally defensible. Legacy Stripe toolset has no retrieve-single-invoice tool."
+ },
+ "check_payment_methods": {
+  "acceptable": [
+   "shopify_storefront.search_shop_policies_and_faqs"
+  ],
+  "partial": [
+   "shopify_ucp.get_checkout",
+   "shopify_ucp.create_checkout"
+  ],
+  "near_miss_distractors": [
+   "stripe.list_payment_intents"
+  ],
+  "notes": "General 'which payment methods do you accept' is an FAQ/policy lookup. UCP checkout responses include payment handlers but require a cart/checkout. No Stripe list-payment-methods tool in the legacy toolset."
+ },
+ "check_refund_policy": {
+  "acceptable": [
+   "shopify_storefront.search_shop_policies_and_faqs"
+  ],
+  "partial": [],
+  "near_miss_distractors": [
+   "stripe.create_refund",
+   "shopify_customer_account.request_return"
+  ],
+  "notes": "Exact fit: policy_types=['refund'] (enum value exists in the schema)."
+ },
+ "complaint": {
+  "acceptable": [],
+  "partial": [
+   "intercom.add_internal_note"
+  ],
+  "near_miss_distractors": [
+   "github.issue_write",
+   "notion.API-create-a-comment",
+   "notion.API-post-page"
+  ],
+  "notes": "GAP. No customer-facing complaint/ticket-creation tool in the official servers retrieved (Intercom MCP cannot create conversations/tickets or reply to customers; Zendesk/Gorgias have no shipped official server). add_internal_note only annotates an existing conversation. GitHub/Notion are tempting distractors."
+ },
+ "contact_customer_service": {
+  "acceptable": [
+   "shopify_storefront.search_shop_policies_and_faqs"
+  ],
+  "partial": [],
+  "near_miss_distractors": [
+   "intercom.search_conversations"
+  ],
+  "notes": "policy_types=['contact'] returns phone/hours/address; the description itself lists 'What is your phone number?' and hours."
+ },
+ "contact_human_agent": {
+  "acceptable": [],
+  "partial": [
+   "shopify_storefront.search_shop_policies_and_faqs",
+   "intercom.add_internal_note"
+  ],
+  "near_miss_distractors": [
+   "intercom.search_contacts",
+   "intercom.get_contact"
+  ],
+  "notes": "GAP. No hand-off/escalation/assign tool in any official server retrieved. Returning contact details (policy_types=['contact']) or leaving an internal note are the closest real calls."
+ },
+ "create_account": {
+  "acceptable": [],
+  "partial": [],
+  "near_miss_distractors": [
+   "stripe.create_customer"
+  ],
+  "notes": "GAP. Shopify Customer Account MCP has no sign-up tool (accounts are created by the shopper via the store's login flow). stripe.create_customer creates a Stripe billing customer, not a store account - a distractor."
+ },
+ "delete_account": {
+  "acceptable": [],
+  "partial": [
+   "shopify_storefront.search_shop_policies_and_faqs"
+  ],
+  "near_miss_distractors": [],
+  "notes": "GAP. No account-deletion tool. Privacy policy lookup (policy_types=['privacy']) is the only related call."
+ },
+ "delivery_options": {
+  "acceptable": [
+   "shopify_storefront.search_shop_policies_and_faqs"
+  ],
+  "partial": [
+   "shopify_ucp.search_locations",
+   "shopify_ucp.create_checkout"
+  ],
+  "near_miss_distractors": [],
+  "notes": "Shipping policy lookup (policy_types=['shipping']). search_locations covers in-store pickup locations (only present on stores with locations; absent on kith.com). Checkout fulfillment options need a cart."
+ },
+ "delivery_period": {
+  "acceptable": [
+   "shopify_storefront.search_shop_policies_and_faqs",
+   "shopify_customer_account.get_order_status",
+   "shopify_customer_account.get_most_recent_order_status"
+  ],
+  "partial": [
+   "shopify_ucp.get_order"
+  ],
+  "near_miss_distractors": [],
+  "notes": "Ambiguous intent: generic 'how long does shipping take' -> shipping policy; 'when will MY order arrive' -> order status tools. Graders should accept either family; consider splitting by utterance."
+ },
+ "edit_account": {
+  "acceptable": [],
+  "partial": [],
+  "near_miss_distractors": [
+   "stripe.create_customer"
+  ],
+  "notes": "GAP. No profile-edit tool in Customer Account MCP (as listed unauthenticated)."
+ },
+ "get_invoice": {
+  "acceptable": [
+   "stripe.list_invoices"
+  ],
+  "partial": [
+   "shopify_ucp.get_order"
+  ],
+  "near_miss_distractors": [
+   "stripe.create_invoice",
+   "stripe.finalize_invoice"
+  ],
+  "notes": "Same caveat as check_invoice. No tool returns/sends an invoice PDF; list_invoices returns invoice objects (which include hosted URLs in the Stripe API)."
+ },
+ "get_refund": {
+  "acceptable": [
+   "shopify_customer_account.request_return",
+   "stripe.create_refund"
+  ],
+  "partial": [],
+  "near_miss_distractors": [
+   "stripe.list_disputes",
+   "stripe.update_dispute"
+  ],
+  "notes": "Two legitimate designs: customer-scoped return request on Shopify (refund follows the return), or merchant-authority refund of a Stripe PaymentIntent. Both are real; which one is 'right' depends on whether the assistant acts as the customer or the merchant."
+ },
+ "newsletter_subscription": {
+  "acceptable": [],
+  "partial": [],
+  "near_miss_distractors": [],
+  "notes": "GAP. No email-marketing server in the catalogue (an official Klaviyo/Mailchimp server would be needed; not retrieved)."
+ },
+ "payment_issue": {
+  "acceptable": [
+   "stripe.list_payment_intents"
+  ],
+  "partial": [
+   "stripe.list_disputes"
+  ],
+  "near_miss_distractors": [
+   "stripe.retrieve_balance",
+   "stripe.create_refund"
+  ],
+  "notes": "Investigating a failed/declined/double charge = list the customer's PaymentIntents. Disputes only if a chargeback is involved."
+ },
+ "place_order": {
+  "acceptable": [
+   "shopify_ucp.create_checkout",
+   "shopify_ucp.create_cart"
+  ],
+  "partial": [
+   "shopify_ucp.search_catalog",
+   "shopify_ucp.complete_checkout"
+  ],
+  "near_miss_distractors": [
+   "stripe.create_payment_link",
+   "stripe.create_invoice"
+  ],
+  "notes": "Multi-step: (search_catalog/get_product) -> create_cart or create_checkout -> complete_checkout. Accept either creation tool as the first action; search_catalog first is also reasonable if the product is unidentified. Stripe payment links/invoices are distractors."
+ },
+ "recover_password": {
+  "acceptable": [],
+  "partial": [],
+  "near_miss_distractors": [],
+  "notes": "GAP. No password tool (Shopify's new customer accounts are passwordless one-time-code login; no MCP tool for it)."
+ },
+ "registration_problems": {
+  "acceptable": [],
+  "partial": [],
+  "near_miss_distractors": [],
+  "notes": "GAP. No account/registration troubleshooting tool."
+ },
+ "review": {
+  "acceptable": [],
+  "partial": [],
+  "near_miss_distractors": [
+   "github.add_issue_comment",
+   "notion.API-create-a-comment"
+  ],
+  "notes": "GAP. No product-review / feedback tool in the official servers retrieved."
+ },
+ "set_up_shipping_address": {
+  "acceptable": [],
+  "partial": [
+   "shopify_ucp.update_checkout"
+  ],
+  "near_miss_distractors": [],
+  "notes": "GAP for a saved account address book (no address tools in Customer Account MCP listing). update_checkout sets a destination for a single open checkout."
+ },
+ "switch_account": {
+  "acceptable": [],
+  "partial": [],
+  "near_miss_distractors": [],
+  "notes": "GAP. No tool; account switching is a client/session action."
+ },
+ "track_order": {
+  "acceptable": [
+   "shopify_customer_account.get_order_status",
+   "shopify_customer_account.get_most_recent_order_status",
+   "shopify_ucp.get_order"
+  ],
+  "partial": [],
+  "near_miss_distractors": [
+   "intercom.search_conversations",
+   "github.list_issues"
+  ],
+  "notes": "Exact fit. get_order_status needs an order number; get_most_recent_order_status takes none; UCP get_order needs an order GID and its output schema includes fulfillment tracking_number/tracking_url."
+ },
+ "track_refund": {
+  "acceptable": [],
+  "partial": [
+   "shopify_customer_account.get_order_status",
+   "shopify_ucp.get_order",
+   "shopify_customer_account.get_store_credit_balances",
+   "stripe.list_payment_intents"
+  ],
+  "near_miss_distractors": [
+   "stripe.create_refund"
+  ],
+  "notes": "GAP-ish. No list/retrieve-refund tool in the legacy Stripe toolset (the current hosted Stripe server reaches 'Retrieve a refund' only via generic stripe_api_read). Order status/get_order may surface refund adjustments (get_order output schema has 'adjustments'); not verified with a live order."
+ }
+}

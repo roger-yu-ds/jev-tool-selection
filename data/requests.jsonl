@@ -1,0 +1,600 @@
+{"id": "R0000", "intent": "place_order", "text": "i do not know what to do to acquire some of ur article"}
+{"id": "R0001", "intent": "change_order", "text": "I am trying to update purchase ORD-449520"}
+{"id": "R0002", "intent": "switch_account", "text": "help to use the bloody gold profile"}
+{"id": "R0003", "intent": "place_order", "text": "i ahve got to shop an article will uhelp me"}
+{"id": "R0004", "intent": "delivery_period", "text": "where could I see how soon can I expect the product ?"}
+{"id": "R0005", "intent": "payment_issue", "text": "how do I notify of payment problems?"}
+{"id": "R0006", "intent": "contact_human_agent", "text": "i do not understand anything ya say direct tome someone"}
+{"id": "R0007", "intent": "contact_customer_service", "text": "I need to check at what time I can reach custome assistance"}
+{"id": "R0008", "intent": "place_order", "text": "I need assistance shopping some of your item"}
+{"id": "R0009", "intent": "check_payment_methods", "text": "can ushow me ur allowed payment options"}
+{"id": "R0010", "intent": "check_cancellation_fee", "text": "how to check the early termination penalty?"}
+{"id": "R0011", "intent": "check_refund_policy", "text": "can I check in what cases can I request the damn refunds?"}
+{"id": "R0012", "intent": "check_refund_policy", "text": "see under which circumstances can I ask for refunds"}
+{"id": "R0013", "intent": "delivery_period", "text": "is it possible to check how soon can i expect the item"}
+{"id": "R0014", "intent": "payment_issue", "text": "issue with payment"}
+{"id": "R0015", "intent": "check_cancellation_fee", "text": "I'm trying to see the early exit charge"}
+{"id": "R0016", "intent": "switch_account", "text": "switching to standard account"}
+{"id": "R0017", "intent": "check_refund_policy", "text": "I have got to see your refund policy, help me"}
+{"id": "R0018", "intent": "recover_password", "text": "help me to retrieve the PIN of my user profile"}
+{"id": "R0019", "intent": "review", "text": "can i leave feedback"}
+{"id": "R0020", "intent": "delivery_period", "text": "I am trying to find shipping periods, could you help me?"}
+{"id": "R0021", "intent": "newsletter_subscription", "text": "I have got to subscribe to your newsletter, how can I do it?"}
+{"id": "R0022", "intent": "place_order", "text": "I want help to order an article"}
+{"id": "R0023", "intent": "change_order", "text": "wanna delete some items from purchase ORD-436202"}
+{"id": "R0024", "intent": "check_cancellation_fee", "text": "want help to check the early termination penalties"}
+{"id": "R0025", "intent": "set_up_shipping_address", "text": "could you help me enter the new shipping address?"}
+{"id": "R0026", "intent": "edit_account", "text": "updating info on standard account"}
+{"id": "R0027", "intent": "check_payment_methods", "text": "i need assistance to check ur available payment modalities"}
+{"id": "R0028", "intent": "newsletter_subscription", "text": "i have to sign up to the company newsletter"}
+{"id": "R0029", "intent": "get_invoice", "text": "I lost bill #85632, could you mail it to me?"}
+{"id": "R0030", "intent": "contact_human_agent", "text": "what do i have to do to speak with somebody"}
+{"id": "R0031", "intent": "newsletter_subscription", "text": "can I cancel my subscription to the corporate newsletter?"}
+{"id": "R0032", "intent": "track_order", "text": "i need assistance to locate purchase ORD-499272"}
+{"id": "R0033", "intent": "delivery_period", "text": "need assistanmce checking how soon can I expect the package"}
+{"id": "R0034", "intent": "payment_issue", "text": "I need assistance to inform of a problem with payments"}
+{"id": "R0035", "intent": "review", "text": "is there a way to submit feedback for your company?"}
+{"id": "R0036", "intent": "contact_customer_service", "text": "how do I get in touch with customer support?"}
+{"id": "R0037", "intent": "check_invoice", "text": "help me finding invoice #85632"}
+{"id": "R0038", "intent": "complaint", "text": "how could I make a consumer claim against your company?"}
+{"id": "R0039", "intent": "complaint", "text": "can you help me make a customer claim?"}
+{"id": "R0040", "intent": "create_account", "text": "assistance to crete a platinum account"}
+{"id": "R0041", "intent": "set_up_shipping_address", "text": "I try to submit a ne delivery address"}
+{"id": "R0042", "intent": "set_up_shipping_address", "text": "how to set the new delivery address up"}
+{"id": "R0043", "intent": "switch_account", "text": "can I change to the premium account?"}
+{"id": "R0044", "intent": "change_shipping_address", "text": "I have a trouble trying to modify my shipping address"}
+{"id": "R0045", "intent": "change_order", "text": "how do i swap several articles of purchase ORD-471436"}
+{"id": "R0046", "intent": "place_order", "text": "purchase several of your product"}
+{"id": "R0047", "intent": "contact_human_agent", "text": "need assistance speaking to a hujan agent"}
+{"id": "R0048", "intent": "check_cancellation_fee", "text": "i need assistance checking the damn cancellation charge"}
+{"id": "R0049", "intent": "change_order", "text": "I can't delete several products from purchase ORD-473293"}
+{"id": "R0050", "intent": "contact_customer_service", "text": "what do I have to do to talk with cusromer support?"}
+{"id": "R0051", "intent": "delivery_period", "text": "I am trying to find the shipping perod"}
+{"id": "R0052", "intent": "check_invoice", "text": "assistance to give a quick look at my invoice #00108"}
+{"id": "R0053", "intent": "payment_issue", "text": "what do I have to do to report problems with payment?"}
+{"id": "R0054", "intent": "registration_problems", "text": "I am trying to inform of errors with registrations"}
+{"id": "R0055", "intent": "check_cancellation_fee", "text": "I do not know how I can see the early exit fee"}
+{"id": "R0056", "intent": "check_cancellation_fee", "text": "I want to check the withdrawal charges, how to do it?"}
+{"id": "R0057", "intent": "edit_account", "text": "modifu details on Gold account"}
+{"id": "R0058", "intent": "change_shipping_address", "text": "I have to edit the address, I need assistance"}
+{"id": "R0059", "intent": "create_account", "text": "I don't know what I have to do to create a Basic account"}
+{"id": "R0060", "intent": "switch_account", "text": "I don't know how I can switch to the standard account"}
+{"id": "R0061", "intent": "contact_customer_service", "text": "help me see what hours I can reach customer support"}
+{"id": "R0062", "intent": "cancel_order", "text": "I do not want the item I purchased, can I cancel the order?"}
+{"id": "R0063", "intent": "track_refund", "text": "see my compensation status"}
+{"id": "R0064", "intent": "delivery_options", "text": "can you help me to check what shipment options you offer?"}
+{"id": "R0065", "intent": "contact_human_agent", "text": "I don't know how I can talk to an assistant"}
+{"id": "R0066", "intent": "get_refund", "text": "I do not know what to do to get a compensation"}
+{"id": "R0067", "intent": "track_order", "text": "help seeing order ORD-402373 status"}
+{"id": "R0068", "intent": "get_refund", "text": "I want assistance receiving a compensation"}
+{"id": "R0069", "intent": "get_invoice", "text": "want heop downloading the bill from Eli"}
+{"id": "R0070", "intent": "recover_password", "text": "i have to resdet my user pin code"}
+{"id": "R0071", "intent": "switch_account", "text": "I don't know how I can change to the platinum account"}
+{"id": "R0072", "intent": "payment_issue", "text": "I want assistance to inform of an error with online payment"}
+{"id": "R0073", "intent": "newsletter_subscription", "text": "I try to cancel the subscription to your newsletter"}
+{"id": "R0074", "intent": "recover_password", "text": "I want help to recover the PIN of my user profile"}
+{"id": "R0075", "intent": "change_order", "text": "add something to order"}
+{"id": "R0076", "intent": "payment_issue", "text": "i cant make payments notify of issujes"}
+{"id": "R0077", "intent": "review", "text": "where do I leave a review for your services?"}
+{"id": "R0078", "intent": "delivery_period", "text": "I have got to check how soon can I expect the goddamn order"}
+{"id": "R0079", "intent": "edit_account", "text": "update details on standard account"}
+{"id": "R0080", "intent": "recover_password", "text": "retrieve my user password"}
+{"id": "R0081", "intent": "check_payment_methods", "text": "wshere do i list ur allowed payment options"}
+{"id": "R0082", "intent": "set_up_shipping_address", "text": "want help setting the secondary delivery address up"}
+{"id": "R0083", "intent": "payment_issue", "text": "where to notify of problems with online payment?"}
+{"id": "R0084", "intent": "complaint", "text": "my experience with you was bad, how do I make a complaint?"}
+{"id": "R0085", "intent": "delivery_period", "text": "i do not know how i can see how soon can i expect my delivry"}
+{"id": "R0086", "intent": "track_refund", "text": "I'm waiting for a reimbursement of $164"}
+{"id": "R0087", "intent": "registration_problems", "text": "can I inform of an error with a sign-up?"}
+{"id": "R0088", "intent": "get_invoice", "text": "where do I get the bill from Chloe?"}
+{"id": "R0089", "intent": "create_account", "text": "new freemium acount for wife"}
+{"id": "R0090", "intent": "contact_human_agent", "text": "I want help speaking with a human agent"}
+{"id": "R0091", "intent": "check_invoice", "text": "I do not know how I can look for the invoice #37777"}
+{"id": "R0092", "intent": "newsletter_subscription", "text": "can i see thed status of my subscription to ur newsletter"}
+{"id": "R0093", "intent": "track_order", "text": "show me the eta of the order ORD-463288"}
+{"id": "R0094", "intent": "get_invoice", "text": "I do not know how I could download bill #00108"}
+{"id": "R0095", "intent": "check_refund_policy", "text": "I try to check in what cases can I request my money back"}
+{"id": "R0096", "intent": "check_invoice", "text": "I want to locate invoice #00108 , help me"}
+{"id": "R0097", "intent": "registration_problems", "text": "I have to inform of na issue with signup"}
+{"id": "R0098", "intent": "delivery_options", "text": "I have to check the shipment options, help me"}
+{"id": "R0099", "intent": "contact_human_agent", "text": "need help to speak with somebody"}
+{"id": "R0100", "intent": "contact_human_agent", "text": "direct to me an operator"}
+{"id": "R0101", "intent": "track_refund", "text": "I cannot see if there are any updates on my compensation"}
+{"id": "R0102", "intent": "switch_account", "text": "i dont knowq what i need to do to switch to the business account"}
+{"id": "R0103", "intent": "delete_account", "text": "I want assistance deleting my premium account"}
+{"id": "R0104", "intent": "complaint", "text": "I want help to file a complaint against your organization"}
+{"id": "R0105", "intent": "switch_account", "text": "help me use the platinum profile"}
+{"id": "R0106", "intent": "track_refund", "text": "I'm waiting for a reimbjrsement of $190"}
+{"id": "R0107", "intent": "check_invoice", "text": "i need assistance checking my bills from Chloe"}
+{"id": "R0108", "intent": "delete_account", "text": "cold uhelp me deleting my platinum account"}
+{"id": "R0109", "intent": "get_invoice", "text": "getting invoices from eight months ago"}
+{"id": "R0110", "intent": "get_invoice", "text": "I don't know what I have to do to download my invoice #37777"}
+{"id": "R0111", "intent": "track_refund", "text": "help me to check if there are nay news on the refund"}
+{"id": "R0112", "intent": "create_account", "text": "can i open a standard account"}
+{"id": "R0113", "intent": "delivery_period", "text": "I try to see whne will my item arrive"}
+{"id": "R0114", "intent": "registration_problems", "text": "can i notify of an error with registrations"}
+{"id": "R0115", "intent": "change_order", "text": "I need help with adding a producft to order ORD-458908"}
+{"id": "R0116", "intent": "complaint", "text": "my experience with uwas too bad help to file a reclqmation"}
+{"id": "R0117", "intent": "get_refund", "text": "I need help demanding a compensation"}
+{"id": "R0118", "intent": "create_account", "text": "i want help to open a standard account for my dad"}
+{"id": "R0119", "intent": "check_payment_methods", "text": "I need help listing the bloody payment methods"}
+{"id": "R0120", "intent": "delivery_period", "text": "I call to see when my parcel is going to arrive"}
+{"id": "R0121", "intent": "check_cancellation_fee", "text": "I don't know how I can see the early termination penalties"}
+{"id": "R0122", "intent": "set_up_shipping_address", "text": "where to submit a different delivery address"}
+{"id": "R0123", "intent": "contact_customer_service", "text": "I want to see at what time I can contact customer assistance"}
+{"id": "R0124", "intent": "delivery_options", "text": "can you help me see what methods for delivery I have?"}
+{"id": "R0125", "intent": "switch_account", "text": "how can I use the Gold account?"}
+{"id": "R0126", "intent": "contact_human_agent", "text": "I do not understand anything you say, talk with a live agent"}
+{"id": "R0127", "intent": "complaint", "text": "I want help filing a customer complaint"}
+{"id": "R0128", "intent": "contact_customer_service", "text": "can i check at what time customer service available is"}
+{"id": "R0129", "intent": "change_shipping_address", "text": "I want help correcting my shipping address"}
+{"id": "R0130", "intent": "payment_issue", "text": "reporting issues with payments"}
+{"id": "R0131", "intent": "check_cancellation_fee", "text": "where do i check the cancellation penalty"}
+{"id": "R0132", "intent": "place_order", "text": "i try to acquire some items"}
+{"id": "R0133", "intent": "delete_account", "text": "i do not know what i have to do to delete a business account"}
+{"id": "R0134", "intent": "check_invoice", "text": "where to take aq quick look at the invoices from Chloe?"}
+{"id": "R0135", "intent": "edit_account", "text": "update data on premium cacount"}
+{"id": "R0136", "intent": "review", "text": "how to leave an opinion for ur products"}
+{"id": "R0137", "intent": "switch_account", "text": "I have got to use the gold account, can I get some help?"}
+{"id": "R0138", "intent": "review", "text": "can I send feedback about a product?"}
+{"id": "R0139", "intent": "check_payment_methods", "text": "I need help listing your payment modalities"}
+{"id": "R0140", "intent": "contact_customer_service", "text": "I do not know how to talk to damn customer support"}
+{"id": "R0141", "intent": "create_account", "text": "i do not know how ican open a premium account for my fiance"}
+{"id": "R0142", "intent": "check_invoice", "text": "how to check bill #85632?"}
+{"id": "R0143", "intent": "get_refund", "text": "i need help to get refunds of my money"}
+{"id": "R0144", "intent": "get_refund", "text": "where do I get a reimbursement?"}
+{"id": "R0145", "intent": "registration_problems", "text": "i need help notifying of registration errors"}
+{"id": "R0146", "intent": "track_refund", "text": "showing refund status"}
+{"id": "R0147", "intent": "track_order", "text": "want assistance checking the ETA of orfer ORD-465533"}
+{"id": "R0148", "intent": "review", "text": "do uhave an e-mnail to send feedback about a service"}
+{"id": "R0149", "intent": "change_shipping_address", "text": "I have chosen a wrong shipping address, how do I correct it?"}
+{"id": "R0150", "intent": "get_invoice", "text": "need to download my invoice #37777 will ya help me"}
+{"id": "R0151", "intent": "get_invoice", "text": "i do not know what i neerd to do to download my bill #12588"}
+{"id": "R0152", "intent": "review", "text": "help me to leave a review about a product"}
+{"id": "R0153", "intent": "payment_issue", "text": "need help informing of problems with online payment"}
+{"id": "R0154", "intent": "create_account", "text": "i want information about creating a Gold account"}
+{"id": "R0155", "intent": "set_up_shipping_address", "text": "support setting up my delivery address"}
+{"id": "R0156", "intent": "payment_issue", "text": "want help reporting a trouble with online payment"}
+{"id": "R0157", "intent": "newsletter_subscription", "text": "I have tounsubscribe from the newsletter, help me"}
+{"id": "R0158", "intent": "set_up_shipping_address", "text": "I need to submit the secondary shipping address"}
+{"id": "R0159", "intent": "delivery_options", "text": "what shipment options can I choose?"}
+{"id": "R0160", "intent": "newsletter_subscription", "text": "can I sign up to the company newsletter?"}
+{"id": "R0161", "intent": "review", "text": "i have got to send some feedback for a product"}
+{"id": "R0162", "intent": "delete_account", "text": "what do i have to do to delete a freemium account"}
+{"id": "R0163", "intent": "get_refund", "text": "how can I ask for a restitution of my money?"}
+{"id": "R0164", "intent": "delivery_period", "text": "i have got to see how long the delivery takes"}
+{"id": "R0165", "intent": "newsletter_subscription", "text": "i dont know what i need to do to sign up to the newsletter"}
+{"id": "R0166", "intent": "track_order", "text": "want hewlp locating order ORD-485052"}
+{"id": "R0167", "intent": "create_account", "text": "where can i create a business account"}
+{"id": "R0168", "intent": "get_refund", "text": "I don't know what to do to get compensations of my money"}
+{"id": "R0169", "intent": "registration_problems", "text": "assistance opening user account"}
+{"id": "R0170", "intent": "contact_customer_service", "text": "tell me what hours i can contact customer sasistance"}
+{"id": "R0171", "intent": "place_order", "text": "I want help to earn several of your item"}
+{"id": "R0172", "intent": "delete_account", "text": "remove platinum account"}
+{"id": "R0173", "intent": "recover_password", "text": "will you give me information about my PIN retrieval?"}
+{"id": "R0174", "intent": "place_order", "text": "I want help shopping an article"}
+{"id": "R0175", "intent": "check_invoice", "text": "I want help checking my fucking bill from Chloe"}
+{"id": "R0176", "intent": "check_refund_policy", "text": "how can I see your reimbursement policy?"}
+{"id": "R0177", "intent": "get_refund", "text": "I need help to obtain a reimbursement of my money"}
+{"id": "R0178", "intent": "newsletter_subscription", "text": "I don't know what I have to do to receive your newsletter"}
+{"id": "R0179", "intent": "delivery_options", "text": "assistance to check what delivery methods are available"}
+{"id": "R0180", "intent": "check_payment_methods", "text": "want assistance to see your allowed payment options"}
+{"id": "R0181", "intent": "change_shipping_address", "text": "I have problems editing the shipping address"}
+{"id": "R0182", "intent": "contact_customer_service", "text": "where can i check what hours i can contact customer service"}
+{"id": "R0183", "intent": "place_order", "text": "I need assistance buying a product"}
+{"id": "R0184", "intent": "check_payment_methods", "text": "I don't know what to do to check the allowed payment options"}
+{"id": "R0185", "intent": "get_invoice", "text": "i dont know what i habe to do to get my bill #85632"}
+{"id": "R0186", "intent": "newsletter_subscription", "text": "I want to nkow about subscribing to your company newsletter"}
+{"id": "R0187", "intent": "complaint", "text": "I need assistance lodging a claim"}
+{"id": "R0188", "intent": "cancel_order", "text": "want help cancelling purchase ORD-475528"}
+{"id": "R0189", "intent": "track_refund", "text": "I have to see the bloody status of the refund, how to do it?"}
+{"id": "R0190", "intent": "check_refund_policy", "text": "I need to see your money back policy, can you hep me?"}
+{"id": "R0191", "intent": "check_cancellation_fee", "text": "I want assistance to check the termination fees"}
+{"id": "R0192", "intent": "registration_problems", "text": "what do i have to do to inform of a signup error"}
+{"id": "R0193", "intent": "edit_account", "text": "updating standard account"}
+{"id": "R0194", "intent": "check_refund_policy", "text": "assitsance seeing in which cases can i request a refund"}
+{"id": "R0195", "intent": "contact_customer_service", "text": "help me see at what time I can call customer service"}
+{"id": "R0196", "intent": "change_order", "text": "canm you help me to update purchase ORD-409663?"}
+{"id": "R0197", "intent": "contact_human_agent", "text": "can I speak with an agent?"}
+{"id": "R0198", "intent": "change_shipping_address", "text": "i put my old address by mistake i need help updating it"}
+{"id": "R0199", "intent": "check_invoice", "text": "help me to see invoice #37777"}
+{"id": "R0200", "intent": "contact_human_agent", "text": "I need help speaking to somebody"}
+{"id": "R0201", "intent": "edit_account", "text": "need to modify the user info help me"}
+{"id": "R0202", "intent": "check_cancellation_fee", "text": "I have to check the cancellation charge"}
+{"id": "R0203", "intent": "change_order", "text": "I want help deleting something from purchase ORD-444740"}
+{"id": "R0204", "intent": "delivery_options", "text": "is it plssible to order from Australia?"}
+{"id": "R0205", "intent": "check_invoice", "text": "I don't know how I can check my bill #37777"}
+{"id": "R0206", "intent": "create_account", "text": "could you help me to open a premium account?"}
+{"id": "R0207", "intent": "check_cancellation_fee", "text": "I cannot find the bloody early termination penalty, help me"}
+{"id": "R0208", "intent": "contact_human_agent", "text": "i need help to talk to someone"}
+{"id": "R0209", "intent": "contact_customer_service", "text": "where do I see at what time I can contact customer support?"}
+{"id": "R0210", "intent": "get_invoice", "text": "I want assistance downloading my invoice #85632"}
+{"id": "R0211", "intent": "check_cancellation_fee", "text": "I want help to see the cancellation penalty"}
+{"id": "R0212", "intent": "check_invoice", "text": "I want assistance to take a quick look at bill #85632"}
+{"id": "R0213", "intent": "review", "text": "want help to send feedback about a product"}
+{"id": "R0214", "intent": "delete_account", "text": "i need information about my standard account deletion"}
+{"id": "R0215", "intent": "track_refund", "text": "help me seeing if there are any updates on my compensation"}
+{"id": "R0216", "intent": "contact_human_agent", "text": "need help to speak to a uhman agent"}
+{"id": "R0217", "intent": "check_refund_policy", "text": "I am trying to check in which cases can I request a refund"}
+{"id": "R0218", "intent": "cancel_order", "text": "assistance cancelling purchase ORD-451497"}
+{"id": "R0219", "intent": "change_order", "text": "help with adding a goddamn item to ordr ORD-402165"}
+{"id": "R0220", "intent": "recover_password", "text": "I forgot the PIN of my profile, how could I reset it?"}
+{"id": "R0221", "intent": "create_account", "text": "I'd like information about creating a pro account"}
+{"id": "R0222", "intent": "check_invoice", "text": "is it possible to locate invoice #37777"}
+{"id": "R0223", "intent": "edit_account", "text": "I have got to edit my damn user, could I get some help?"}
+{"id": "R0224", "intent": "registration_problems", "text": "I cannot create a user, help to inform of a signup problem"}
+{"id": "R0225", "intent": "check_payment_methods", "text": "assistance listing your available payment methods"}
+{"id": "R0226", "intent": "contact_human_agent", "text": "could you help me chatting with someone?"}
+{"id": "R0227", "intent": "contact_human_agent", "text": "I have to speak with somebody"}
+{"id": "R0228", "intent": "place_order", "text": "help to biy some of ur article"}
+{"id": "R0229", "intent": "check_refund_policy", "text": "help me see in what cases can I reuest my money back"}
+{"id": "R0230", "intent": "edit_account", "text": "updating info on gold account"}
+{"id": "R0231", "intent": "complaint", "text": "help me making a consumer complaint against ur business"}
+{"id": "R0232", "intent": "place_order", "text": "what do i need to do to shop several products"}
+{"id": "R0233", "intent": "edit_account", "text": "correct data on premium account"}
+{"id": "R0234", "intent": "contact_human_agent", "text": "I do not know what I ned to do to speak with an agent"}
+{"id": "R0235", "intent": "delete_account", "text": "i dont know how i can remove my premium account"}
+{"id": "R0236", "intent": "change_shipping_address", "text": "I try to correct the shipping address"}
+{"id": "R0237", "intent": "create_account", "text": "new standard account"}
+{"id": "R0238", "intent": "switch_account", "text": "what do I have to do to use the Basic profile?"}
+{"id": "R0239", "intent": "contact_human_agent", "text": "I cannot understand a word you say, can I contact someone?"}
+{"id": "R0240", "intent": "track_order", "text": "i try to check the status of order ORD-437930"}
+{"id": "R0241", "intent": "payment_issue", "text": "informing of troubles with payment"}
+{"id": "R0242", "intent": "payment_issue", "text": "help solving a goddamn error with online payments"}
+{"id": "R0243", "intent": "payment_issue", "text": "help informing of an error with payments"}
+{"id": "R0244", "intent": "check_cancellation_fee", "text": "is it possible to check the bloody early exit fee?"}
+{"id": "R0245", "intent": "check_cancellation_fee", "text": "i do not know how i can see the terminationpenalty"}
+{"id": "R0246", "intent": "contact_customer_service", "text": "do you have an e-mail to contact customer assistance?"}
+{"id": "R0247", "intent": "track_refund", "text": "could I know if there are any news on my reimbursement?"}
+{"id": "R0248", "intent": "delivery_period", "text": "can you help me see when will my product arrive?"}
+{"id": "R0249", "intent": "track_order", "text": "I want to track purchase ORD-462299, I need help"}
+{"id": "R0250", "intent": "contact_human_agent", "text": "uare not helpful help me talk wity a bloody assistant"}
+{"id": "R0251", "intent": "switch_account", "text": "I want assistance to change to the freemium account"}
+{"id": "R0252", "intent": "payment_issue", "text": "need help notifying of an error with payment"}
+{"id": "R0253", "intent": "check_refund_policy", "text": "in what situations can i ask for a refund"}
+{"id": "R0254", "intent": "switch_account", "text": "how to use the premium profile"}
+{"id": "R0255", "intent": "get_invoice", "text": "I don't know what to do to download my invoice #00108"}
+{"id": "R0256", "intent": "contact_customer_service", "text": "I need to speak to customer service, how do I do it?"}
+{"id": "R0257", "intent": "change_order", "text": "how to add an item to order ORD-476389?"}
+{"id": "R0258", "intent": "contact_customer_service", "text": "I want to call damn customer assistance"}
+{"id": "R0259", "intent": "registration_problems", "text": "have a questoon about creating user profiles"}
+{"id": "R0260", "intent": "track_order", "text": "i wqant assistance checking purchase ORD-475206 status"}
+{"id": "R0261", "intent": "check_cancellation_fee", "text": "I want help to check the early termination charges"}
+{"id": "R0262", "intent": "set_up_shipping_address", "text": "I have problems entering my new delivery address"}
+{"id": "R0263", "intent": "newsletter_subscription", "text": "can you help me unsubscribing to the company newsletter?"}
+{"id": "R0264", "intent": "get_invoice", "text": "what do I need to do to get my goddamn bill from Dev?"}
+{"id": "R0265", "intent": "check_refund_policy", "text": "I am trying to check how long reimbursements usually tke"}
+{"id": "R0266", "intent": "place_order", "text": "i dont know how to order several articles"}
+{"id": "R0267", "intent": "check_cancellation_fee", "text": "i need assistance seeing the early exit charge"}
+{"id": "R0268", "intent": "contact_customer_service", "text": "how can I speak to customer assistance?"}
+{"id": "R0269", "intent": "payment_issue", "text": "reporting payment issues"}
+{"id": "R0270", "intent": "contact_customer_service", "text": "how can I talk to customer assistance?"}
+{"id": "R0271", "intent": "payment_issue", "text": "could you help me to notify of an issue with payments?"}
+{"id": "R0272", "intent": "registration_problems", "text": "I need help to report problems with a registration"}
+{"id": "R0273", "intent": "payment_issue", "text": "I need help to report a bloody error with payment"}
+{"id": "R0274", "intent": "set_up_shipping_address", "text": "what do I need to do to set my shipping address up?"}
+{"id": "R0275", "intent": "delivery_options", "text": "help me check what shipping methods are available"}
+{"id": "R0276", "intent": "complaint", "text": "I have to lodge a consumer complaint against your company"}
+{"id": "R0277", "intent": "track_refund", "text": "I don't know what to do to track the refund"}
+{"id": "R0278", "intent": "complaint", "text": "I try to lodge a customer reclamation"}
+{"id": "R0279", "intent": "check_payment_methods", "text": "i do not knwo how to see the payment methods"}
+{"id": "R0280", "intent": "payment_issue", "text": "i dont know how i can notify of issues with online payments"}
+{"id": "R0281", "intent": "registration_problems", "text": "where to inform of a sign-up error?"}
+{"id": "R0282", "intent": "track_refund", "text": "help checking if there is anything wrong with the refund"}
+{"id": "R0283", "intent": "review", "text": "can uhelp me to submit some feedback about ur products"}
+{"id": "R0284", "intent": "review", "text": "can uhelp me ti leave a damn review for a product"}
+{"id": "R0285", "intent": "place_order", "text": "I do not know what I need to do to buy an product"}
+{"id": "R0286", "intent": "place_order", "text": "I want to acquire a few of your article"}
+{"id": "R0287", "intent": "delivery_period", "text": "need assistance to check when my product is gonna arrive"}
+{"id": "R0288", "intent": "contact_customer_service", "text": "I want to check what hours I can reach customer support"}
+{"id": "R0289", "intent": "contact_customer_service", "text": "I need help to talk to custmoer service"}
+{"id": "R0290", "intent": "complaint", "text": "can ya help me lodging a consumer claim against ur business"}
+{"id": "R0291", "intent": "change_order", "text": "need help swapping a item of purchase ORD-403936"}
+{"id": "R0292", "intent": "check_invoice", "text": "need help lpocating the bloody invoice from Ana"}
+{"id": "R0293", "intent": "contact_customer_service", "text": "see what hours I can contact customer support"}
+{"id": "R0294", "intent": "check_invoice", "text": "how to see bill #85632?"}
+{"id": "R0295", "intent": "complaint", "text": "I want help to file a customer complaint"}
+{"id": "R0296", "intent": "payment_issue", "text": "can you help me inform of a problem with payment?"}
+{"id": "R0297", "intent": "recover_password", "text": "I don't know what to do to recover my profile PIN code"}
+{"id": "R0298", "intent": "track_order", "text": "I do not know how to see the status of order ORD-409866"}
+{"id": "R0299", "intent": "delivery_period", "text": "where do i check how long it takes for my article to arrive"}
+{"id": "R0300", "intent": "get_invoice", "text": "I'm trying to get my damn bills from Ana"}
+{"id": "R0301", "intent": "delivery_period", "text": "I call to check when my article is going to arrive"}
+{"id": "R0302", "intent": "set_up_shipping_address", "text": "why I cannot enter the delivery address valid"}
+{"id": "R0303", "intent": "track_refund", "text": "i dont know what to do to track my rebate"}
+{"id": "R0304", "intent": "track_refund", "text": "I need help seeing if there are any news on the compensation"}
+{"id": "R0305", "intent": "change_order", "text": "assistance to remove an item from order ORD-434854"}
+{"id": "R0306", "intent": "change_shipping_address", "text": "can you give me information about editibg the address?"}
+{"id": "R0307", "intent": "delete_account", "text": "I do not need the Basic account, help to delete it"}
+{"id": "R0308", "intent": "newsletter_subscription", "text": "i need help to cancel my corporate newsletter subscription"}
+{"id": "R0309", "intent": "recover_password", "text": "I'm trying to retrieve the pas of my user profile"}
+{"id": "R0310", "intent": "delivery_period", "text": "can you help me check how oson can I expect the parcel?"}
+{"id": "R0311", "intent": "track_refund", "text": "how could I track my restitution?"}
+{"id": "R0312", "intent": "delivery_period", "text": "where do I see when my package is going to arrive?"}
+{"id": "R0313", "intent": "delivery_period", "text": "would it be possible to see when will my package arrive?"}
+{"id": "R0314", "intent": "payment_issue", "text": "i have to notify of errors with online payment"}
+{"id": "R0315", "intent": "get_refund", "text": "i have paid $77 for an item help me receive a compensation"}
+{"id": "R0316", "intent": "change_order", "text": "is it possible to change order ORD-485841?"}
+{"id": "R0317", "intent": "registration_problems", "text": "assistance to report an error with a signup"}
+{"id": "R0318", "intent": "check_cancellation_fee", "text": "assistance to check the termination fee"}
+{"id": "R0319", "intent": "contact_human_agent", "text": "I do not know what I need to dp to contact an agent"}
+{"id": "R0320", "intent": "cancel_order", "text": "I need help to cancel order ORD-466123"}
+{"id": "R0321", "intent": "place_order", "text": "is it possible to order some of ur item"}
+{"id": "R0322", "intent": "check_payment_methods", "text": "I need help checking the allowed payment methods"}
+{"id": "R0323", "intent": "review", "text": "I do not know what I have to do to submit bloody feedback"}
+{"id": "R0324", "intent": "set_up_shipping_address", "text": "I have to set a shipping address up, how can I do it?"}
+{"id": "R0325", "intent": "payment_issue", "text": "how do I inform of a problem with online payments?"}
+{"id": "R0326", "intent": "check_invoice", "text": "want assistance to take a quick look at the invoice #85632"}
+{"id": "R0327", "intent": "check_refund_policy", "text": "help me check in which situations can i ask to be refunded"}
+{"id": "R0328", "intent": "recover_password", "text": "I can't reset my account access key"}
+{"id": "R0329", "intent": "complaint", "text": "I need help making a complaint"}
+{"id": "R0330", "intent": "switch_account", "text": "want help to change to the standard account"}
+{"id": "R0331", "intent": "edit_account", "text": "edit information on premium account"}
+{"id": "R0332", "intent": "registration_problems", "text": "I cannot sign up, I need to notify of registration issues"}
+{"id": "R0333", "intent": "change_shipping_address", "text": "I don't know how I could modify my address"}
+{"id": "R0334", "intent": "delivery_options", "text": "I would like to check the delivery methods, how to do it?"}
+{"id": "R0335", "intent": "switch_account", "text": "changkng to platinum account"}
+{"id": "R0336", "intent": "get_refund", "text": "i have got to request reimbirsements of money"}
+{"id": "R0337", "intent": "check_cancellation_fee", "text": "I need help to see the early exit charge"}
+{"id": "R0338", "intent": "contact_human_agent", "text": "I cannot speak with an assistant"}
+{"id": "R0339", "intent": "check_cancellation_fee", "text": "I have got to check the withdrawal penalty"}
+{"id": "R0340", "intent": "check_refund_policy", "text": "wanna see how long refunds take could ya help me"}
+{"id": "R0341", "intent": "delivery_period", "text": "I need help seeing how soon can I expect my purchase"}
+{"id": "R0342", "intent": "check_payment_methods", "text": "need to see the payment potions how to do it"}
+{"id": "R0343", "intent": "place_order", "text": "assistance to shop some of ur article"}
+{"id": "R0344", "intent": "contact_human_agent", "text": "i do not know what i have to do to contac a live agent"}
+{"id": "R0345", "intent": "check_payment_methods", "text": "will you show me the accepted payment methods?"}
+{"id": "R0346", "intent": "track_order", "text": "help locating purchase ORD-413770"}
+{"id": "R0347", "intent": "delivery_options", "text": "how to see what options for delivery you offer?"}
+{"id": "R0348", "intent": "set_up_shipping_address", "text": "i cant submit myy new shipping address"}
+{"id": "R0349", "intent": "place_order", "text": "i do not know what i need to do to order some fo ur article"}
+{"id": "R0350", "intent": "check_refund_policy", "text": "i want help to check in what cases can i request refunds"}
+{"id": "R0351", "intent": "newsletter_subscription", "text": "sign up to your company newsletter"}
+{"id": "R0352", "intent": "edit_account", "text": "I want to update my goddamn personal info, how to do it?"}
+{"id": "R0353", "intent": "newsletter_subscription", "text": "can you help me subscribe to your newsletter?"}
+{"id": "R0354", "intent": "contact_human_agent", "text": "I don't know how to speak to a human agent"}
+{"id": "R0355", "intent": "check_invoice", "text": "I want help looking for invoice #00108"}
+{"id": "R0356", "intent": "delivery_period", "text": "wanna know more about delivery period find some information"}
+{"id": "R0357", "intent": "get_invoice", "text": "i dont know what i have to do to get invoice #85632"}
+{"id": "R0358", "intent": "get_refund", "text": "how to ask for a restitution of my money"}
+{"id": "R0359", "intent": "review", "text": "where do I leave some feedback about a product?"}
+{"id": "R0360", "intent": "delete_account", "text": "can I close a standard account?"}
+{"id": "R0361", "intent": "track_order", "text": "wanna check the status of order ORD-456635"}
+{"id": "R0362", "intent": "check_invoice", "text": "what do I have to do to look for the invoice #85632?"}
+{"id": "R0363", "intent": "complaint", "text": "where to lodge a consumer reclamation against ur company"}
+{"id": "R0364", "intent": "check_cancellation_fee", "text": "how can i check the withdrawal penalty"}
+{"id": "R0365", "intent": "newsletter_subscription", "text": "i have glt to receive the newsletter help me"}
+{"id": "R0366", "intent": "review", "text": "how to send feedback about your products?"}
+{"id": "R0367", "intent": "delivery_period", "text": "could utell me about the shipping periods"}
+{"id": "R0368", "intent": "contact_customer_service", "text": "where do I se what hours I can reach customer assistance?"}
+{"id": "R0369", "intent": "track_refund", "text": "I am waiting for a bloody compensation of 191 dollars"}
+{"id": "R0370", "intent": "change_order", "text": "help to swap a product of order ORD-409790"}
+{"id": "R0371", "intent": "delivery_period", "text": "can you show me when my product is going to arrive?"}
+{"id": "R0372", "intent": "complaint", "text": "want help filiong a consumer claim"}
+{"id": "R0373", "intent": "complaint", "text": "help filing a consumer complaint against your organization"}
+{"id": "R0374", "intent": "newsletter_subscription", "text": "I try to receive your newsletter"}
+{"id": "R0375", "intent": "switch_account", "text": "need to chnange to the premium account could i get some help"}
+{"id": "R0376", "intent": "set_up_shipping_address", "text": "there is a problem entering my delivery address"}
+{"id": "R0377", "intent": "create_account", "text": "how can i get information about creating a business account"}
+{"id": "R0378", "intent": "create_account", "text": "i need help with opening my platinum account"}
+{"id": "R0379", "intent": "recover_password", "text": "is it possible to retrieve the password of my user profile"}
+{"id": "R0380", "intent": "payment_issue", "text": "what do i need to do to report an issue with online payment"}
+{"id": "R0381", "intent": "get_refund", "text": "help me to request a restitution of money"}
+{"id": "R0382", "intent": "delete_account", "text": "I don't know how to remove the Gold account"}
+{"id": "R0383", "intent": "get_refund", "text": "how do i receibe a compensation of money"}
+{"id": "R0384", "intent": "set_up_shipping_address", "text": "I need to enter a shipping address"}
+{"id": "R0385", "intent": "cancel_order", "text": "need help to cancel purchase ORD-417868"}
+{"id": "R0386", "intent": "review", "text": "I need to leave my feedback about a service"}
+{"id": "R0387", "intent": "track_order", "text": "ned to locate order ORD-479278 how could i do it"}
+{"id": "R0388", "intent": "registration_problems", "text": "help me inform of issues with a sign-up"}
+{"id": "R0389", "intent": "payment_issue", "text": "need assistance informing of a trouble with payment"}
+{"id": "R0390", "intent": "recover_password", "text": "I need assistance recovering my account access key"}
+{"id": "R0391", "intent": "newsletter_subscription", "text": "how can i cancel the subscription to the company newsletter"}
+{"id": "R0392", "intent": "place_order", "text": "how do I acquire some of your item?"}
+{"id": "R0393", "intent": "check_payment_methods", "text": "how do i see ur available payment modailties"}
+{"id": "R0394", "intent": "track_order", "text": "I'm tying to see the ETA of purchase ORD-454295"}
+{"id": "R0395", "intent": "set_up_shipping_address", "text": "I have problems submitting a different shipping address"}
+{"id": "R0396", "intent": "contact_human_agent", "text": "what do i have to do to contact an agwnt"}
+{"id": "R0397", "intent": "check_invoice", "text": "i need help to look for the bill #12588"}
+{"id": "R0398", "intent": "get_refund", "text": "I need help to get a refund"}
+{"id": "R0399", "intent": "create_account", "text": "help to ccreate a goddamn premium account"}
+{"id": "R0400", "intent": "track_refund", "text": "how can I see if there is anything new on my compensation?"}
+{"id": "R0401", "intent": "track_order", "text": "I try to see the ETA of the purchase ORD-494061"}
+{"id": "R0402", "intent": "get_invoice", "text": "i do not know what i have to do to get my invoice #00108"}
+{"id": "R0403", "intent": "check_cancellation_fee", "text": "where do I see the cancellation charges?"}
+{"id": "R0404", "intent": "delete_account", "text": "i dont know what to do to delete my platinum account"}
+{"id": "R0405", "intent": "create_account", "text": "i do not know hows i could open a standard account"}
+{"id": "R0406", "intent": "place_order", "text": "help to place an order"}
+{"id": "R0407", "intent": "delivery_period", "text": "could you help me see how soon can I expect my parcel?"}
+{"id": "R0408", "intent": "contact_human_agent", "text": "can you help me talking with an operator?"}
+{"id": "R0409", "intent": "payment_issue", "text": "how to report errors with payment"}
+{"id": "R0410", "intent": "review", "text": "can I submit feedback about your products?"}
+{"id": "R0411", "intent": "create_account", "text": "how do I create a premium account?"}
+{"id": "R0412", "intent": "newsletter_subscription", "text": "can you help me sign up to the newsletter?"}
+{"id": "R0413", "intent": "check_cancellation_fee", "text": "I need to check the cancellation penalties, help me"}
+{"id": "R0414", "intent": "cancel_order", "text": "I can't pay for this item, cancel order ORD-473635"}
+{"id": "R0415", "intent": "cancel_order", "text": "i need help cancelling purchase ORD-407472"}
+{"id": "R0416", "intent": "contact_human_agent", "text": "I don't understand you, can you help me talk with an agent?"}
+{"id": "R0417", "intent": "newsletter_subscription", "text": "i dont know what i have to do to receive thenewsletter"}
+{"id": "R0418", "intent": "create_account", "text": "I'm tryingto create a Gold account"}
+{"id": "R0419", "intent": "check_invoice", "text": "I need help locating my invoices from Chloe"}
+{"id": "R0420", "intent": "contact_human_agent", "text": "can ya help me speaking with an assistant"}
+{"id": "R0421", "intent": "change_order", "text": "problem with swappingt some articles of purchase ORD-435617"}
+{"id": "R0422", "intent": "complaint", "text": "i call to file a consumer claim against ur company"}
+{"id": "R0423", "intent": "delete_account", "text": "deleting business accoumt"}
+{"id": "R0424", "intent": "place_order", "text": "I need help earning some articles"}
+{"id": "R0425", "intent": "create_account", "text": "i have a problem with opening a standard account"}
+{"id": "R0426", "intent": "check_invoice", "text": "I want help to give a quick look at the invoice #85632"}
+{"id": "R0427", "intent": "change_order", "text": "how to remove an item from order ORD-498737"}
+{"id": "R0428", "intent": "get_invoice", "text": "I don't know what I need to do to get invoice #37777"}
+{"id": "R0429", "intent": "newsletter_subscription", "text": "I would like to unsubscribe to the company newsletter"}
+{"id": "R0430", "intent": "review", "text": "I want to send some feedback, I need assistance"}
+{"id": "R0431", "intent": "check_cancellation_fee", "text": "can you show me the withdrawal fee?"}
+{"id": "R0432", "intent": "create_account", "text": "create new standard account for daughter"}
+{"id": "R0433", "intent": "change_order", "text": "I have got to modify purchase ORD-423697, I need help"}
+{"id": "R0434", "intent": "delete_account", "text": "I have to cancel my platinum account, how can I do it?"}
+{"id": "R0435", "intent": "track_refund", "text": "any news on the refund"}
+{"id": "R0436", "intent": "set_up_shipping_address", "text": "how to set up the secondary delivery address"}
+{"id": "R0437", "intent": "edit_account", "text": "change data on standard account"}
+{"id": "R0438", "intent": "switch_account", "text": "I have got to change to the platinum account, how to do it?"}
+{"id": "R0439", "intent": "get_invoice", "text": "I don't know what I have to do to get the bill #85632"}
+{"id": "R0440", "intent": "contact_customer_service", "text": "wanna check what hours i can call customer service"}
+{"id": "R0441", "intent": "review", "text": "assistance to leave some feedback about a service"}
+{"id": "R0442", "intent": "change_order", "text": "can I remove an article from order ORD-454926?"}
+{"id": "R0443", "intent": "place_order", "text": "I want to shop a few of your product"}
+{"id": "R0444", "intent": "change_shipping_address", "text": "I want support editing my address"}
+{"id": "R0445", "intent": "check_payment_methods", "text": "can you show me what payment options you accept?"}
+{"id": "R0446", "intent": "registration_problems", "text": "I cannot inform of an error with sign-up"}
+{"id": "R0447", "intent": "newsletter_subscription", "text": "help me unsubscribing from the corporate newsletter"}
+{"id": "R0448", "intent": "review", "text": "I have got to leave my feedback about your services"}
+{"id": "R0449", "intent": "payment_issue", "text": "I want to report errors with payment"}
+{"id": "R0450", "intent": "payment_issue", "text": "need assistance informing of problems with online payment"}
+{"id": "R0451", "intent": "contact_customer_service", "text": "i dont know how i could talk to customer support"}
+{"id": "R0452", "intent": "delivery_options", "text": "help me check what delivery methods I have"}
+{"id": "R0453", "intent": "delivery_period", "text": "I need to check how long it takes for the delivery to arrive"}
+{"id": "R0454", "intent": "check_payment_methods", "text": "I don't know what to do to list the accepted payment methods"}
+{"id": "R0455", "intent": "contact_human_agent", "text": "I want help to speak to somebody"}
+{"id": "R0456", "intent": "check_refund_policy", "text": "need to check how long refunds take how can i do it"}
+{"id": "R0457", "intent": "track_order", "text": "where could I see purchase ORD-498120 status?"}
+{"id": "R0458", "intent": "check_refund_policy", "text": "assistance to see how long reimbursements usually take"}
+{"id": "R0459", "intent": "set_up_shipping_address", "text": "troubles setting up a goddamn delivery address"}
+{"id": "R0460", "intent": "get_refund", "text": "I don't know what to do to ask for compensationsof my money"}
+{"id": "R0461", "intent": "complaint", "text": "I do not know how to lodge a complaint"}
+{"id": "R0462", "intent": "create_account", "text": "I need assistance opening a pro account for my daughter"}
+{"id": "R0463", "intent": "track_order", "text": "I am trying to check order ORD-453436 current status"}
+{"id": "R0464", "intent": "delivery_options", "text": "I am trying to check what shipping options you offer"}
+{"id": "R0465", "intent": "registration_problems", "text": "i need help to report a registration error"}
+{"id": "R0466", "intent": "contact_human_agent", "text": "neerd help chatting with a human agent"}
+{"id": "R0467", "intent": "switch_account", "text": "I want help changing to the goddamn platinum account"}
+{"id": "R0468", "intent": "get_invoice", "text": "I'm tryingto download my invoice from Dev"}
+{"id": "R0469", "intent": "recover_password", "text": "can uhelp me retrieving my account pin"}
+{"id": "R0470", "intent": "delivery_options", "text": "I need to check what damn delivery methods are available"}
+{"id": "R0471", "intent": "delete_account", "text": "I have got to delete a standard account"}
+{"id": "R0472", "intent": "get_refund", "text": "get reimbursement of money"}
+{"id": "R0473", "intent": "check_cancellation_fee", "text": "how do i see the termination penalty"}
+{"id": "R0474", "intent": "switch_account", "text": "I don't know how I can change to the business account"}
+{"id": "R0475", "intent": "check_refund_policy", "text": "need to check in what cases can i ask for an refund help me"}
+{"id": "R0476", "intent": "change_order", "text": "assistance adding something to purchase ORD-431080"}
+{"id": "R0477", "intent": "review", "text": "I am trying to leave fewedback about a service"}
+{"id": "R0478", "intent": "delivery_options", "text": "i have to see the delivery options how do i do it"}
+{"id": "R0479", "intent": "switch_account", "text": "could you help me to change to the goddamn platinum account?"}
+{"id": "R0480", "intent": "cancel_order", "text": "i need assistance to cancel order ORD-401166"}
+{"id": "R0481", "intent": "contact_human_agent", "text": "I cannot contact an assistant"}
+{"id": "R0482", "intent": "edit_account", "text": "wanna edit my user info how to do it"}
+{"id": "R0483", "intent": "cancel_order", "text": "I want assistance canceling order ORD-406173"}
+{"id": "R0484", "intent": "change_order", "text": "help to correct purchase ORD-451667"}
+{"id": "R0485", "intent": "contact_customer_service", "text": "I want help to get in touch with goddamn customer assistance"}
+{"id": "R0486", "intent": "payment_issue", "text": "i need assistance to inform of problems with payment"}
+{"id": "R0487", "intent": "track_order", "text": "I want to see the status of order ORD-419747, I need help"}
+{"id": "R0488", "intent": "place_order", "text": "I need assistance buying an article"}
+{"id": "R0489", "intent": "registration_problems", "text": "I want to inform of registration issues"}
+{"id": "R0490", "intent": "recover_password", "text": "i have a probelm with the password retrieval"}
+{"id": "R0491", "intent": "track_order", "text": "need help to see the ETA of the purchase ORD-484168"}
+{"id": "R0492", "intent": "check_refund_policy", "text": "can you help me seeing in which cases can I request refunds?"}
+{"id": "R0493", "intent": "contact_customer_service", "text": "I try to contact customer support"}
+{"id": "R0494", "intent": "get_refund", "text": "i have paid $92 for a product where to get my money back"}
+{"id": "R0495", "intent": "create_account", "text": "new premium account for wife"}
+{"id": "R0496", "intent": "complaint", "text": "can uhelp me lodge a claim against ur business"}
+{"id": "R0497", "intent": "cancel_order", "text": "I'm trying to cancel order ORD-462406"}
+{"id": "R0498", "intent": "contact_human_agent", "text": "you are not helpful, I need help to chat with an agent"}
+{"id": "R0499", "intent": "check_invoice", "text": "i want help taking a quick look at the bill #85632"}
+{"id": "R0500", "intent": "create_account", "text": "i cannot create a freemium account for my dad"}
+{"id": "R0501", "intent": "edit_account", "text": "update standard account"}
+{"id": "R0502", "intent": "place_order", "text": "i dont know what i have to do to shop an article"}
+{"id": "R0503", "intent": "create_account", "text": "i dfo not know what i have to do to create a standard account"}
+{"id": "R0504", "intent": "review", "text": "need help submitting feedback for yor services"}
+{"id": "R0505", "intent": "place_order", "text": "can you help me shopping some items?"}
+{"id": "R0506", "intent": "recover_password", "text": "i try to restore the pwd of my user profile"}
+{"id": "R0507", "intent": "review", "text": "could you help me sending some feedback?"}
+{"id": "R0508", "intent": "change_shipping_address", "text": "I need help trying to hcange the bloody delivery address"}
+{"id": "R0509", "intent": "check_cancellation_fee", "text": "can you help me seeing the termination fees?"}
+{"id": "R0510", "intent": "set_up_shipping_address", "text": "I have a problem entering another delivery address"}
+{"id": "R0511", "intent": "check_cancellation_fee", "text": "I need help seeing the early termination fee"}
+{"id": "R0512", "intent": "payment_issue", "text": "where do i report problems with online payment"}
+{"id": "R0513", "intent": "contact_human_agent", "text": "can I talk to a person?"}
+{"id": "R0514", "intent": "set_up_shipping_address", "text": "I need help to submit a new delivery address"}
+{"id": "R0515", "intent": "edit_account", "text": "want assistance modifying the goddamn user info"}
+{"id": "R0516", "intent": "track_order", "text": "where do i see the eta of the order ORD-485224"}
+{"id": "R0517", "intent": "contact_customer_service", "text": "is it possible to talk to customer assistance ?"}
+{"id": "R0518", "intent": "review", "text": "need help submitting bloody feedback for a service"}
+{"id": "R0519", "intent": "check_refund_policy", "text": "I have to see in what situations can I ask to be reimbursed"}
+{"id": "R0520", "intent": "review", "text": "how to send some feedback about your company?"}
+{"id": "R0521", "intent": "check_refund_policy", "text": "chwck under which circumstances can I request reimbursements"}
+{"id": "R0522", "intent": "get_invoice", "text": "I do not know what to do to download my invoice #37777"}
+{"id": "R0523", "intent": "get_invoice", "text": "I do not know what I need to do to download bill #37777"}
+{"id": "R0524", "intent": "check_payment_methods", "text": "help to check your accepted payment methods"}
+{"id": "R0525", "intent": "track_order", "text": "wanna see hte eta of order ORD-402765 help me"}
+{"id": "R0526", "intent": "create_account", "text": "new Platinum acount"}
+{"id": "R0527", "intent": "check_refund_policy", "text": "help to see ur money back policy"}
+{"id": "R0528", "intent": "delivery_period", "text": "I have to check when will my item arrive, I need assistance"}
+{"id": "R0529", "intent": "registration_problems", "text": "i try to report a problem with a registration"}
+{"id": "R0530", "intent": "track_refund", "text": "I have got to see my refund status, can you help me?"}
+{"id": "R0531", "intent": "cancel_order", "text": "I have a problem witrh cancelling purchase ORD-435523"}
+{"id": "R0532", "intent": "newsletter_subscription", "text": "i need help to unsubscribe from ur company newsletter"}
+{"id": "R0533", "intent": "place_order", "text": "earning something"}
+{"id": "R0534", "intent": "recover_password", "text": "I have got to recover my account key, help me"}
+{"id": "R0535", "intent": "track_order", "text": "help to check the ETA of purchase ORD-402614"}
+{"id": "R0536", "intent": "check_payment_methods", "text": "want assistance checking ur allowed payment methods"}
+{"id": "R0537", "intent": "complaint", "text": "how can I lodge a customer reclamation against your company?"}
+{"id": "R0538", "intent": "check_cancellation_fee", "text": "can I check the early termination penalty?"}
+{"id": "R0539", "intent": "registration_problems", "text": "notify of online registration issues"}
+{"id": "R0540", "intent": "newsletter_subscription", "text": "tell me about cancel the newsletter subscription"}
+{"id": "R0541", "intent": "switch_account", "text": "can i use the standard account"}
+{"id": "R0542", "intent": "change_order", "text": "need to eddit order ORD-426096"}
+{"id": "R0543", "intent": "check_cancellation_fee", "text": "I am trying to check the fucking early exit charge"}
+{"id": "R0544", "intent": "get_invoice", "text": "getting invoices from last month"}
+{"id": "R0545", "intent": "place_order", "text": "I don't know how to acquire several of your article"}
+{"id": "R0546", "intent": "payment_issue", "text": "I don't know what I have to do to notify of a payment error"}
+{"id": "R0547", "intent": "check_refund_policy", "text": "assistance to see your goddamn money back guarantee"}
+{"id": "R0548", "intent": "track_order", "text": "where to see the bloody ETA of the order ORD-473003"}
+{"id": "R0549", "intent": "complaint", "text": "where to file a customer complaint against ur business"}
+{"id": "R0550", "intent": "review", "text": "where could i leave a fucking comment for a service"}
+{"id": "R0551", "intent": "check_invoice", "text": "checking invoice from 4 purchases ago"}
+{"id": "R0552", "intent": "set_up_shipping_address", "text": "i dont know what to do to set up my shipping address"}
+{"id": "R0553", "intent": "track_order", "text": "I have to check the status of purchase ORD-487481"}
+{"id": "R0554", "intent": "check_refund_policy", "text": "need help to see in which situations can I request a refund"}
+{"id": "R0555", "intent": "contact_human_agent", "text": "could you help me to talk to a person?"}
+{"id": "R0556", "intent": "check_payment_methods", "text": "help me seeing your accepted payment methods"}
+{"id": "R0557", "intent": "delivery_period", "text": "I call to check how long it takes for the delivery to arrive"}
+{"id": "R0558", "intent": "newsletter_subscription", "text": "how to subscribe to the corporate newsletter"}
+{"id": "R0559", "intent": "delivery_period", "text": "show me how long it takes for my article to arrive"}
+{"id": "R0560", "intent": "registration_problems", "text": "need assistance to report a problem with signup"}
+{"id": "R0561", "intent": "complaint", "text": "I am unhappy with your service, help to make a claim"}
+{"id": "R0562", "intent": "contact_customer_service", "text": "help me to see what hours I can reach customer service"}
+{"id": "R0563", "intent": "check_invoice", "text": "I need assistance taking a quick look at my bill #12588"}
+{"id": "R0564", "intent": "contact_customer_service", "text": "how to see at what time i can reach customer support"}
+{"id": "R0565", "intent": "set_up_shipping_address", "text": "there is a problem submitting my secondary shipping address"}
+{"id": "R0566", "intent": "get_refund", "text": "I want help to demand a rebate of money"}
+{"id": "R0567", "intent": "switch_account", "text": "i do not know what to do to swtch to the premium account"}
+{"id": "R0568", "intent": "delete_account", "text": "i dont know what i need to do to remove the Platinum account"}
+{"id": "R0569", "intent": "contact_customer_service", "text": "I don't know what I need to do to speak to customer support"}
+{"id": "R0570", "intent": "check_invoice", "text": "i want assiswtance to find the bills from Ana"}
+{"id": "R0571", "intent": "delivery_period", "text": "where to see whne will my product arrive"}
+{"id": "R0572", "intent": "check_payment_methods", "text": "I want help checking the payment modalities"}
+{"id": "R0573", "intent": "recover_password", "text": "can you help me retrieve the PIN code of my account?"}
+{"id": "R0574", "intent": "switch_account", "text": "what do I have to do to use the gold profile?"}
+{"id": "R0575", "intent": "change_order", "text": "how do i remove some articles from purchase ORD-449215"}
+{"id": "R0576", "intent": "place_order", "text": "need to buy a few of ur item"}
+{"id": "R0577", "intent": "cancel_order", "text": "i have problems with cancelling purchase ORD-406550"}
+{"id": "R0578", "intent": "check_refund_policy", "text": "want help to check in what cases can i request refunds"}
+{"id": "R0579", "intent": "check_cancellation_fee", "text": "I want to check the termination charge, help me"}
+{"id": "R0580", "intent": "complaint", "text": "wanna file a customer claim against ur company"}
+{"id": "R0581", "intent": "check_refund_policy", "text": "check in what cases can I ask for refunds"}
+{"id": "R0582", "intent": "registration_problems", "text": "i do not know how to inform of problems with a signup"}
+{"id": "R0583", "intent": "get_refund", "text": "i dont know what i need to do to request rebates"}
+{"id": "R0584", "intent": "contact_human_agent", "text": "i have got to talk with an agent could uhelp me"}
+{"id": "R0585", "intent": "switch_account", "text": "need help using the Platinum proffile"}
+{"id": "R0586", "intent": "delivery_period", "text": "I have to check how long it takes for the purchase to arrive"}
+{"id": "R0587", "intent": "track_order", "text": "can you help me to check order ORD-402286 status?"}
+{"id": "R0588", "intent": "create_account", "text": "can you help me open a platinum account for my dad?"}
+{"id": "R0589", "intent": "cancel_order", "text": "whag do i need to do to cancel order ORD-429819"}
+{"id": "R0590", "intent": "set_up_shipping_address", "text": "I need help to submit my delivery address"}
+{"id": "R0591", "intent": "check_refund_policy", "text": "check under what circumstances can i request a reimbursement"}
+{"id": "R0592", "intent": "check_payment_methods", "text": "need to check ur allowed payment methods"}
+{"id": "R0593", "intent": "complaint", "text": "want assistance to lodge a reclamation against ur business"}
+{"id": "R0594", "intent": "recover_password", "text": "I do not know how to retrieve my user account pwd"}
+{"id": "R0595", "intent": "review", "text": "i want help leaving a comment"}
+{"id": "R0596", "intent": "change_shipping_address", "text": "I have a trouble trying to change the shipping address"}
+{"id": "R0597", "intent": "delivery_period", "text": "help me to see when my purchase is gonn arrive"}
+{"id": "R0598", "intent": "newsletter_subscription", "text": "could you help me unsubscribe from your bloody newsletter?"}
+{"id": "R0599", "intent": "newsletter_subscription", "text": "what do i have to do to unsubscribe to the nrwsletter"}

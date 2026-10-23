@@ -1,0 +1,9 @@
+.venv/
+__pycache__/
+*.egg-info/
+.ipynb_checkpoints/
+.lavish/
+.env
+runs/*.log
+runs/logs/
+.ruff_cache/
