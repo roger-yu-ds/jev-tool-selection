@@ -114,15 +114,21 @@ def main() -> None:
     ap = argparse.ArgumentParser()
     ap.add_argument("--arm", choices=list(MODELS), required=True)
     ap.add_argument("--limit", type=int, default=None)
+    ap.add_argument("--sample", choices=["first", "fresh"], default="first",
+                    help="fresh = the final setup (policy prompt + customer-worded tools) on data/requests_fresh.jsonl, into runs/fresh/")
     ap.add_argument("--policy", action="store_true")
     args = ap.parse_args()
-    reqs = requests()[: args.limit] if args.limit else requests()
-    name = f"native_{args.arm}{'_policy' if args.policy else ''}"
+    fresh = args.sample == "fresh"
+    if fresh:
+        args.policy = True
+    reqs = requests(args.sample)[: args.limit] if args.limit else requests(args.sample)
+    name = f"fresh/native_{args.arm}" if fresh else f"native_{args.arm}{'_policy' if args.policy else ''}"
     out = RUNS / f"{name}.jsonl"
+    out.parent.mkdir(parents=True, exist_ok=True)
     todo = [r for r in reqs if r.id not in done_ids(out)]
     print(f"{name}: {len(todo)} to run", flush=True)
     t0 = time.perf_counter()
-    run_native(args.arm, todo, tools(), out, args.policy)
+    run_native(args.arm, todo, tools(customer_words=fresh), out, args.policy)
     print(f"{name}: done in {time.perf_counter() - t0:.0f}s", flush=True)
 
 

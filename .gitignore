@@ -7,3 +7,5 @@ __pycache__/
 runs/*.log
 runs/logs/
 .ruff_cache/
+data/cache/
+__marimo__/

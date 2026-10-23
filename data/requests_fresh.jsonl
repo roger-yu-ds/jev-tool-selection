@@ -1,0 +1,600 @@
+{"id": "F0000", "intent": "complaint", "text": "how tolodge a customer complaint"}
+{"id": "F0001", "intent": "recover_password", "text": "where to retreive my key"}
+{"id": "F0002", "intent": "create_account", "text": "have a question about creating fucking premium accounts"}
+{"id": "F0003", "intent": "change_order", "text": "give me information aout editing order ORD-472066"}
+{"id": "F0004", "intent": "check_cancellation_fee", "text": "could you help me check the termination penalty?"}
+{"id": "F0005", "intent": "delivery_options", "text": "help seeing what delivery options you offer"}
+{"id": "F0006", "intent": "switch_account", "text": "need help using the gold aaccount"}
+{"id": "F0007", "intent": "delivery_options", "text": "can i place an oeder from Geelong"}
+{"id": "F0008", "intent": "check_payment_methods", "text": "i do not know how i can see ur payhment options"}
+{"id": "F0009", "intent": "delivery_period", "text": "need help seeing how long the shipment takes"}
+{"id": "F0010", "intent": "get_invoice", "text": "wanna get the bil from Chloe will uhelp me"}
+{"id": "F0011", "intent": "newsletter_subscription", "text": "where to sign up to the newsleter"}
+{"id": "F0012", "intent": "contact_customer_service", "text": "can yahelp me contacting customer support"}
+{"id": "F0013", "intent": "change_shipping_address", "text": "I can't modify theaddress"}
+{"id": "F0014", "intent": "delivery_options", "text": "i have to check the shipment methods i need assistance"}
+{"id": "F0015", "intent": "track_refund", "text": "would it be possible to check my compensation status"}
+{"id": "F0016", "intent": "complaint", "text": "wanna file a consumer claim againstur company"}
+{"id": "F0017", "intent": "delivery_options", "text": "information about the options for shipping"}
+{"id": "F0018", "intent": "track_refund", "text": "i expect a refund of $181 has it been processed already"}
+{"id": "F0019", "intent": "place_order", "text": "shopping article"}
+{"id": "F0020", "intent": "recover_password", "text": "watn assistance recovering my account pass"}
+{"id": "F0021", "intent": "place_order", "text": "is it possible to shop an item"}
+{"id": "F0022", "intent": "check_payment_methods", "text": "show me your accepted pamyent modalities"}
+{"id": "F0023", "intent": "contact_human_agent", "text": "need help talking to somebody"}
+{"id": "F0024", "intent": "newsletter_subscription", "text": "how can i get information about receiving ur newsletter"}
+{"id": "F0025", "intent": "newsletter_subscription", "text": "help to unsubscribe frmo your company newsletter"}
+{"id": "F0026", "intent": "contact_customer_service", "text": "want help speaking with custgomer service"}
+{"id": "F0027", "intent": "edit_account", "text": "updating user profile"}
+{"id": "F0028", "intent": "recover_password", "text": "how could I get information about forgotten passwords?"}
+{"id": "F0029", "intent": "payment_issue", "text": "i have a question about thepayments"}
+{"id": "F0030", "intent": "delivery_period", "text": "can uhelp me see how sooj can i expect the product"}
+{"id": "F0031", "intent": "track_refund", "text": "i cant see the compensation status"}
+{"id": "F0032", "intent": "cancel_order", "text": "I don't knowhow to cancel purchase ORD-496166"}
+{"id": "F0033", "intent": "track_order", "text": "help to locate purchaes ORD-421713"}
+{"id": "F0034", "intent": "registration_problems", "text": "notifying of problem creating user profile"}
+{"id": "F0035", "intent": "delivery_options", "text": "could Iplace an order from Ballarat?"}
+{"id": "F0036", "intent": "edit_account", "text": "editing personal information"}
+{"id": "F0037", "intent": "delivery_period", "text": "I am calling to see when will my product arirve"}
+{"id": "F0038", "intent": "check_payment_methods", "text": "see the allowed paymnet modalities"}
+{"id": "F0039", "intent": "switch_account", "text": "assistance using the standard profile"}
+{"id": "F0040", "intent": "get_invoice", "text": "i need asssistance getting my bill #37777"}
+{"id": "F0041", "intent": "change_order", "text": "wanna cange an item of order ORD-463546 how could i do it"}
+{"id": "F0042", "intent": "payment_issue", "text": "want assistance to reporta payment error"}
+{"id": "F0043", "intent": "edit_account", "text": "mldifying gold account"}
+{"id": "F0044", "intent": "track_refund", "text": "could you help me checking the refund current status?"}
+{"id": "F0045", "intent": "delivery_period", "text": "i do not know what to do to see how long the shipping takes"}
+{"id": "F0046", "intent": "registration_problems", "text": "error with sign-up"}
+{"id": "F0047", "intent": "change_order", "text": "wanna edit purchgase ORD-451890"}
+{"id": "F0048", "intent": "edit_account", "text": "edit info on freemium accunt"}
+{"id": "F0049", "intent": "switch_account", "text": "need help switching to my new profile"}
+{"id": "F0050", "intent": "create_account", "text": "could you tell me more about opening platinum accounts?"}
+{"id": "F0051", "intent": "registration_problems", "text": "I can't open an account, reportregistration issues"}
+{"id": "F0052", "intent": "complaint", "text": "make consumer reclamation against your business"}
+{"id": "F0053", "intent": "registration_problems", "text": "question about opening user profiles"}
+{"id": "F0054", "intent": "check_invoice", "text": "checking invoice from nine months ago"}
+{"id": "F0055", "intent": "set_up_shipping_address", "text": "shipping addtess trouble"}
+{"id": "F0056", "intent": "check_invoice", "text": "help locating my invoice #00108"}
+{"id": "F0057", "intent": "contact_human_agent", "text": "contcat an agent"}
+{"id": "F0058", "intent": "change_order", "text": "remove item from order"}
+{"id": "F0059", "intent": "change_shipping_address", "text": "help me modifying the adress"}
+{"id": "F0060", "intent": "get_invoice", "text": "need assistance downloading my invoiceINV-2026-2427"}
+{"id": "F0061", "intent": "check_invoice", "text": "need to chek my bill #85632 how to do it"}
+{"id": "F0062", "intent": "contact_human_agent", "text": "could uhelp me chat with somebody"}
+{"id": "F0063", "intent": "check_cancellation_fee", "text": "can ushow me hte cancellation fees"}
+{"id": "F0064", "intent": "get_invoice", "text": "can uhelp me downloading my bils from Dev"}
+{"id": "F0065", "intent": "cancel_order", "text": "ihave bought some damn product cancel order ORD-427246"}
+{"id": "F0066", "intent": "switch_account", "text": "i have got ot use the freemium account how could i do it"}
+{"id": "F0067", "intent": "check_invoice", "text": "seebill from Dev"}
+{"id": "F0068", "intent": "check_cancellation_fee", "text": "I want assistsnce seeing the withdrawal penalty"}
+{"id": "F0069", "intent": "get_invoice", "text": "get invoice #37777"}
+{"id": "F0070", "intent": "set_up_shipping_address", "text": "I have a problem entering the secindary shipping address"}
+{"id": "F0071", "intent": "delivery_options", "text": "can you help me checking the methods for shipment?"}
+{"id": "F0072", "intent": "delete_account", "text": "assistance deleting the secondary account"}
+{"id": "F0073", "intent": "contact_human_agent", "text": "I don't know how I can cotnact somebody"}
+{"id": "F0074", "intent": "change_shipping_address", "text": "i try to change the shipping acdress"}
+{"id": "F0075", "intent": "delete_account", "text": "how can i remove a platinum acclunt"}
+{"id": "F0076", "intent": "check_cancellation_fee", "text": "withdrawal penalties"}
+{"id": "F0077", "intent": "payment_issue", "text": "want assistance solving an problem with payments"}
+{"id": "F0078", "intent": "change_shipping_address", "text": "there are errors trying to correct my address"}
+{"id": "F0079", "intent": "delete_account", "text": "I never use my goddamn premium account, assistance removing it"}
+{"id": "F0080", "intent": "change_order", "text": "i need information about correcting purchase ORD-406642"}
+{"id": "F0081", "intent": "set_up_shipping_address", "text": "their are errors submitting my fucking shipping address"}
+{"id": "F0082", "intent": "complaint", "text": "assistance making a custolmer claim"}
+{"id": "F0083", "intent": "complaint", "text": "my experience with you was too bad, help making a complaint"}
+{"id": "F0084", "intent": "delivery_period", "text": "show me when my article is going to arrie"}
+{"id": "F0085", "intent": "get_refund", "text": "can uhelp me requesting reimbursements of my money"}
+{"id": "F0086", "intent": "edit_account", "text": "editing business account"}
+{"id": "F0087", "intent": "cancel_order", "text": "i dont want oredr ORD-429840"}
+{"id": "F0088", "intent": "payment_issue", "text": "wanna report issues with online pahment"}
+{"id": "F0089", "intent": "change_order", "text": "modify order370795561790"}
+{"id": "F0090", "intent": "place_order", "text": "buy artilce"}
+{"id": "F0091", "intent": "track_order", "text": "will ushow me purchase ORD-480609 curret status"}
+{"id": "F0092", "intent": "contact_human_agent", "text": "can uhelp me contact an assostant"}
+{"id": "F0093", "intent": "get_refund", "text": "how long till i get my damn reimbursement"}
+{"id": "F0094", "intent": "change_shipping_address", "text": "wanna change my fucking address"}
+{"id": "F0095", "intent": "delivery_options", "text": "i dont know how i can see the delivery options"}
+{"id": "F0096", "intent": "review", "text": "assistance sending some efedback about a product"}
+{"id": "F0097", "intent": "delete_account", "text": "clsoe pro account"}
+{"id": "F0098", "intent": "contact_customer_service", "text": "do you have a toll-free customer assistance phone no?"}
+{"id": "F0099", "intent": "check_refund_policy", "text": "is it possible to seeur money back policy"}
+{"id": "F0100", "intent": "contact_human_agent", "text": "wana talk to a goddamn person"}
+{"id": "F0101", "intent": "review", "text": "ya have an address to submit some feednack"}
+{"id": "F0102", "intent": "get_invoice", "text": "where to download my bill #85632?"}
+{"id": "F0103", "intent": "get_refund", "text": "wanna get a rebate of my mney"}
+{"id": "F0104", "intent": "review", "text": "submitting service review"}
+{"id": "F0105", "intent": "check_invoice", "text": "is it possible to see the bills from Chloe?"}
+{"id": "F0106", "intent": "edit_account", "text": "correcting data on standard accoujnt"}
+{"id": "F0107", "intent": "change_shipping_address", "text": "information about a deliveryaddress change"}
+{"id": "F0108", "intent": "recover_password", "text": "how can i recover the pwd of myprofile"}
+{"id": "F0109", "intent": "check_cancellation_fee", "text": "withrdawal penalty"}
+{"id": "F0110", "intent": "check_refund_policy", "text": "are service charges reimbursable?"}
+{"id": "F0111", "intent": "contact_customer_service", "text": "wanna call cystomer assistance"}
+{"id": "F0112", "intent": "contact_human_agent", "text": "assistance to speak to someone"}
+{"id": "F0113", "intent": "get_refund", "text": "obtain money back"}
+{"id": "F0114", "intent": "track_refund", "text": "I need help tracking the restitution"}
+{"id": "F0115", "intent": "payment_issue", "text": "I cannot make payments, could you help me report errors?"}
+{"id": "F0116", "intent": "change_order", "text": "help swapping an article of purchase113542617735902"}
+{"id": "F0117", "intent": "track_order", "text": "i have to see the damn ETA of my delivery helpme"}
+{"id": "F0118", "intent": "contact_human_agent", "text": "I try to talk with an assistant"}
+{"id": "F0119", "intent": "cancel_order", "text": "would you give me information about cancelling orders?"}
+{"id": "F0120", "intent": "delivery_period", "text": "I'm trying to find shpping period help me"}
+{"id": "F0121", "intent": "cancel_order", "text": "i can no longer pay fororder ORD-456953 cancel it"}
+{"id": "F0122", "intent": "check_refund_policy", "text": "want assistance checking your reimbursement plicy"}
+{"id": "F0123", "intent": "check_payment_methods", "text": "I need help to see the accepted paayment options"}
+{"id": "F0124", "intent": "payment_issue", "text": "my credit card was declined, I have to report payment errors"}
+{"id": "F0125", "intent": "check_payment_methods", "text": "do ya accept card"}
+{"id": "F0126", "intent": "create_account", "text": "is it possible to create a Basic accojnt for my daughter?"}
+{"id": "F0127", "intent": "create_account", "text": "creating user"}
+{"id": "F0128", "intent": "place_order", "text": "make purchase"}
+{"id": "F0129", "intent": "delivery_period", "text": "tell me more about shipping period"}
+{"id": "F0130", "intent": "check_refund_policy", "text": "I have to see under what circumstances can I request refunds"}
+{"id": "F0131", "intent": "edit_account", "text": "modify information on platinum acfount"}
+{"id": "F0132", "intent": "set_up_shipping_address", "text": "i dont know how i can submit my secondary shipping address"}
+{"id": "F0133", "intent": "edit_account", "text": "update platinum account"}
+{"id": "F0134", "intent": "delivery_period", "text": "wanna know about delivery periods give me some informtion"}
+{"id": "F0135", "intent": "edit_account", "text": "i do not know how i can correct the user information"}
+{"id": "F0136", "intent": "create_account", "text": "creating new Platinum account for daughter"}
+{"id": "F0137", "intent": "review", "text": "assistance to write an opinionabout your company"}
+{"id": "F0138", "intent": "change_shipping_address", "text": "wanna correct the acdress can uhelp me"}
+{"id": "F0139", "intent": "registration_problems", "text": "where to inform of an issue witha sign-up"}
+{"id": "F0140", "intent": "delete_account", "text": "how could i find infrmation about pro account removals"}
+{"id": "F0141", "intent": "contact_human_agent", "text": "i dont understand ucould i contact a bloody live aent"}
+{"id": "F0142", "intent": "delete_account", "text": "is it possible to delete the standard account?"}
+{"id": "F0143", "intent": "delivery_options", "text": "shipments to Geelong"}
+{"id": "F0144", "intent": "recover_password", "text": "can I reset m user pass?"}
+{"id": "F0145", "intent": "registration_problems", "text": "I'm having issues trying to register"}
+{"id": "F0146", "intent": "get_refund", "text": "I'm trying to obtain compensations"}
+{"id": "F0147", "intent": "complaint", "text": "need assistanbce to make a complaint"}
+{"id": "F0148", "intent": "delivery_options", "text": "can i order frrom Australia"}
+{"id": "F0149", "intent": "get_refund", "text": "assistance to demand reimbursements"}
+{"id": "F0150", "intent": "registration_problems", "text": "i have a damn registration issue"}
+{"id": "F0151", "intent": "check_payment_methods", "text": "list payment emthods"}
+{"id": "F0152", "intent": "check_cancellation_fee", "text": "how much would you charge me if I cancelled the contract?"}
+{"id": "F0153", "intent": "check_cancellation_fee", "text": "I do not know what to do to ese the cancellation penalties"}
+{"id": "F0154", "intent": "get_refund", "text": "receiving rebate"}
+{"id": "F0155", "intent": "complaint", "text": "I don't know how to make a claim against your organization"}
+{"id": "F0156", "intent": "place_order", "text": "I don't know how to earn several products"}
+{"id": "F0157", "intent": "contact_human_agent", "text": "contacting live agent"}
+{"id": "F0158", "intent": "edit_account", "text": "edit details oon Basic account"}
+{"id": "F0159", "intent": "change_shipping_address", "text": "want assistance to update the address"}
+{"id": "F0160", "intent": "check_cancellation_fee", "text": "wanna see the withdrawalcharge"}
+{"id": "F0161", "intent": "complaint", "text": "how to file an reclamation?"}
+{"id": "F0162", "intent": "change_order", "text": "question about changing purchaes ORD-446075"}
+{"id": "F0163", "intent": "check_cancellation_fee", "text": "I don't know how I could check the early exit fees"}
+{"id": "F0164", "intent": "delete_account", "text": "i do not know what i have to do to close the Basic accont"}
+{"id": "F0165", "intent": "place_order", "text": "how can i purchasse a product"}
+{"id": "F0166", "intent": "delete_account", "text": "where can i get information about an business account deletion"}
+{"id": "F0167", "intent": "check_cancellation_fee", "text": "need to see hte goddamn early exit penalty how to do it"}
+{"id": "F0168", "intent": "delivery_options", "text": "do you deliver to Ballarat?"}
+{"id": "F0169", "intent": "change_order", "text": "problems with correcting order ORD-450869"}
+{"id": "F0170", "intent": "contact_customer_service", "text": "help me check at what time i can contact cuswtomer support"}
+{"id": "F0171", "intent": "set_up_shipping_address", "text": "want assistance to enter anotherr shipping address"}
+{"id": "F0172", "intent": "change_shipping_address", "text": "can utell me more about updating my addfess"}
+{"id": "F0173", "intent": "cancel_order", "text": "have problems wth cancelling order ORD-448995"}
+{"id": "F0174", "intent": "contact_customer_service", "text": "uhave a free of charge number to talk with customer support"}
+{"id": "F0175", "intent": "switch_account", "text": "using business accouny"}
+{"id": "F0176", "intent": "track_refund", "text": "seeing reimbursement status"}
+{"id": "F0177", "intent": "switch_account", "text": "using pro account"}
+{"id": "F0178", "intent": "review", "text": "wanna leave an opinion about ur company"}
+{"id": "F0179", "intent": "change_order", "text": "i canot correct the order i made"}
+{"id": "F0180", "intent": "check_cancellation_fee", "text": "see cancellation charge"}
+{"id": "F0181", "intent": "set_up_shipping_address", "text": "can ya help me to set my shippiong address up"}
+{"id": "F0182", "intent": "complaint", "text": "I want assistance lodging a reclamation"}
+{"id": "F0183", "intent": "delivery_period", "text": "can you help em check when will my article arrive?"}
+{"id": "F0184", "intent": "check_payment_methods", "text": "can uhelp me check the bloody allowed paymentmethods"}
+{"id": "F0185", "intent": "set_up_shipping_address", "text": "the delivery addrses isnt valid can i get some help"}
+{"id": "F0186", "intent": "create_account", "text": "i do not have a business cacount yet I'd like to create one"}
+{"id": "F0187", "intent": "create_account", "text": "i need assistance with creating a freemium acount"}
+{"id": "F0188", "intent": "check_invoice", "text": "see ibll #37777"}
+{"id": "F0189", "intent": "check_invoice", "text": "show me invoiceINV-2026-6040"}
+{"id": "F0190", "intent": "get_refund", "text": "is it possible to request rteimbursements"}
+{"id": "F0191", "intent": "check_payment_methods", "text": "need assistance listing ur acceptedpayment modalities"}
+{"id": "F0192", "intent": "delivery_period", "text": "i want inofrmation about delivery periods how could i get it"}
+{"id": "F0193", "intent": "delivery_options", "text": "wanna check what shipping methods uoffer can uhelp me"}
+{"id": "F0194", "intent": "complaint", "text": "could you help me lodge a claim against your business?"}
+{"id": "F0195", "intent": "cancel_order", "text": "need assistance withcanceling purchase ORD-457661"}
+{"id": "F0196", "intent": "review", "text": "is there an e-mail to submit an opinion for your services?"}
+{"id": "F0197", "intent": "change_shipping_address", "text": "I chose a wrong delivery addreds"}
+{"id": "F0198", "intent": "track_refund", "text": "show status of refund"}
+{"id": "F0199", "intent": "payment_issue", "text": "can youhelp me reporting troubles with online payments?"}
+{"id": "F0200", "intent": "track_order", "text": "I don't know how I can check the ETA of order ORD-495784"}
+{"id": "F0201", "intent": "place_order", "text": "can uhelp me buying an artikcle"}
+{"id": "F0202", "intent": "set_up_shipping_address", "text": "deliveryaddress issue"}
+{"id": "F0203", "intent": "track_order", "text": "eta fo order ORD-422949"}
+{"id": "F0204", "intent": "create_account", "text": "create gold cacount"}
+{"id": "F0205", "intent": "get_refund", "text": "help me request compensations"}
+{"id": "F0206", "intent": "review", "text": "I have to leave feedback about yoour products"}
+{"id": "F0207", "intent": "contact_human_agent", "text": "you are not helpful, I want assistance talking with someone"}
+{"id": "F0208", "intent": "payment_issue", "text": "the payment did not go through, report an error"}
+{"id": "F0209", "intent": "get_refund", "text": "need help asking for a reimbursement ofmy money"}
+{"id": "F0210", "intent": "review", "text": "need to submit my feedback for a service can uhelp me"}
+{"id": "F0211", "intent": "recover_password", "text": "question about the passowrd reset"}
+{"id": "F0212", "intent": "check_cancellation_fee", "text": "is it possible to check the withdrawal charge?"}
+{"id": "F0213", "intent": "review", "text": "can you help me writing an opinion about your products?"}
+{"id": "F0214", "intent": "delivery_period", "text": "how long does it usually take for a product to arrive?"}
+{"id": "F0215", "intent": "change_order", "text": "wanna add an article to order 370795561790will uhelp me"}
+{"id": "F0216", "intent": "delivery_period", "text": "what is the shipping period for mt package"}
+{"id": "F0217", "intent": "cancel_order", "text": "assistance with cancelling pucrhase ORD-450709"}
+{"id": "F0218", "intent": "review", "text": "assistance submitting feedback for ur services"}
+{"id": "F0219", "intent": "place_order", "text": "assistance acquiring a few of ur item"}
+{"id": "F0220", "intent": "create_account", "text": "I'm trying to find information about creating users"}
+{"id": "F0221", "intent": "get_refund", "text": "refund $166"}
+{"id": "F0222", "intent": "place_order", "text": "i have got to purchase sone articles"}
+{"id": "F0223", "intent": "switch_account", "text": "use premium account"}
+{"id": "F0224", "intent": "recover_password", "text": "how to recover my goddamn profile piin code"}
+{"id": "F0225", "intent": "check_invoice", "text": "could uhelp me see my goddamn invoikces from Eli"}
+{"id": "F0226", "intent": "switch_account", "text": "changing to freemium account"}
+{"id": "F0227", "intent": "switch_account", "text": "wanna use thed freemium profile can ya help me"}
+{"id": "F0228", "intent": "check_payment_methods", "text": "want help seeing ur pzyment options"}
+{"id": "F0229", "intent": "create_account", "text": "register"}
+{"id": "F0230", "intent": "recover_password", "text": "problem with forgotten keys"}
+{"id": "F0231", "intent": "review", "text": "how could I write a review?"}
+{"id": "F0232", "intent": "change_shipping_address", "text": "problems editing address"}
+{"id": "F0233", "intent": "registration_problems", "text": "howto inform of problems with signup?"}
+{"id": "F0234", "intent": "cancel_order", "text": "i cannot pay for these product how do i cancel the order"}
+{"id": "F0235", "intent": "registration_problems", "text": "assistance signing up"}
+{"id": "F0236", "intent": "newsletter_subscription", "text": "wanna know more about cancelling the newsletter sjbscription"}
+{"id": "F0237", "intent": "check_refund_policy", "text": "can ya help me see u refund policy"}
+{"id": "F0238", "intent": "track_order", "text": "what do i have to od to check order ORD-462139 status"}
+{"id": "F0239", "intent": "complaint", "text": "making customer complaint against your company"}
+{"id": "F0240", "intent": "delete_account", "text": "want help closing a Gold account"}
+{"id": "F0241", "intent": "check_cancellation_fee", "text": "check cancellation charges"}
+{"id": "F0242", "intent": "cancel_order", "text": "cancel purchase732201349959"}
+{"id": "F0243", "intent": "get_refund", "text": "reimbursing 140 ddollars"}
+{"id": "F0244", "intent": "recover_password", "text": "want help to restore the password of ym user profile"}
+{"id": "F0245", "intent": "check_cancellation_fee", "text": "show early termination charge"}
+{"id": "F0246", "intent": "check_payment_methods", "text": "need help seeing your available payment option"}
+{"id": "F0247", "intent": "payment_issue", "text": "help regarding payments"}
+{"id": "F0248", "intent": "recover_password", "text": "have a queston about a pin code recovery"}
+{"id": "F0249", "intent": "create_account", "text": "new bloody premium cacount"}
+{"id": "F0250", "intent": "contact_customer_service", "text": "I do not know how I could contact fucking customer support"}
+{"id": "F0251", "intent": "track_order", "text": "track order"}
+{"id": "F0252", "intent": "check_cancellation_fee", "text": "what is the fee for canceling the contract?"}
+{"id": "F0253", "intent": "contact_customer_service", "text": "i dont know what to do to talk with customre assistance"}
+{"id": "F0254", "intent": "get_refund", "text": "rebating 184 dollars"}
+{"id": "F0255", "intent": "delivery_options", "text": "do ya ship toFinland"}
+{"id": "F0256", "intent": "change_order", "text": "need help deleting some articles from order ORD-490821"}
+{"id": "F0257", "intent": "registration_problems", "text": "issue creating account"}
+{"id": "F0258", "intent": "registration_problems", "text": "reporting registration issues"}
+{"id": "F0259", "intent": "newsletter_subscription", "text": "i cannot unsubscribe from urnewsletter"}
+{"id": "F0260", "intent": "change_shipping_address", "text": "where can I get information about an address correction ?"}
+{"id": "F0261", "intent": "track_refund", "text": "help me tracking my compensation"}
+{"id": "F0262", "intent": "get_invoice", "text": "i try to getinvoice #85632"}
+{"id": "F0263", "intent": "review", "text": "help me leaving a comment for ur company"}
+{"id": "F0264", "intent": "check_cancellation_fee", "text": "can ya help me seeing the bloody early exit fee"}
+{"id": "F0265", "intent": "complaint", "text": "filing consumer complaint"}
+{"id": "F0266", "intent": "get_refund", "text": "reimbusre $171"}
+{"id": "F0267", "intent": "recover_password", "text": "is it possible to reset the keyof my user account"}
+{"id": "F0268", "intent": "contact_human_agent", "text": "I don't want a bot, transfer to me a damn operator"}
+{"id": "F0269", "intent": "newsletter_subscription", "text": "see the status of my newsletter subscription"}
+{"id": "F0270", "intent": "edit_account", "text": "wanna modify the fucking personal info could uhelp me"}
+{"id": "F0271", "intent": "create_account", "text": "i havent signed up yet help me creatin a customer profile"}
+{"id": "F0272", "intent": "set_up_shipping_address", "text": "the secondary shipping address is not valid, help me"}
+{"id": "F0273", "intent": "track_refund", "text": "check if there is anything wrong with my damn restitution"}
+{"id": "F0274", "intent": "check_payment_methods", "text": "want assistance lising your accepted payment methods"}
+{"id": "F0275", "intent": "delete_account", "text": "I am trying to cancel a freemium account"}
+{"id": "F0276", "intent": "cancel_order", "text": "help cancelling my bloody purchase"}
+{"id": "F0277", "intent": "track_refund", "text": "I'd like to see if there is anything new on the refund"}
+{"id": "F0278", "intent": "delete_account", "text": "have a question about my Platinum account cancellation"}
+{"id": "F0279", "intent": "payment_issue", "text": "reporting payment issue"}
+{"id": "F0280", "intent": "change_shipping_address", "text": "i need support modifying my delivery addtess"}
+{"id": "F0281", "intent": "newsletter_subscription", "text": "can you help me receiving your fucking corporate newslettee?"}
+{"id": "F0282", "intent": "payment_issue", "text": "solving payment errors"}
+{"id": "F0283", "intent": "delete_account", "text": "remove premium account"}
+{"id": "F0284", "intent": "track_order", "text": "need assistance locating purchase ORD-438671"}
+{"id": "F0285", "intent": "delivery_options", "text": "where do I see what methods for delivery are available?"}
+{"id": "F0286", "intent": "registration_problems", "text": "is it possible to report issues with sin-up?"}
+{"id": "F0287", "intent": "cancel_order", "text": "help me cancel ordere ORD-471453"}
+{"id": "F0288", "intent": "recover_password", "text": "can uhelp me to restore the access key ofmy account"}
+{"id": "F0289", "intent": "track_order", "text": "i cannot see the current staus of purchase ORD-482847"}
+{"id": "F0290", "intent": "contact_human_agent", "text": "contact someone"}
+{"id": "F0291", "intent": "change_shipping_address", "text": "i need supports updaing the damn address"}
+{"id": "F0292", "intent": "place_order", "text": "where do I acqurie some of your article?"}
+{"id": "F0293", "intent": "check_payment_methods", "text": "where could I see what payment options you accept?"}
+{"id": "F0294", "intent": "set_up_shipping_address", "text": "problem submktting another delivery address"}
+{"id": "F0295", "intent": "change_order", "text": "want assistance to delete an item from orer ORD-403001"}
+{"id": "F0296", "intent": "complaint", "text": "is it possible to lodge an complaint against ur business"}
+{"id": "F0297", "intent": "check_invoice", "text": "seeing bil #00108"}
+{"id": "F0298", "intent": "registration_problems", "text": "need help reporting errors with registratons"}
+{"id": "F0299", "intent": "set_up_shipping_address", "text": "my new shipipng address is invalid i need help"}
+{"id": "F0300", "intent": "delete_account", "text": "can you help me canceling the goddamn platinum account?"}
+{"id": "F0301", "intent": "delivery_options", "text": "where can i check themethods for shipment"}
+{"id": "F0302", "intent": "track_order", "text": "can ya help me tracking order ORD-406700"}
+{"id": "F0303", "intent": "place_order", "text": "buying item"}
+{"id": "F0304", "intent": "get_invoice", "text": "i dont know how i can download my invoice #12588"}
+{"id": "F0305", "intent": "payment_issue", "text": "my card did not work, assistance reporting payment problems"}
+{"id": "F0306", "intent": "recover_password", "text": "someoe stole my account PIN code, where could I retrieve it?"}
+{"id": "F0307", "intent": "get_invoice", "text": "getbills from Ben"}
+{"id": "F0308", "intent": "delete_account", "text": "problems with Basic account deletions"}
+{"id": "F0309", "intent": "complaint", "text": "I ain't happy with your work, lodge a customer reclamation"}
+{"id": "F0310", "intent": "edit_account", "text": "modifying ddetails on premium account"}
+{"id": "F0311", "intent": "switch_account", "text": "change to premium acount"}
+{"id": "F0312", "intent": "place_order", "text": "makepurchase"}
+{"id": "F0313", "intent": "create_account", "text": "another premium acconut"}
+{"id": "F0314", "intent": "change_shipping_address", "text": "I'd like to correct the bloody dadress can i get some help"}
+{"id": "F0315", "intent": "create_account", "text": "another freemium accounmt for father"}
+{"id": "F0316", "intent": "check_cancellation_fee", "text": "what are the withdrawal charged?"}
+{"id": "F0317", "intent": "place_order", "text": "I need to order something, will you help me?"}
+{"id": "F0318", "intent": "edit_account", "text": "correct info onpro account"}
+{"id": "F0319", "intent": "contact_customer_service", "text": "what is your customer service phone number?"}
+{"id": "F0320", "intent": "contact_customer_service", "text": "I need help contacting customerservice"}
+{"id": "F0321", "intent": "delivery_options", "text": "assistance checking what shipping options are there"}
+{"id": "F0322", "intent": "track_refund", "text": "any news on my bloody reimbursement"}
+{"id": "F0323", "intent": "review", "text": "need help to send some feedabck about ur products"}
+{"id": "F0324", "intent": "get_invoice", "text": "downlpoad bills from Eli"}
+{"id": "F0325", "intent": "switch_account", "text": "switch user"}
+{"id": "F0326", "intent": "check_refund_policy", "text": "could I see how long the fucking refunds usually take?"}
+{"id": "F0327", "intent": "check_payment_methods", "text": "can you showme the accepted payment modalities?"}
+{"id": "F0328", "intent": "get_refund", "text": "refunding$135"}
+{"id": "F0329", "intent": "delete_account", "text": "close business account"}
+{"id": "F0330", "intent": "track_refund", "text": "I expect an reimbursement of $66"}
+{"id": "F0331", "intent": "newsletter_subscription", "text": "wanna subscribe to the bloody ndwsletter help me"}
+{"id": "F0332", "intent": "check_payment_methods", "text": "acn ushow me what payment payment modalities uaccept"}
+{"id": "F0333", "intent": "contact_human_agent", "text": "you aren't helpful at all, will you direct to me an agent?"}
+{"id": "F0334", "intent": "cancel_order", "text": "I cannot afford this article, cancel order ORD-499761"}
+{"id": "F0335", "intent": "create_account", "text": "create nbew business account"}
+{"id": "F0336", "intent": "change_order", "text": "i nmeed assistance removing some products"}
+{"id": "F0337", "intent": "check_invoice", "text": "check invoices"}
+{"id": "F0338", "intent": "check_refund_policy", "text": "check your refund policy"}
+{"id": "F0339", "intent": "change_order", "text": "could you help me to delete something?"}
+{"id": "F0340", "intent": "place_order", "text": "wanna earn an article i need asisstance"}
+{"id": "F0341", "intent": "newsletter_subscription", "text": "i want assistance canceling the newslettersubscription"}
+{"id": "F0342", "intent": "recover_password", "text": "wluld you give me information about the key retrieval?"}
+{"id": "F0343", "intent": "track_order", "text": "where is ordered ORD-419392"}
+{"id": "F0344", "intent": "check_refund_policy", "text": "could you show me in which cases can I ask for a refund?"}
+{"id": "F0345", "intent": "contact_customer_service", "text": "how to contact cutsomer assistance?"}
+{"id": "F0346", "intent": "check_payment_methods", "text": "what are ur available payment methods"}
+{"id": "F0347", "intent": "track_order", "text": "need to see order ORD-452036 current stayus"}
+{"id": "F0348", "intent": "get_refund", "text": "i paid $51 for this order want help getting an rebate"}
+{"id": "F0349", "intent": "payment_issue", "text": "I get an error when I try to check out"}
+{"id": "F0350", "intent": "payment_issue", "text": "support regarding online pamyent"}
+{"id": "F0351", "intent": "recover_password", "text": "i dont know what to do to recover myuser account pin"}
+{"id": "F0352", "intent": "cancel_order", "text": "canceling order"}
+{"id": "F0353", "intent": "registration_problems", "text": "I don't know what to do to notiyf of registration errors"}
+{"id": "F0354", "intent": "check_refund_policy", "text": "show me in what casescan i request my money back"}
+{"id": "F0355", "intent": "recover_password", "text": "reset my pwd"}
+{"id": "F0356", "intent": "change_order", "text": "can uhelp me swap something ofpurchase ORD-428797"}
+{"id": "F0357", "intent": "set_up_shipping_address", "text": "there are errors setting a different delivery address up"}
+{"id": "F0358", "intent": "delete_account", "text": "remove pro accoint"}
+{"id": "F0359", "intent": "contact_customer_service", "text": "could you help me talking ot bloody customer service?"}
+{"id": "F0360", "intent": "track_refund", "text": "I would like to track my rebate, can you help me?"}
+{"id": "F0361", "intent": "complaint", "text": "I'm not happy wirh ur services file a complaint"}
+{"id": "F0362", "intent": "switch_account", "text": "wanna use the pro pprofile"}
+{"id": "F0363", "intent": "create_account", "text": "new Basic acount"}
+{"id": "F0364", "intent": "check_cancellation_fee", "text": "are there cancellation penalties"}
+{"id": "F0365", "intent": "contact_human_agent", "text": "can you help me contacting a person?"}
+{"id": "F0366", "intent": "place_order", "text": "want help acquiring som items"}
+{"id": "F0367", "intent": "change_order", "text": "change purchzse ORD-449092"}
+{"id": "F0368", "intent": "delivery_options", "text": "seeing the delivery methods"}
+{"id": "F0369", "intent": "track_order", "text": "trackorder ORD-404090"}
+{"id": "F0370", "intent": "place_order", "text": "help purchasing some bloody articles"}
+{"id": "F0371", "intent": "delivery_period", "text": "want assistance checking how soon can I expect my parcel"}
+{"id": "F0372", "intent": "delivery_period", "text": "is it possible to chck when will my purchase arrive"}
+{"id": "F0373", "intent": "create_account", "text": "open a Gold account"}
+{"id": "F0374", "intent": "delivery_period", "text": "need to check wwhen my shipment is gonna arrive can uhelp me"}
+{"id": "F0375", "intent": "delivery_options", "text": "check options for delivery"}
+{"id": "F0376", "intent": "switch_account", "text": "want assistance switching to the Platinum account"}
+{"id": "F0377", "intent": "change_shipping_address", "text": "there is a trouble correcting my delivery adxdress"}
+{"id": "F0378", "intent": "track_refund", "text": "I do not know how I can check the status of my rebate"}
+{"id": "F0379", "intent": "create_account", "text": "i want an different bloody premium account for my wife"}
+{"id": "F0380", "intent": "get_invoice", "text": "need to get the invoicefrom Ana can i get some help"}
+{"id": "F0381", "intent": "contact_human_agent", "text": "chatting with humnan agent"}
+{"id": "F0382", "intent": "check_invoice", "text": "I need help checking the biol #37777"}
+{"id": "F0383", "intent": "create_account", "text": "create standard accountfor wife"}
+{"id": "F0384", "intent": "check_cancellation_fee", "text": "I cannot find anything about the termination charges"}
+{"id": "F0385", "intent": "check_invoice", "text": "checkbill #00108"}
+{"id": "F0386", "intent": "delivery_period", "text": "i have got to see when mh delivery is gonna arrive"}
+{"id": "F0387", "intent": "contact_human_agent", "text": "I have to contact na agent"}
+{"id": "F0388", "intent": "contact_customer_service", "text": "ucstomer service mail address"}
+{"id": "F0389", "intent": "get_invoice", "text": "could you mail me my goddamn invoices rfom Ben?"}
+{"id": "F0390", "intent": "check_refund_policy", "text": "wanna see ur refund polcy"}
+{"id": "F0391", "intent": "switch_account", "text": "use standard acdcount"}
+{"id": "F0392", "intent": "get_refund", "text": "reimburse 42 dollar"}
+{"id": "F0393", "intent": "get_refund", "text": "want assistance demanding compensations fo money"}
+{"id": "F0394", "intent": "check_refund_policy", "text": "II need to see your reimbursement policy"}
+{"id": "F0395", "intent": "change_shipping_address", "text": "help with a delivery address correction"}
+{"id": "F0396", "intent": "get_invoice", "text": "getting invoice from three purchases ago"}
+{"id": "F0397", "intent": "newsletter_subscription", "text": "tell me about unsubscribing from your newslewtter"}
+{"id": "F0398", "intent": "review", "text": "uhave a way to send a reivew"}
+{"id": "F0399", "intent": "check_invoice", "text": "assistance giving aquick look at invoice #85632"}
+{"id": "F0400", "intent": "check_payment_methods", "text": "neeed help listing the allowed payment methods"}
+{"id": "F0401", "intent": "change_order", "text": "how can i remove several items from purchaswe ORD-433332"}
+{"id": "F0402", "intent": "complaint", "text": "lodge reclamation"}
+{"id": "F0403", "intent": "newsletter_subscription", "text": "i dont know what to do to cancel my newxletter subscription"}
+{"id": "F0404", "intent": "registration_problems", "text": "can you help me informing of a registration error?"}
+{"id": "F0405", "intent": "delete_account", "text": "deleting platinum accoumt"}
+{"id": "F0406", "intent": "check_refund_policy", "text": "wanna check how long reimbursenents take how to do it"}
+{"id": "F0407", "intent": "delete_account", "text": "problem with Gold acconut removals"}
+{"id": "F0408", "intent": "delivery_options", "text": "d uship to Newcastle"}
+{"id": "F0409", "intent": "complaint", "text": "lodging claim"}
+{"id": "F0410", "intent": "check_payment_methods", "text": "can I pay with PayPal?"}
+{"id": "F0411", "intent": "delivery_options", "text": "help me to see what shipping options I have"}
+{"id": "F0412", "intent": "payment_issue", "text": "report payment problems"}
+{"id": "F0413", "intent": "check_invoice", "text": "hepp seeing the bill from Ben"}
+{"id": "F0414", "intent": "newsletter_subscription", "text": "help cancelling my corporate newslettersubscription"}
+{"id": "F0415", "intent": "change_shipping_address", "text": "my address has changed, could you help me changing it?"}
+{"id": "F0416", "intent": "delivery_period", "text": "delivery period"}
+{"id": "F0417", "intent": "get_invoice", "text": "download ibll #37777"}
+{"id": "F0418", "intent": "track_refund", "text": "what is my rebate status?"}
+{"id": "F0419", "intent": "recover_password", "text": "i have to rewet my fucking user pin i need assistance"}
+{"id": "F0420", "intent": "newsletter_subscription", "text": "need assistance subscribing tp the newsletter"}
+{"id": "F0421", "intent": "check_cancellation_fee", "text": "i have got to see trhe withdrawal charge can i get some help"}
+{"id": "F0422", "intent": "change_order", "text": "itry to swap several damn products of order ORD-424583"}
+{"id": "F0423", "intent": "check_invoice", "text": "find bill #00108"}
+{"id": "F0424", "intent": "place_order", "text": "whereto acquire something"}
+{"id": "F0425", "intent": "cancel_order", "text": "problems with cnceling purchase ORD-416306"}
+{"id": "F0426", "intent": "recover_password", "text": "can you help me restoring myPIN code?"}
+{"id": "F0427", "intent": "newsletter_subscription", "text": "I have got to receive the corporate newsletter"}
+{"id": "F0428", "intent": "check_invoice", "text": "i lost the bills from Dev could ufnid them for me"}
+{"id": "F0429", "intent": "track_refund", "text": "want help to know if there are any updates on my restitution"}
+{"id": "F0430", "intent": "get_invoice", "text": "help me todownload my invoice #00108"}
+{"id": "F0431", "intent": "change_shipping_address", "text": "wanna know more about correcting the deilvery address"}
+{"id": "F0432", "intent": "newsletter_subscription", "text": "need help unsubscribing from ur newsletter"}
+{"id": "F0433", "intent": "payment_issue", "text": "I need help to notify of a trouble with payment"}
+{"id": "F0434", "intent": "change_order", "text": "I want to add a product to my order, could I get some help?"}
+{"id": "F0435", "intent": "newsletter_subscription", "text": "how to receive ur newseltter"}
+{"id": "F0436", "intent": "cancel_order", "text": "I do not want my last bloody item, cancel order ORD-407934"}
+{"id": "F0437", "intent": "payment_issue", "text": "solve problems with apyment"}
+{"id": "F0438", "intent": "get_invoice", "text": "I have lost the bill from Ben, mail it to me"}
+{"id": "F0439", "intent": "check_payment_methods", "text": "assistance seeing what payment payment modalitiesare allowed"}
+{"id": "F0440", "intent": "place_order", "text": "shop several articles"}
+{"id": "F0441", "intent": "complaint", "text": "can uhelp me file a customer reeclamation"}
+{"id": "F0442", "intent": "review", "text": "want assistance to leave a review for your prducts"}
+{"id": "F0443", "intent": "check_invoice", "text": "I want assistance to looi for invoice #85632"}
+{"id": "F0444", "intent": "newsletter_subscription", "text": "where could i cancel mycorporate newsletter subscription"}
+{"id": "F0445", "intent": "track_order", "text": "when will I receive ordered ORD-407164 ?"}
+{"id": "F0446", "intent": "delivery_period", "text": "I am looking for shipping periods, where could I find them?"}
+{"id": "F0447", "intent": "review", "text": "submit product review"}
+{"id": "F0448", "intent": "switch_account", "text": "using another user"}
+{"id": "F0449", "intent": "track_refund", "text": "I'm waiting for a reimbursement ofv $85 was it processed"}
+{"id": "F0450", "intent": "contact_human_agent", "text": "is it possible to speak to a human agent"}
+{"id": "F0451", "intent": "review", "text": "write comment about your services"}
+{"id": "F0452", "intent": "switch_account", "text": "I do not know what to do to change to another user profile"}
+{"id": "F0453", "intent": "place_order", "text": "earning product"}
+{"id": "F0454", "intent": "cancel_order", "text": "can uhelp me cancelliung order ORD-466231"}
+{"id": "F0455", "intent": "complaint", "text": "can ya help me lodging an consumer complaint"}
+{"id": "F0456", "intent": "set_up_shipping_address", "text": "support submitting the deoivery address"}
+{"id": "F0457", "intent": "check_payment_methods", "text": "I don't know how I could list your payment modalities"}
+{"id": "F0458", "intent": "check_cancellation_fee", "text": "assistance checking the termination fees"}
+{"id": "F0459", "intent": "check_payment_methods", "text": "I'm trying to check ur payment modalitise"}
+{"id": "F0460", "intent": "track_refund", "text": "Iexpect a restitution of 82 dollars"}
+{"id": "F0461", "intent": "track_order", "text": "wanna locate purchase ORD-477880 how could i do it"}
+{"id": "F0462", "intent": "check_refund_policy", "text": "inwhat situations can I ask to be reimbursed?"}
+{"id": "F0463", "intent": "switch_account", "text": "help me usew the freemium account"}
+{"id": "F0464", "intent": "payment_issue", "text": "report a trouble wuth payments"}
+{"id": "F0465", "intent": "registration_problems", "text": "I am experiencing an problem registering"}
+{"id": "F0466", "intent": "edit_account", "text": "I don't know how I could edit my bloody account"}
+{"id": "F0467", "intent": "delivery_period", "text": "I need assistance seeing when will my parcel arrive"}
+{"id": "F0468", "intent": "cancel_order", "text": "how could icancel purchase ORD-410920"}
+{"id": "F0469", "intent": "edit_account", "text": "modify Basic accunt"}
+{"id": "F0470", "intent": "set_up_shipping_address", "text": "there is a trouble entering a secondary shipping addres"}
+{"id": "F0471", "intent": "track_order", "text": "check my last parcel eta"}
+{"id": "F0472", "intent": "edit_account", "text": "I'd like to update the details on my account i need help"}
+{"id": "F0473", "intent": "cancel_order", "text": "can you help me camceling the purchase I made?"}
+{"id": "F0474", "intent": "set_up_shipping_address", "text": "where do I set up another shipping address?"}
+{"id": "F0475", "intent": "switch_account", "text": "is it possible to use the gold profile?"}
+{"id": "F0476", "intent": "delivery_period", "text": "I want information about the fucking delivey period"}
+{"id": "F0477", "intent": "review", "text": "want help sending my feedback"}
+{"id": "F0478", "intent": "change_shipping_address", "text": "issues changing shipping address"}
+{"id": "F0479", "intent": "track_refund", "text": "i cannot track my restitution"}
+{"id": "F0480", "intent": "cancel_order", "text": "I need help with cancellng order ORD-469557"}
+{"id": "F0481", "intent": "registration_problems", "text": "want hepl regarding my signup"}
+{"id": "F0482", "intent": "newsletter_subscription", "text": "subscribe tothe corporate newsletter"}
+{"id": "F0483", "intent": "payment_issue", "text": "where do i report an issue with paynents"}
+{"id": "F0484", "intent": "check_refund_policy", "text": "show me ur reimbursement policy"}
+{"id": "F0485", "intent": "track_order", "text": "is it possible to track purchase ORD-482336?"}
+{"id": "F0486", "intent": "newsletter_subscription", "text": "can uhelp me cancel the corporate newsetter subscription"}
+{"id": "F0487", "intent": "track_order", "text": "help seeing the ETA of the purchase00123842"}
+{"id": "F0488", "intent": "contact_customer_service", "text": "need help checking whatt hours customer support available is"}
+{"id": "F0489", "intent": "payment_issue", "text": "I don't know how to inform of issues wth online payments"}
+{"id": "F0490", "intent": "payment_issue", "text": "would it be possible to notfy of an error with payments"}
+{"id": "F0491", "intent": "edit_account", "text": "need assistance modifying my user info"}
+{"id": "F0492", "intent": "check_refund_policy", "text": "need help to check in which cases can Irequest refunds"}
+{"id": "F0493", "intent": "check_payment_methods", "text": "is it possible to check your paymet modalities?"}
+{"id": "F0494", "intent": "get_invoice", "text": "can you help me getting bill #85632?"}
+{"id": "F0495", "intent": "get_invoice", "text": "how do I get bill #85632?"}
+{"id": "F0496", "intent": "get_invoice", "text": "want help to get my invoices from Dev"}
+{"id": "F0497", "intent": "contact_customer_service", "text": "how can i see what hours i can reach custimer service"}
+{"id": "F0498", "intent": "set_up_shipping_address", "text": "sumbitting new shipping address"}
+{"id": "F0499", "intent": "check_refund_policy", "text": "are the charges of your services refundable?"}
+{"id": "F0500", "intent": "check_invoice", "text": "look for bill fromMr. Smith"}
+{"id": "F0501", "intent": "recover_password", "text": "find information about a lost password"}
+{"id": "F0502", "intent": "review", "text": "what do I need to do to write an opinion for a product?"}
+{"id": "F0503", "intent": "track_order", "text": "showing me estimated time of arrival of order ORD-441143"}
+{"id": "F0504", "intent": "check_cancellation_fee", "text": "help checking theearly exit charge"}
+{"id": "F0505", "intent": "complaint", "text": "where do i lodge an consumer claim"}
+{"id": "F0506", "intent": "place_order", "text": "order anitem"}
+{"id": "F0507", "intent": "change_order", "text": "i have made a mistake help me modify purchase ORD-491754"}
+{"id": "F0508", "intent": "contact_human_agent", "text": "how do I speak with a fucking operator?"}
+{"id": "F0509", "intent": "delivery_period", "text": "could i check when my package is gonna arive"}
+{"id": "F0510", "intent": "review", "text": "I do not know how I can send some feedback for your company"}
+{"id": "F0511", "intent": "track_refund", "text": "need assistance to see my restitution current status"}
+{"id": "F0512", "intent": "create_account", "text": "I don't know how I can create a Platinum accoiunt"}
+{"id": "F0513", "intent": "registration_problems", "text": "i do not know how i could report signup issues"}
+{"id": "F0514", "intent": "change_shipping_address", "text": "I have entered a wrong address by mistake, how do I edit it?"}
+{"id": "F0515", "intent": "set_up_shipping_address", "text": "how could i enter afucking delivery address"}
+{"id": "F0516", "intent": "complaint", "text": "I have got to lodge a complaint, can I get some help?"}
+{"id": "F0517", "intent": "check_refund_policy", "text": "assistance seeing how olng refunds take"}
+{"id": "F0518", "intent": "check_invoice", "text": "where could I take a quick look at invokce #37777?"}
+{"id": "F0519", "intent": "contact_human_agent", "text": "transferring to operator"}
+{"id": "F0520", "intent": "track_refund", "text": "track refund"}
+{"id": "F0521", "intent": "delivery_options", "text": "is it possible to ordet from Australia"}
+{"id": "F0522", "intent": "check_invoice", "text": "locate billINV-2026-4855"}
+{"id": "F0523", "intent": "get_refund", "text": "wanna ask for rebates"}
+{"id": "F0524", "intent": "recover_password", "text": "information aboutforgotten pass"}
+{"id": "F0525", "intent": "check_refund_policy", "text": "help me checking how long reimbursements take"}
+{"id": "F0526", "intent": "registration_problems", "text": "I cannot create a user, help to report sign-up errors"}
+{"id": "F0527", "intent": "registration_problems", "text": "help registering"}
+{"id": "F0528", "intent": "check_invoice", "text": "i dont know how i can find my damn invoices from Ben"}
+{"id": "F0529", "intent": "review", "text": "is it possible to send some feedback abouta product?"}
+{"id": "F0530", "intent": "switch_account", "text": "wanna switch to th Basic account could uhelp me"}
+{"id": "F0531", "intent": "contact_human_agent", "text": "want assistance contacting an operator"}
+{"id": "F0532", "intent": "registration_problems", "text": "there is an issue with my online registration"}
+{"id": "F0533", "intent": "track_order", "text": "where do I check my last purchase estimated time of arrival?"}
+{"id": "F0534", "intent": "contact_customer_service", "text": "can I contactcustomer assistance?"}
+{"id": "F0535", "intent": "change_shipping_address", "text": "is it possible to edit the bloody deliveryaddress"}
+{"id": "F0536", "intent": "newsletter_subscription", "text": "can I receive your newesletter?"}
+{"id": "F0537", "intent": "get_invoice", "text": "ened assistance downloading the bill from Ana"}
+{"id": "F0538", "intent": "delivery_period", "text": "I want information aboujt shipping periods"}
+{"id": "F0539", "intent": "check_invoice", "text": "can you help me check bill #12588?"}
+{"id": "F0540", "intent": "set_up_shipping_address", "text": "the new delivery address isn't valid, how to do it?"}
+{"id": "F0541", "intent": "change_shipping_address", "text": "i have a problem with an adress update"}
+{"id": "F0542", "intent": "newsletter_subscription", "text": "do you have newsletter?"}
+{"id": "F0543", "intent": "delete_account", "text": "cancel standard acount"}
+{"id": "F0544", "intent": "contact_human_agent", "text": "contactingassistant"}
+{"id": "F0545", "intent": "place_order", "text": "help to buy an few of your product"}
+{"id": "F0546", "intent": "switch_account", "text": "can I use the Basic acclunt?"}
+{"id": "F0547", "intent": "edit_account", "text": "updating standard accojnt"}
+{"id": "F0548", "intent": "change_order", "text": "update purchase00004587345"}
+{"id": "F0549", "intent": "contact_customer_service", "text": "where to check at wnat time customer assistance available is"}
+{"id": "F0550", "intent": "edit_account", "text": "can you help me to modify my user information?"}
+{"id": "F0551", "intent": "delete_account", "text": "give me information about the deletion of my Freemiumaccount"}
+{"id": "F0552", "intent": "get_invoice", "text": "getting billsfrom Dev"}
+{"id": "F0553", "intent": "check_refund_policy", "text": "I do not know how I can check your reimbursement policu"}
+{"id": "F0554", "intent": "track_order", "text": "checking status of order"}
+{"id": "F0555", "intent": "contact_customer_service", "text": "help getting in touch with customer assistance"}
+{"id": "F0556", "intent": "newsletter_subscription", "text": "I want to know about receiving your corporate neswletter"}
+{"id": "F0557", "intent": "recover_password", "text": "I lost my access key, help me retrieving it"}
+{"id": "F0558", "intent": "switch_account", "text": "I need to switch to the standard acconut"}
+{"id": "F0559", "intent": "place_order", "text": "need assistance ordering some goddamn items"}
+{"id": "F0560", "intent": "check_refund_policy", "text": "am I entitled to a reimbursement?"}
+{"id": "F0561", "intent": "check_payment_methods", "text": "wanna check theavailable payment options"}
+{"id": "F0562", "intent": "cancel_order", "text": "I purchased some item, help canceling one of the orders"}
+{"id": "F0563", "intent": "set_up_shipping_address", "text": "troubles submitting my secondary delivery addres"}
+{"id": "F0564", "intent": "create_account", "text": "problem with creatingmy standard account"}
+{"id": "F0565", "intent": "set_up_shipping_address", "text": "need to submit a new shipping adress"}
+{"id": "F0566", "intent": "delete_account", "text": "delete freemium acvount"}
+{"id": "F0567", "intent": "payment_issue", "text": "notifying of payment problem"}
+{"id": "F0568", "intent": "complaint", "text": "help filing a cosnumer reclamation against ur company"}
+{"id": "F0569", "intent": "get_refund", "text": "need assistance getting refunds of moey"}
+{"id": "F0570", "intent": "switch_account", "text": "i want assistance using tghe fucking Gold account"}
+{"id": "F0571", "intent": "delete_account", "text": "help to close my Platinum acount"}
+{"id": "F0572", "intent": "edit_account", "text": "updating pro account"}
+{"id": "F0573", "intent": "edit_account", "text": "what do i have to do to edit my goddamn profile"}
+{"id": "F0574", "intent": "track_order", "text": "i want assistance seeingorder ORD-458497 current status"}
+{"id": "F0575", "intent": "set_up_shipping_address", "text": "i ahve an issue submitting a new delivery address"}
+{"id": "F0576", "intent": "contact_customer_service", "text": "need to speak to customersupport can ya help me"}
+{"id": "F0577", "intent": "get_invoice", "text": "I want help downloading the invoice #00108"}
+{"id": "F0578", "intent": "create_account", "text": "open pro cacount for wife"}
+{"id": "F0579", "intent": "check_refund_policy", "text": "want assistance seeing ur money back guarantee"}
+{"id": "F0580", "intent": "track_refund", "text": "want help to track the reimbursement"}
+{"id": "F0581", "intent": "set_up_shipping_address", "text": "i want assistance setting the new shipping dadress up"}
+{"id": "F0582", "intent": "recover_password", "text": "problems with my PIN retrieval"}
+{"id": "F0583", "intent": "get_refund", "text": "I don't know how I can request a rebate"}
+{"id": "F0584", "intent": "delivery_options", "text": "i do not know how to check what shipment options uoffer"}
+{"id": "F0585", "intent": "cancel_order", "text": "have a question abut canceling purchase ORD-422759"}
+{"id": "F0586", "intent": "check_payment_methods", "text": "can ya help me to see what payment option are allowed"}
+{"id": "F0587", "intent": "contact_customer_service", "text": "contactcustomer service"}
+{"id": "F0588", "intent": "contact_customer_service", "text": "I try to call goddamn customer service"}
+{"id": "F0589", "intent": "get_refund", "text": "where do i receive a compensation of moneyh"}
+{"id": "F0590", "intent": "review", "text": "do you have an e-mai to send a review about a service?"}
+{"id": "F0591", "intent": "delivery_options", "text": "shipnents to Australia"}
+{"id": "F0592", "intent": "contact_customer_service", "text": "what is thecustomer support mail"}
+{"id": "F0593", "intent": "edit_account", "text": "edit Gold accont"}
+{"id": "F0594", "intent": "registration_problems", "text": "assistance to notify of a problem with registrations"}
+{"id": "F0595", "intent": "check_cancellation_fee", "text": "termination fee"}
+{"id": "F0596", "intent": "check_invoice", "text": "I don't know how I could locate the bill #12588"}
+{"id": "F0597", "intent": "check_refund_policy", "text": "I would like to check your money back guarantee, help me"}
+{"id": "F0598", "intent": "change_order", "text": "add product to purchase ORD-482091"}
+{"id": "F0599", "intent": "cancel_order", "text": "canceling purechase ORD-494336"}

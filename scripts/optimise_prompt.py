@@ -69,7 +69,7 @@ def main() -> None:
     args = ap.parse_args()
     out_path = ROOT / "data" / f"gepa_{args.arm}.json"
     dev, held = split()
-    lab = labels("v1")
+    lab = labels("first_pass")  # what GEPA was trained and reported against
 
     if args.evaluate:
         from run_router import run_llm

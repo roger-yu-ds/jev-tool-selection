@@ -3,7 +3,8 @@
 A run is one selector under one condition, stored as ``runs/<name>.jsonl`` with one row per
 request. Names: ``jev``, ``router_<model>`` (the LLM told to pick a tool by name) and
 ``native_<model>`` (the LLM with the tools in the API's ``tools`` parameter), each with a
-``_policy`` variant where the routing policy was added to the prompt.
+``_policy`` variant where the routing policy was added to the prompt. ``fresh/<name>`` runs are the
+final configuration (policy prompt, customer-worded tool descriptions) on the fresh 600 messages.
 
 Outcomes per request, from the pick and the intent's labels:
 
@@ -11,10 +12,19 @@ Outcomes per request, from the pick and the intent's labels:
     defensible  a partial tool: a sensible first step that doesn't finish the job
     handed_off  hand_off_to_human on an intent a real tool could handle (a miss)
     asked       no tool call: the model replied in text, or (router) wrote prose instead of a name
+                (right instead, when the intent's ``ask_ok`` says a question is needed first)
     wrong       the wrong tool on a covered intent
     bluffed     a tool that can't do it, on a gap intent
 
-Only ``right`` counts as right. ``wrong`` and ``bluffed`` together are the wrong-call rate.
+For reporting, the six outcomes fold into three verdicts:
+
+    correct     right
+    benign      incorrect, but nothing bad happens: handed_off, asked, defensible (the customer
+                waits for a person, answers a question, or gets a sensible first step)
+    harmful     incorrect, and the assistant acted wrongly: wrong, bluffed (a tool that can't do
+                what was asked, so it looks as if something happened and nothing did)
+
+Only ``right`` counts as correct. The harmful rate is what a customer would notice.
 
 A native model may call several tools at once. The batch is ``right`` if every call is acceptable
 or defensible and at least one is acceptable; a batch with any wrong call is a wrong call (the
@@ -31,10 +41,13 @@ from collections import Counter
 from collections.abc import Sequence
 from functools import cache
 
-from .data import HAND, RUNS, Request, labels, requests
+from .data import HAND, RUNS, Request, all_requests_by_id, labels
 
 OUTCOMES = ["right", "defensible", "handed_off", "asked", "wrong", "bluffed"]
 WRONG_CALL = {"wrong", "bluffed"}
+VERDICTS = ["correct", "benign", "harmful"]
+VERDICT = {"right": "correct", "defensible": "benign", "handed_off": "benign", "asked": "benign",
+           "wrong": "harmful", "bluffed": "harmful"}  # fmt: skip
 MODEL_NAMES = {"jev": "Jev", "deepseek": "DeepSeek V4.1 Flash", "haiku": "Claude Haiku 5.5", "sonnet": "Claude Sonnet 5.5"}
 
 
@@ -51,7 +64,7 @@ def outcome(pick: str | None, lab: dict, kind: str = "tool_call", calls: Sequenc
             return "right"
         return outs[0]
     if kind == "text" or pick is None:
-        return "asked"
+        return "right" if lab.get("ask_ok") else "asked"
     if pick in lab["acceptable"]:
         return "right"
     if pick in lab["partial"]:
@@ -62,14 +75,19 @@ def outcome(pick: str | None, lab: dict, kind: str = "tool_call", calls: Sequenc
 
 
 def parse_run_name(name: str) -> dict[str, str]:
-    """``native_sonnet_policy`` -> mode native, model sonnet, prompt policy (or gepa, or base)."""
+    """``native_sonnet_policy`` -> mode native, model sonnet, prompt policy (or gepa, or base);
+    ``fresh/native_sonnet`` -> the same with sample fresh and prompt final."""
+    sample, _, name = name.rpartition("/")
+    if sample == "fresh":
+        out = parse_run_name(name)
+        return {**out, "prompt": "final", "sample": "fresh"}
     prompt = next((p for p in ("policy", "gepa") if name.endswith("_" + p)), "base")
     base = name.removesuffix("_" + prompt) if prompt != "base" else name
     if base == "jev":
         mode, model = "jev", "jev"
     else:
         mode, _, model = base.partition("_")
-    return {"mode": mode, "model": model, "prompt": prompt}
+    return {"mode": mode, "model": model, "prompt": prompt, "sample": "first"}
 
 
 @cache
@@ -87,13 +105,16 @@ def load_run(name: str) -> dict[str, dict]:
     return out
 
 
-def available_runs() -> list[str]:
+def available_runs(sample: str = "first") -> list[str]:
+    """Run names for one sample (``first``: runs/*.jsonl; ``fresh``: runs/fresh/*.jsonl)."""
+    if sample == "fresh":
+        return sorted(f"fresh/{p.stem}" for p in (RUNS / "fresh").glob("*.jsonl"))
     return sorted(p.stem for p in RUNS.glob("*.jsonl"))
 
 
-def scored_rows(name: str, version: str = "v1") -> list[dict]:
+def scored_rows(name: str, version: str = "audited") -> list[dict]:
     """One dict per request the run answered: request fields + pick + outcome + usage."""
-    lab, by_id = labels(version), {r.id: r for r in requests()}
+    lab, by_id = labels(version), all_requests_by_id()
     rows = []
     for rid, r in load_run(name).items():
         req = by_id[rid]
@@ -101,7 +122,7 @@ def scored_rows(name: str, version: str = "v1") -> list[dict]:
         o = outcome(r["pick"], lab[req.intent], r.get("kind", "tool_call"), calls)
         rows.append({"id": rid, "intent": req.intent, "gap": lab[req.intent]["gap"], "text": req.text, "run": name,
                      **parse_run_name(name), "pick": r["pick"], "kind": r.get("kind", "tool_call"), "outcome": o,
-                     "right": o == "right", "wrong_call": o in WRONG_CALL, "confidence": r.get("confidence"),
+                     "right": o == "right", "wrong_call": o in WRONG_CALL, "verdict": VERDICT[o], "confidence": r.get("confidence"),
                      "latency_s": r["latency_s"], "input_tokens": r.get("input_tokens"),
                      "cached_tokens": r.get("cached_tokens", 0), "output_tokens": r.get("output_tokens", 0),
                      "cost_usd": r.get("cost_usd", 0.0), "reply": r.get("raw") or r.get("text") or "",
@@ -130,6 +151,9 @@ def summarise(rows: Sequence[dict]) -> dict:
         "right": right / n,
         "right_ci": wilson(right, n),
         "wrong_call": sum(r["wrong_call"] for r in rows) / n,
+        "correct": right / n,
+        "benign": sum(VERDICT[r["outcome"]] == "benign" for r in rows) / n,
+        "harmful": sum(r["wrong_call"] for r in rows) / n,
         "handoff": sum(r["pick"] == HAND for r in rows) / n,
         "asked": mix["asked"] / n,
         "mix": {o: mix[o] / n for o in OUTCOMES},
@@ -151,7 +175,7 @@ def mcnemar(a: Sequence[bool], b: Sequence[bool]) -> dict:
     return {"only_a": only_a, "only_b": only_b, "n_pairs": len(a), "p": p}
 
 
-def paired(name_a: str, name_b: str, version: str = "v1", seed: int = 0, boots: int = 4000) -> dict:
+def paired(name_a: str, name_b: str, version: str = "audited", seed: int = 0, boots: int = 4000) -> dict:
     """Compare two runs on the requests both answered: McNemar and a bootstrap CI on the difference."""
     a = {r["id"]: r for r in scored_rows(name_a, version)}
     b = {r["id"]: r for r in scored_rows(name_b, version)}
@@ -166,7 +190,7 @@ def paired(name_a: str, name_b: str, version: str = "v1", seed: int = 0, boots: 
             "right_a": statistics.fmean(ra), "right_b": statistics.fmean(rb)}  # fmt: skip
 
 
-def per_intent(name: str, version: str = "v1") -> dict[str, dict]:
+def per_intent(name: str, version: str = "audited") -> dict[str, dict]:
     out: dict[str, dict] = {}
     for r in scored_rows(name, version):
         d = out.setdefault(r["intent"], {"n": 0, "right": 0, "gap": r["gap"], "picks": Counter()})
@@ -178,12 +202,12 @@ def per_intent(name: str, version: str = "v1") -> dict[str, dict]:
     return out
 
 
-def grid(version: str = "v1") -> dict[str, dict]:
+def grid(version: str = "audited") -> dict[str, dict]:
     """Every available run summarised, keyed by run name."""
     return {name: summarise(scored_rows(name, version)) for name in available_runs()}
 
 
-def gate_curve(name: str = "jev", version: str = "v1", thresholds: Sequence[float] = (0, .3, .4, .5, .6, .7, .8, .9, .95)) -> list[dict]:
+def gate_curve(name: str = "jev", version: str = "audited", thresholds: Sequence[float] = (0, .3, .4, .5, .6, .7, .8, .9, .95)) -> list[dict]:
     """Jev's confidence as a dial: below the threshold, hand off instead of calling a tool."""
     lab = labels(version)
     rows = scored_rows(name, version)
@@ -200,4 +224,4 @@ def gate_curve(name: str = "jev", version: str = "v1", thresholds: Sequence[floa
 
 
 def requests_by_id() -> dict[str, Request]:
-    return {r.id: r for r in requests()}
+    return all_requests_by_id()

@@ -1,4 +1,4 @@
-"""The data: 600 customer messages, 90 real MCP tools, and the labels that say which tool fits."""
+"""The data: customer messages, 90 real MCP tools, and the labels that say which tool fits."""
 
 from __future__ import annotations
 
@@ -13,6 +13,8 @@ RUNS = ROOT / "runs"
 
 HAND = "hand_off_to_human"
 FAQ = "shopify_storefront.search_shop_policies_and_faqs"
+ORDER_LOOKUPS = ["shopify_customer_account.get_order_status", "shopify_customer_account.get_most_recent_order_status",
+                 "shopify_ucp.get_order"]  # fmt: skip
 
 # The one tool that isn't real: added so a selector can say "no tool can do this".
 HANDOFF_TOOL = {
@@ -22,6 +24,19 @@ HANDOFF_TOOL = {
     "inputSchema": {"type": "object", "properties": {"reason": {"type": "string"}}, "required": ["reason"]},
 }
 
+# One line in customers' words, appended to six real descriptions (`tools(customer_words=True)`).
+# Real descriptions are written for developers ("This tool will fetch a list of Invoices from
+# Stripe"); customers say "download my bill". Written while looking at the first sample's misses,
+# so the fresh sample (data/requests_fresh.jsonl) is the clean test of them.
+CUSTOMER_WORDS = {
+    "shopify_ucp.search_catalog": "Customers say: 'I want to buy an article', 'help me order some items', 'I need to shop for a product'.",
+    "shopify_ucp.create_cart": "Customers say: 'I want to buy this', 'add it to my cart'.",
+    "stripe.list_invoices": "Customers say: 'where is my invoice', 'download my bill #123', 'check my bills'.",
+    "shopify_customer_account.get_order_status": "Customers say: 'status of order ORD-123', 'check bill/invoice #123', 'any news on my refund for order ...'.",
+    "shopify_customer_account.get_most_recent_order_status": "Customers say: 'where is my order', 'any news on my refund', 'I'm waiting for my reimbursement'.",
+    "shopify_customer_account.request_return": "Customers say: 'I want my money back', 'how do I get a refund', 'I want a compensation'.",
+}  # fmt: skip
+
 
 @dataclass(frozen=True, slots=True)
 class Request:
@@ -30,10 +45,20 @@ class Request:
     text: str
 
 
+SAMPLES = {"first": "requests.jsonl", "fresh": "requests_fresh.jsonl"}
+
+
 @cache
-def requests() -> list[Request]:
-    """The 600 messages, a fixed sample of Bitext's customer-support dataset (27 intents)."""
-    return [Request(**json.loads(x)) for x in (DATA / "requests.jsonl").read_text().splitlines() if x.strip()]
+def requests(sample: str = "first") -> list[Request]:
+    """600 Bitext messages. ``first`` is the sample the study was developed on; ``fresh`` is a
+    disjoint, varied 600 drawn afterwards (scripts/make_fresh_sample.py) for the final run."""
+    path = DATA / SAMPLES[sample]
+    return [Request(**json.loads(x)) for x in path.read_text().splitlines() if x.strip()]
+
+
+@cache
+def all_requests_by_id() -> dict[str, Request]:
+    return {r.id: r for s in SAMPLES if (DATA / SAMPLES[s]).exists() for r in requests(s)}
 
 
 @cache
@@ -42,35 +67,71 @@ def catalog() -> list[dict]:
     return json.loads((DATA / "catalog.json").read_text())
 
 
-def tools() -> list[dict]:
+def tools(customer_words: bool = False) -> list[dict]:
     """The 91 tools a selector chooses from: ``{name, description, inputSchema}``."""
-    out = [{"name": t["qualified_name"], "description": t["description"],
-            "inputSchema": t["input_schema"] or {"type": "object"}} for t in catalog()]  # fmt: skip
+    out = []
+    for t in catalog():
+        desc = t["description"]
+        if customer_words and t["qualified_name"] in CUSTOMER_WORDS:
+            desc = desc.rstrip() + "\n" + CUSTOMER_WORDS[t["qualified_name"]]
+        out.append({"name": t["qualified_name"], "description": desc, "inputSchema": t["input_schema"] or {"type": "object"}})
     return out + [HANDOFF_TOOL]
 
 
 # -- labels -------------------------------------------------------------------------------------
 # data/intent_map.json is the research pass: per intent, the tools that fit (acceptable), the ones
-# that are a defensible first step without finishing the job (partial), and notes. The overrides
-# below are the author's first-pass corrections, each with its reason. The 15 intents with no
+# that are a sensible first step without finishing the job (partial), and notes. Intents with no
 # acceptable tool are "gap" intents: the only right answer is hand_off_to_human.
+#
+# Two versions. `first_pass` is the research map plus four early overrides. `audited` (the default)
+# is the result of reviewing every failure by hand: each change below has its reason, and every
+# number in the talk uses it.
 
-OVERRIDES: dict[str, tuple[list[str], list[str], str]] = {
+FIRST_PASS_OVERRIDES: dict[str, tuple[list[str], list[str], str]] = {
     "place_order": (["shopify_ucp.search_catalog", "shopify_ucp.lookup_catalog", "shopify_ucp.get_product"], [],
                     "The task asks for the FIRST call: finding the product comes before creating a cart."),
-    "delivery_period": (["shopify_ucp.get_order"], [],
-                        "get_order is accepted for track_order, so it is accepted here too."),
+    "delivery_period": (["shopify_ucp.get_order"], [], "get_order is accepted for track_order, so it is accepted here too."),
     "contact_customer_service": ([], [HAND], "Handing to a person is a defensible reading of 'contact customer service'."),
     "track_refund": ([], ["shopify_customer_account.get_most_recent_order_status"],
                      "get_order_status is listed as partial; its no-argument twin does the same job."),
-}
+}  # fmt: skip
 
-# The revised labels (v2) also accept the readings the LLMs made consistently and defensibly.
-V2_EXTRA: dict[str, tuple[list[str], str]] = {
-    "payment_issue": ([HAND], "Handing 'I have a payment problem' to a person is a fair first step."),
-    "get_refund": ([FAQ], "'How do I get a refund?' can be answered from the refund policy."),
+# (intent, acceptable to add, partial to add, gap?, reason). gap=None leaves it unchanged.
+AUDIT: list[tuple[str, list[str], list[str], bool | None, str]] = [
+    ("track_refund", [*ORDER_LOOKUPS, "stripe.list_payment_intents"], ["shopify_customer_account.get_store_credit_balances"], False,
+     "Looking up the order (or the payment) shows whether the refund went through; the routing policy itself says to."),
+    ("check_invoice", [*ORDER_LOOKUPS, "stripe.list_customers"], [], None,
+     "For a shopper the bill is usually the order receipt; Stripe needs the customer before it can list their invoices."),
+    ("get_invoice", [*ORDER_LOOKUPS, "stripe.list_customers"], [], None,
+     "Same as check_invoice."),
+    ("get_refund", [*ORDER_LOOKUPS, "stripe.list_payment_intents"], [], None,
+     "Both refund tools need an order or payment ID first, so the lookup is the right first call."),
+    ("contact_customer_service", [HAND], [], None, "'I want to call customer support': a person is customer service."),
+    ("payment_issue", [HAND], [], None, "Someone reporting a payment problem should reach a person."),
+    ("cancel_order", [], ORDER_LOOKUPS, None, "Checking the order first is sensible, though nothing can cancel it."),
+    ("change_order", [], ORDER_LOOKUPS, None, "Same as cancel_order."),
+    ("change_shipping_address", [], ORDER_LOOKUPS, None, "Same as cancel_order."),
+    ("review", [], ["intercom.add_internal_note"], None, "Recording the feedback as a note is a reasonable first step."),
+]
+# Reading the customer's own records or the store's public information is at worst a wasted step, so
+# in the audited key these are benign on every intent where they aren't correct. Harmful means a write
+# that wasn't asked for, or reaching into the wrong system: GitHub, Notion, the helpdesk's internal
+# conversations and contacts, Stripe's developer docs or the merchant's own balance and catalogue.
+READ_ONLY_BENIGN = [
+    FAQ, "shopify_ucp.get_checkout", "shopify_ucp.get_cart", "shopify_ucp.get_order", "shopify_ucp.search_catalog",
+    "shopify_ucp.lookup_catalog", "shopify_ucp.get_product", "shopify_ucp.search_locations", "shopify_ucp.lookup_locations",
+    *ORDER_LOOKUPS[:2], "shopify_customer_account.get_store_credit_balances",
+    "stripe.list_customers", "stripe.list_invoices", "stripe.list_payment_intents", "stripe.list_subscriptions", "stripe.list_disputes",
+    "intercom.search_articles", "intercom.list_articles", "intercom.get_article",
+]  # fmt: skip
+AUDIT_READ_ONLY = ("Reading the customer's own records or the store's public information (including the FAQ) is at worst "
+                   "a wasted step: benign, never harmful.")  # fmt: skip
+# A clarifying question is right when every acceptable tool needs something the message doesn't give.
+ASK_OK = {
+    "place_order": "Searching the catalogue needs to know what the customer wants to buy.",
+    "get_refund": "Starting a return needs the order and the items.",
+    "payment_issue": "Investigating needs to know what went wrong.",
 }
-V2_GAP_FAQ = "On intents no tool covers, a how-to question can be answered from the store's FAQ."
 
 
 @cache
@@ -78,33 +139,40 @@ def _intent_map() -> dict[str, dict]:
     return json.loads((DATA / "intent_map.json").read_text())
 
 
-def labels(version: str = "v1") -> dict[str, dict]:
-    """Per intent: ``gap``, ``acceptable``, ``partial``, the research ``note`` and any ``override``."""
+def labels(version: str = "audited") -> dict[str, dict]:
+    """Per intent: ``gap``, ``acceptable``, ``partial``, ``ask_ok``, the research ``note`` and the
+    ``changes`` made to it (with reasons)."""
+    if version not in ("audited", "first_pass"):
+        raise ValueError(version)
     out = {}
     for intent, v in _intent_map().items():
         acc, part = list(v["acceptable"]), list(v.get("partial") or [])
         gap = not acc
         if gap:
             acc = [HAND]
-        note = None
-        if intent in OVERRIDES:
-            add_acc, add_part, note = OVERRIDES[intent]
+        changes = []
+        if intent in FIRST_PASS_OVERRIDES:
+            add_acc, add_part, why = FIRST_PASS_OVERRIDES[intent]
             acc += [t for t in add_acc if t not in acc]
             part = [t for t in part if t not in add_acc] + [t for t in add_part if t not in part]
-        row = {"gap": gap, "acceptable": acc, "partial": part, "note": v.get("notes", ""), "override": note, "v2": None}
-        if version == "v2":
-            if gap and FAQ not in acc:
-                acc.append(FAQ)
-                row["partial"] = [t for t in part if t != FAQ]
-                row["v2"] = V2_GAP_FAQ
-            if intent in V2_EXTRA:
-                add, why = V2_EXTRA[intent]
-                acc += [t for t in add if t not in acc]
-                row["partial"] = [t for t in row["partial"] if t not in add]
-                row["v2"] = why
-        elif version != "v1":
-            raise ValueError(version)
-        out[intent] = row
+            changes.append(why)
+        ask_ok = False
+        if version == "audited":
+            for a_intent, add_acc, add_part, a_gap, why in AUDIT:
+                if a_intent != intent:
+                    continue
+                if a_gap is False:
+                    gap, acc = False, [t for t in acc if t != HAND]
+                acc += [t for t in add_acc if t not in acc]
+                part += [t for t in add_part if t not in part]
+                changes.append(why)
+            part += [t for t in READ_ONLY_BENIGN if t not in acc and t not in part]
+            ask_ok = intent in ASK_OK
+            if ask_ok:
+                changes.append(ASK_OK[intent])
+        part = [t for t in part if t not in acc]
+        out[intent] = {"gap": gap, "acceptable": acc, "partial": part, "ask_ok": ask_ok, "note": v.get("notes", ""),
+                       "changes": changes}  # fmt: skip
     return out
 
 

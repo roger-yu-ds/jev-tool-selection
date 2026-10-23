@@ -14,7 +14,7 @@ Per trace: name `tool-select`, session `<mode>/<prompt>` (e.g. native/policy), t
 prompt], input = the customer's message, output = the pick, metadata (intent, request id, run);
 the generation carries the pick, the tool-call arguments, Jev's confidence and top tools, the
 provider and the prompt name (the prompts themselves are stored once in prompt management);
-scores `right_v1`, `right_v2`, `wrong_call` (0/1) and `outcome_v1` (categorical). Trace ids are
+scores `correct` (audited answer key), `correct_first_pass`, `harmful` (0/1) and `outcome` (categorical). Trace ids are
 deterministic (a hash of run + request id), so re-running updates rather than duplicates.
 """
 
@@ -38,7 +38,8 @@ load_dotenv(ROOT / ".env")
 load_dotenv(ROOT.parents[1] / ".env")  # when this folder sits inside the course repo, its .env works too
 sys.path.insert(0, str(ROOT / "src"))
 
-from toolpick import RUNS, labels, outcome, parse_run_name, requests, tools
+from toolpick import RUNS, labels, outcome, parse_run_name, tools
+from toolpick.data import all_requests_by_id
 from toolpick.prompts import jev_instructions, native_system, router_system
 from toolpick.scoring import MODEL_NAMES, WRONG_CALL
 
@@ -144,18 +145,18 @@ def emit_span(tracer, ids: FixedIds, run: str, row: dict, req, lab1: dict, lab2:
         "langfuse.observation.output": j(output),
         "langfuse.observation.usage_details": j(usage),
         "langfuse.observation.cost_details": j({"total": float(row.get("cost_usd") or 0)}),
-        "langfuse.observation.prompt.name": f"{meta_run['mode']}/{meta_run['prompt']}",
+        "langfuse.observation.prompt.name": f"{meta_run['mode']}/{'policy' if meta_run['prompt'] == 'final' else meta_run['prompt']}",
         "langfuse.observation.metadata": j({"request_id": req.id, "intent": req.intent, "gap_intent": lab1[req.intent]["gap"],
-                                            "kind": kind, "outcome_v1": o1, "outcome_v2": o2, "provider": row.get("provider"),
+                                            "kind": kind, "outcome": o1, "outcome_first_pass": o2, "provider": row.get("provider"),
                                             "finish_reason": row.get("finish_reason"), "jev_confidence": row.get("confidence"),
                                             "jev_top": row.get("top"), "tool_calls": row.get("tool_calls"),
                                             "timestamps": "measured" if row.get("ts") else "approximate (backfilled; duration is measured)"}),
         "langfuse.trace.name": "tool-select",
-        "session.id": f"{meta_run['mode']}/{meta_run['prompt']}",
+        "session.id": f"{meta_run['sample']}/{meta_run['mode']}/{meta_run['prompt']}",
         "gen_ai.request.model": row.get("model") or MODEL_IDS[model],
         "gen_ai.usage.input_tokens": int(row.get("input_tokens") or 0),
         "gen_ai.usage.output_tokens": int(row.get("output_tokens") or 0),
-        "langfuse.trace.tags": [model, meta_run["mode"], meta_run["prompt"], "measurecamp-2026"],
+        "langfuse.trace.tags": [model, meta_run["mode"], meta_run["prompt"], meta_run["sample"], "measurecamp-2026"],
         "langfuse.trace.input": req.text,
         "langfuse.trace.output": row["pick"] or "(text reply)",
         "langfuse.trace.metadata": j({"intent": req.intent, "request_id": req.id, "run": run, "model_name": MODEL_NAMES[model]}),
@@ -164,8 +165,8 @@ def emit_span(tracer, ids: FixedIds, run: str, row: dict, req, lab1: dict, lab2:
     ids.next_trace = int(trace_id, 16)
     span = tracer.start_span(f"select:{model}", start_time=int(start.timestamp() * 1e9), attributes=attrs)
     span.end(end_time=int(end.timestamp() * 1e9))
-    scores = {"right_v1": float(o1 == "right"), "right_v2": float(o2 == "right"), "wrong_call": float(o1 in WRONG_CALL),
-              "outcome_v1": o1}  # fmt: skip
+    scores = {"correct": float(o1 == "right"), "correct_first_pass": float(o2 == "right"), "harmful": float(o1 in WRONG_CALL),
+              "outcome": o1}  # fmt: skip
     return trace_id, scores
 
 
@@ -201,14 +202,14 @@ def main() -> None:
         return
     ensure_prompts(c)
     tracer, provider, ids = tracer_and_provider()
-    reqs = {r.id: r for r in requests()}
-    lab1, lab2 = labels("v1"), labels("v2")
-    paths = [RUNS / f"{n}.jsonl" for n in args.runs] if args.runs else sorted(RUNS.glob("*.jsonl"))
-    for path in paths:
-        rows = [json.loads(x) for x in path.read_text().splitlines() if x.strip()]
-        items = [emit_span(tracer, ids, path.stem, row, reqs[row["id"]], lab1, lab2) for row in rows]
+    reqs = all_requests_by_id()
+    lab1, lab2 = labels("audited"), labels("first_pass")
+    names = args.runs or [p.stem for p in sorted(RUNS.glob("*.jsonl"))] + [f"fresh/{p.stem}" for p in sorted((RUNS / "fresh").glob("*.jsonl"))]
+    for name in names:
+        rows = [json.loads(x) for x in (RUNS / f"{name}.jsonl").read_text().splitlines() if x.strip()]
+        items = [emit_span(tracer, ids, name, row, reqs[row["id"]], lab1, lab2) for row in rows]
         provider.force_flush()
-        print(f"{path.stem}: {len(rows)} spans exported, {send_scores(c, items)} score errors", flush=True)
+        print(f"{name}: {len(rows)} spans exported, {send_scores(c, items)} score errors", flush=True)
     provider.shutdown()
 
 

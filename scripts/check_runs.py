@@ -18,11 +18,12 @@ import toolpick as tp
 names = {t["name"] for t in tp.tools()}
 schema = {t["name"]: t["inputSchema"] for t in tp.tools()}
 ids = {r.id for r in tp.requests()}
+fresh_ids = {r.id for r in tp.requests("fresh")}
 
 
 def check_labels() -> None:
     bad = []
-    for v in ("v1", "v2"):
+    for v in ("audited", "first_pass"):
         for k, lab in tp.labels(v).items():
             for t in lab["acceptable"] + lab["partial"]:
                 if t not in names:
@@ -36,8 +37,9 @@ def check_run(name: str) -> None:
     rows = [json.loads(x) for x in (tp.RUNS / f"{name}.jsonl").read_text().splitlines() if x.strip()]
     rid = [r["id"] for r in rows]
     dup = [k for k, c in Counter(rid).items() if c > 1]
-    missing = sorted(ids - set(rid))
-    unknown_ids = sorted(set(rid) - ids)
+    expected = fresh_ids if name.startswith("fresh/") else ids
+    missing = sorted(expected - set(rid))
+    unknown_ids = sorted(set(rid) - expected)
     unparsed = [r for r in rows if r["pick"] is None and r.get("kind", "tool_call") == "tool_call"]
     not_in_catalog = [r for r in rows if r["pick"] and r["pick"] not in names]
     truncated = [r for r in rows if r.get("finish_reason") == "length"]
@@ -97,6 +99,6 @@ def check_jev_rerun() -> None:
 
 if __name__ == "__main__":
     check_labels()
-    for n in tp.available_runs():
+    for n in tp.available_runs() + tp.available_runs("fresh"):
         check_run(n)
     check_jev_rerun()

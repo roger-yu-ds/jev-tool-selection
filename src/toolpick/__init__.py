@@ -4,6 +4,8 @@ from .data import DATA, FAQ, HAND, RUNS, Request, catalog, labels, requests, too
 from .scoring import (
     MODEL_NAMES,
     OUTCOMES,
+    VERDICT,
+    VERDICTS,
     available_runs,
     gate_curve,
     grid,
@@ -25,6 +27,8 @@ __all__ = [
     "MODEL_NAMES",
     "OUTCOMES",
     "RUNS",
+    "VERDICT",
+    "VERDICTS",
     "Request",
     "available_runs",
     "catalog",

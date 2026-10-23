@@ -3,7 +3,9 @@
     uv run python scripts/build_slides.py
 
 Keys: → / space / click = next step or slide, ← = back, Home/End, `p` = print view (all slides
-stacked; then Ctrl+P → PDF), `a` = jump to the appendix. Every number is computed from runs/.
+stacked; then Ctrl+P → PDF), `a` = jump to the appendix. Every number is computed from runs/: the
+main slides from the final setup on the fresh 600 (runs/fresh/), the appendix from the development
+runs on the first 600.
 """
 
 from __future__ import annotations
@@ -17,6 +19,8 @@ ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT / "src"))
 
 import toolpick as tp
+import toolpick.data
+import toolpick.prompts
 
 OUT = ROOT / "slides" / "index.html"
 e = html.escape
@@ -27,14 +31,6 @@ COL = {"jev": "#1d4ed8", "deepseek": "#7c3aed", "haiku": "#d97706", "sonnet": "#
 
 def pct(x: float, d: int = 0) -> str:
     return f"{100 * x:.{d}f}%"
-
-
-def run_name(arm: str, mode: str, policy: bool) -> str:
-    return ("jev" if arm == "jev" else f"{mode}_{arm}") + ("_policy" if policy else "")
-
-
-def summ(arm: str, mode: str, policy: bool, version: str = "v1") -> dict:
-    return tp.summarise(tp.scored_rows(run_name(arm, mode, policy), version))
 
 
 # ---------------------------------------------------------------- figures
@@ -67,6 +63,35 @@ def morph_bars(a: list[tuple[str, float, str]], b: list[tuple[str, float, str]],
                    f'<text class="val va" x="0" style="--x1:{left + wa + 12:.1f}px;--x2:{left + wb + 12:.1f}px" y="{y + 34}">{pct(va)}</text>'
                    f'<text class="val vb" x="0" style="--x1:{left + wa + 12:.1f}px;--x2:{left + wb + 12:.1f}px" y="{y + 34}">{pct(vb)}</text>')  # fmt: skip
     out.append(f'</svg><p class="cap"><span class="ca">{e(cap_a)}</span><span class="cb">{e(cap_b)}</span></p></div>')
+    return "".join(out)
+
+
+VCOL = {"correct": "#2a9d8f", "benign": "#d6cfbf", "harmful": "#c1121f"}
+
+
+def stacked(rows: list[tuple[str, dict, str]], *, width=900) -> str:
+    """One bar per selector split into correct / benign / harmful; each row is a reveal step."""
+    rh, left = 52, 230
+    height = rh * len(rows) + 46
+    pw = width - left - 20
+    out = [f'<svg viewBox="0 0 {width} {height}" class="fig">']
+    lx = left
+    for v in ("correct", "benign", "harmful"):
+        out.append(f'<rect x="{lx}" y="4" width="14" height="14" fill="{VCOL[v]}"/><text x="{lx + 20}" y="16" class="tick">{v}</text>')
+        lx += 120
+    for i, (label, s, cls) in enumerate(rows):
+        y = 34 + i * rh
+        g = [f'<g class="{cls}"><text x="{left - 14}" y="{y + 24}" text-anchor="end" class="lbl">{e(label)}</text>']
+        x = left
+        for v in ("correct", "benign", "harmful"):
+            w = s[v] * pw
+            g.append(f'<rect x="{x:.1f}" y="{y}" width="{w:.1f}" height="36" fill="{VCOL[v]}"/>')
+            if w > 46:
+                fill = "#fff" if v != "benign" else "#15161a"
+                g.append(f'<text x="{x + w / 2:.1f}" y="{y + 24}" text-anchor="middle" class="val" style="fill:{fill}">{pct(s[v])}</text>')
+            x += w
+        out.append("".join(g) + "</g>")
+    out.append("</svg>")
     return "".join(out)
 
 
@@ -106,214 +131,260 @@ def scatter(points: list[dict], *, width=760, height=460) -> str:
     return "".join(out)
 
 
+FRESH = {"jev": "fresh/jev", "deepseek": "fresh/native_deepseek", "haiku": "fresh/native_haiku", "sonnet": "fresh/native_sonnet"}
+CASCADE_T = 0.8  # chosen on the first 600 (development) messages, applied unchanged to the fresh 600
+
+
+def fsumm(arm: str) -> dict:
+    return tp.summarise(tp.scored_rows(FRESH[arm]))
+
+
+def frows(arm: str) -> dict[str, dict]:
+    return {r["id"]: r for r in tp.scored_rows(FRESH[arm])}
+
+
+def say(arm: str, r: dict) -> str:
+    """What a selector did, in words."""
+    if r["kind"] == "text" or r["pick"] is None:
+        return "asks the customer a question"
+    p = r["pick"]
+    if p == tp.HAND:
+        return "hands off to a person"
+    return f"calls <code>{e(p.split('.')[-1])}</code>"
+
+
 def intents_grid() -> str:
     lab = tp.labels()
-    cnt = {}
-    for r in tp.requests():
+    cnt: dict[str, int] = {}
+    for r in tp.requests("fresh"):
         cnt[r.intent] = cnt.get(r.intent, 0) + 1
-    items = sorted(lab, key=lambda k: (lab[k]["gap"], k))
     cells = []
-    for k in items:
-        gap = lab[k]["gap"]
-        cells.append(f'<div class="cell {"gap" if gap else "cov"}"><span>{e(k.replace("_", " "))}</span><small>{cnt[k]}</small></div>')
+    for k in sorted(lab, key=lambda k: (lab[k]["gap"], k)):
+        cells.append(f'<div class="cell {"gap" if lab[k]["gap"] else "cov"}"><span>{e(k.replace("_", " "))}</span><small>{cnt.get(k, 0)}</small></div>')
     return '<div class="intents">' + "".join(cells) + "</div>"
 
 
-# ---------------------------------------------------------------- slides
 def build() -> str:
-    jev = summ("jev", "router", False)
-    jev_p, sn_p = summ("jev", "router", True), summ("sonnet", "router", True)
-    nat = {a: summ(a, "native", False) for a in ARMS[1:]}
-    nat_p = {a: summ(a, "native", True) for a in ARMS[1:]}
-    v2 = {a: summ(a, "router", False, "v2") for a in ARMS}
+    S = {a: fsumm(a) for a in ARMS}
+    R = {a: frows(a) for a in ARMS}
+    ids = sorted(set.intersection(*(set(r) for r in R.values())))
     lab = tp.labels()
-    n_gap = sum(lab[k]["gap"] for k in lab)
-    gap_msgs = sum(lab[r.intent]["gap"] for r in tp.requests())
-    pairs = {a: tp.paired("jev", run_name(a, "router", False)) for a in ARMS[1:]}
-    pairs_p = {a: tp.paired("jev_policy", run_name(a, "router", True)) for a in ARMS[1:]}
-    tok = tp.tool_tokens_by_server()
-    gepa_path = ROOT / "data" / "gepa_deepseek.json"
-    gepa = json.loads(gepa_path.read_text()) if gepa_path.exists() else None
-    gepa_run = tp.summarise(tp.scored_rows("router_deepseek_gepa")) if "router_deepseek_gepa" in tp.available_runs() else None
+    n_cov = sum(not v["gap"] for v in lab.values())
+    fresh_reqs = tp.requests("fresh")
+    gap_share = sum(lab[r.intent]["gap"] for r in fresh_reqs) / len(fresh_reqs)
+    pairs = {a: tp.paired(FRESH["jev"], FRESH[a]) for a in ARMS[1:]}
+    best = max(ARMS[1:], key=lambda a: S[a]["correct"])
 
-    # the hook message: one where the four router picks differ most
-    hook = next(r for r in tp.requests() if r.id == "R0186")
-    hook_picks = [(SHORT[a], (tp.load_run(run_name(a, "router", False)).get(hook.id) or {}).get("pick") or "—") for a in ARMS]
+    # hook: a message where the four answers differ most (verdicts first, then picks)
+    def spread(i):
+        return (len({R[a][i]["pick"] for a in ARMS}), len({R[a][i]["verdict"] for a in ARMS}), -len(R["jev"][i]["text"]))
+    hook = max(ids, key=spread)
+    hook_text = R["jev"][hook]["text"]
 
-    best_llm = max(ARMS[1:], key=lambda a: summ(a, "router", False)["right"])
-    router_base = [(SHORT[a], summ(a, "router", False)["right"], COL[a]) for a in ARMS]
-    router_v2 = [(SHORT[a], v2[a]["right"], COL[a]) for a in ARMS]
-    router_pol = [(SHORT[a], summ(a, "router", True)["right"], COL[a]) for a in ARMS]
-    pts = [{"x": summ(a, "router", False)["wrong_call"], "y": summ(a, "router", False)["right"], "label": f"{SHORT[a]} (router)",
-            "color": COL[a], "cls": "step"} for a in ARMS]
-    pts += [{"x": nat[a]["wrong_call"], "y": nat[a]["right"], "label": f"{SHORT[a]} (native)", "color": COL[a], "shape": "square",
-             "cls": "step"} for a in ARMS[1:]]
+    # scoring examples from the fresh run
+    def first(pred):
+        return next((R[a][i], a) for i in ids for a in ARMS[::-1] if pred(R[a][i]))
+    ex_ok, ex_ok_a = first(lambda r: r["verdict"] == "correct" and not r["gap"] and r["pick"] not in (None, tp.HAND))
+    ex_benign, ex_benign_a = first(lambda r: r["verdict"] == "benign" and r["pick"] == tp.HAND)
+    ex_harm, ex_harm_a = first(lambda r: r["verdict"] == "harmful" and "create" in (r["pick"] or ""))
+    n_harm = sum(R[a][i]["verdict"] == "harmful" for a in ARMS for i in ids)
 
-    def stat(arm, mode, policy):
-        s = summ(arm, mode, policy)
-        return s
+    # confidence and the Jev-first cascade (threshold fixed on the development sample)
+    conf = {i: R["jev"][i]["confidence"] or 0 for i in ids}
+    bands = [(0.9, 1.01, "0.9 or higher"), (0.7, 0.9, "0.7 – 0.9"), (0.0, 0.7, "below 0.7")]
+    band_rows = []
+    for lo, hi, label in bands:
+        b = [i for i in ids if lo <= conf[i] < hi]
+        band_rows.append((label, len(b) / len(ids), sum(R["jev"][i]["right"] for i in b) / max(1, len(b))))
+    sent = [i for i in ids if conf[i] < CASCADE_T]
+    casc_right = sum((R["sonnet"][i] if conf[i] < CASCADE_T else R["jev"][i])["right"] for i in ids) / len(ids)
+    casc_harm = sum((R["sonnet"][i] if conf[i] < CASCADE_T else R["jev"][i])["wrong_call"] for i in ids) / len(ids)
+    casc_cost = 1000 * sum((R["sonnet"][i]["cost_usd"] if conf[i] < CASCADE_T else 0) + R["jev"][i]["cost_usd"] for i in ids) / len(ids)
 
-    cost_rows = "".join(
-        f"<tr><td>{e(SHORT[a])}{' (router)' if a != 'jev' else ''}</td><td>{s['input_tokens_median']:,.0f}</td>"
-        f"<td>{s['latency_median_s']:.2f} s</td><td>${s['cost_per_1000']:.2f}</td></tr>"
-        for a, s in ((a, summ(a, "router", False)) for a in ARMS))
-    cost_rows += "".join(
-        f"<tr class='step'><td>{e(SHORT[a])} (native)</td><td>{s['input_tokens_median']:,.0f}</td>"
-        f"<td>{s['latency_median_s']:.2f} s</td><td>${s['cost_per_1000']:.2f}</td></tr>" for a, s in nat.items())
+    # where Jev and Sonnet disagree
+    only_j = [i for i in ids if R["jev"][i]["right"] and not R["sonnet"][i]["right"]]
+    only_s = [i for i in ids if R["sonnet"][i]["right"] and not R["jev"][i]["right"]]
 
     slides = []
-
-    # 1 title
     slides.append("""<section class="title">
 <p class="kicker">MeasureCamp Sydney · 24 October 2026</p>
 <h1>Who picks the tool?</h1>
-<p class="sub">Measuring tool selection on real MCP servers</p>
+<p class="sub">Measuring AI tool selection on real MCP servers</p>
 <p class="by">Roger Yu</p>
 </section>""")
 
-    # 2 hook
-    picks_html = "".join(f'<div class="pick step"><span class="who" style="color:{COL[a]}">{e(SHORT[a])}</span>'
-                         f'<code>{e(p.split(".")[-1])}</code></div>' for a, (_, p) in zip(ARMS, hook_picks, strict=True))
+    picks = "".join(f'<div class="pick step"><span class="who" style="color:{COL[a]}">{e(SHORT[a])}</span>{say(a, R[a][hook])}</div>' for a in ARMS)
     slides.append(f"""<section>
 <p class="kicker">A customer writes</p>
-<blockquote class="big">“{e(hook.text)}”</blockquote>
-<p class="kicker step">Four selectors, four answers</p>
-<div class="picks">{picks_html}</div>
-<p class="punch step">Which one is right?</p>
+<blockquote class="big">“{e(hook_text)}”</blockquote>
+<p class="kicker step">Four AI assistants, four answers</p>
+<div class="picks">{picks}</div>
+<p class="punch step">Which one is right? And how would you measure it?</p>
 </section>""")
 
-    # 3 setup
     slides.append("""<section>
 <h2>The test</h2>
 <div class="three">
-<div class="step"><div class="num">600</div><p>customer-support messages<br><small>Bitext, 27 intents</small></p></div>
-<div class="step"><div class="num">90</div><p>real tools from 7 official MCP servers<br><small>Shopify · Stripe · Intercom · GitHub · Notion, verbatim</small></p></div>
-<div class="step"><div class="num">4</div><p>selectors<br><small>Jev · DeepSeek V4.1 Flash · Claude Haiku 5.5 · Claude Sonnet 5.5</small></p></div>
+<div class="step"><div class="num">600</div><p>customer-support messages<br><small>Bitext · 27 request types · typos and all</small></p></div>
+<div class="step"><div class="num">90</div><p>real tools from 7 official MCP servers<br><small>Shopify · Stripe · Intercom · GitHub · Notion, copied word for word</small></p></div>
+<div class="step"><div class="num">4</div><p>AI assistants<br><small>Jev · DeepSeek V4.1 Flash · Claude Haiku 5.5 · Claude Sonnet 5.5</small></p></div>
 </div>
-<p class="note step">Each picks <b>the one tool to call first</b>. Scored against a set of acceptable tools per intent, not one gold answer.</p>
+<p class="note step">Each one sees a message and the 90 tools, and decides the first thing to do: call a tool, ask the customer a question, or hand off to a person.</p>
 </section>""")
 
-    # 4 gaps
     slides.append(f"""<section>
-<h2>Real servers cover {27 - n_gap} of 27 intents</h2>
+<h2>Real servers cover {n_cov} of 27 request types</h2>
 {intents_grid()}
-<p class="note step">No official tool cancels or edits a placed order, opens a complaint, hands off, or touches an account.
-<b>{pct(gap_msgs / 600)} of messages have no tool.</b> The right answer there is <code>hand_off_to_human</code>, the one tool we added.</p>
+<p class="note step">No official tool cancels or edits a placed order, opens a complaint, or touches an account.
+For {pct(gap_share)} of messages the right answer is <b>“hand off to a person”</b>.</p>
 </section>""")
 
-    # 5 accuracy
     slides.append(f"""<section>
-<h2>Right first pick <span class="dim">(router mode, plain prompt)</span></h2>
-{bars(router_base, step_class="step")}
-<p class="note step">Jev beats {e(SHORT[best_llm])} by {100 * pairs[best_llm]['diff']:.0f} points on the same 600 messages
-(only Jev right {pairs[best_llm]['only_a']}, only {e(SHORT[best_llm])} right {pairs[best_llm]['only_b']}; McNemar p = {pairs[best_llm]['p']:.2g}).</p>
+<h2>Three kinds of answer</h2>
+<div class="verdicts">
+<div class="step v-ok"><h3>Correct</h3><p>“{e(ex_ok['text'])}”</p><p class="who">{e(SHORT[ex_ok_a])} {say(ex_ok_a, ex_ok)}</p></div>
+<div class="step v-benign"><h3>Wrong, but benign</h3><p>“{e(ex_benign['text'])}”</p><p class="who">{e(SHORT[ex_benign_a])} {say(ex_benign_a, ex_benign)}: the customer waits, nothing breaks</p></div>
+<div class="step v-harm"><h3>Wrong, and harmful</h3><p>“{e(ex_harm['text'])}”</p><p class="who">{e(SHORT[ex_harm_a])} {say(ex_harm_a, ex_harm)}: a record created in the wrong system</p></div>
+</div>
+<p class="note step">Benign: handing off, asking a question, or reading the customer's own records. Harmful: changing something it shouldn't, or reaching into the wrong system.
+In the final runs, harmful answers were rare: {n_harm} in {len(ids) * len(ARMS):,}.</p>
 </section>""")
 
-    # 6 two ways to fail
+    vrows = [(SHORT[a], S[a], "step") for a in ARMS]
     slides.append(f"""<section>
-<h2>Two ways to fail</h2>
-{scatter(pts)}
-<p class="note step">A <b>wrong call</b> is a tool that can't do the job: an order lookup for “cancel my order”.
-Squares are the LLMs with real tool calling; they ask a clarifying question on {pct(min(s['asked'] for s in nat.values()))}–{pct(max(s['asked'] for s in nat.values()))} of messages.</p>
+<h2>Results</h2>
+{stacked(vrows)}
+<p class="note step">Jev against {e(SHORT[best])}: {pct(S['jev']['correct'])} and {pct(S[best]['correct'])} correct
+(only Jev right on {pairs[best]['only_a']} messages, only {e(SHORT[best])} on {pairs[best]['only_b']}; p = {pairs[best]['p']:.2g}).</p>
 </section>""")
 
-    # 7 the labels decide
-    slides.append(f"""<section>
-<h2>Change the ruler</h2>
-{morph_bars(router_base, router_v2, "first-pass labels", "revised labels: an FAQ search on a how-to question counts")}
-<p class="note step">Same picks. One defensible change to what counts as right, and the ranking flips: the LLMs read “how do I…?” literally; Jev hands off.</p>
-</section>""")
-
-    # 8 state the rule
-    slides.append(f"""<section>
-<h2>State the rule</h2>
-{morph_bars(router_base, router_pol, "plain prompt", "+ three sentences of routing policy")}
-<p class="note step">Every selector gains {min(100 * (summ(a, 'router', True)['right'] - summ(a, 'router', False)['right']) for a in ARMS):.0f}–{max(100 * (summ(a, 'router', True)['right'] - summ(a, 'router', False)['right']) for a in ARMS):.0f} points.
-Jev {pct(jev_p['right'])} and Sonnet {pct(sn_p['right'])} are level (p = {pairs_p['sonnet']['p']:.2f}); Jev makes {pct(jev_p['wrong_call'], 1)} wrong calls, Sonnet {pct(sn_p['wrong_call'], 1)}.</p>
-</section>""")
-
-    # 9 cost
+    cost_rows = "".join(
+        f"<tr class='step'><td style='color:{COL[a]};font-weight:600'>{e(SHORT[a])}</td><td>{S[a]['input_tokens_median']:,.0f}</td>"
+        f"<td>{S[a]['latency_median_s']:.1f} s</td><td>${S[a]['cost_per_1000']:.2f}</td></tr>" for a in ARMS)
     slides.append(f"""<section>
 <h2>What it costs to decide</h2>
-<table class="cost"><thead><tr><th>selector</th><th>input tokens</th><th>median latency</th><th>per 1,000 picks</th></tr></thead>
+<table class="cost big"><thead><tr><th></th><th>input tokens</th><th>median time</th><th>per 1,000 messages</th></tr></thead>
 <tbody>{cost_rows}</tbody></table>
-<p class="note step">Jev sees names and descriptions ({jev['input_tokens_median'] / 1000:.0f}k tokens); the LLMs see full schemas. Prompt caching is on for every LLM run; these are billed prices.</p>
+<p class="note step">Billed prices with prompt caching on. Jev reads names and descriptions; the LLMs read every tool's full schema.</p>
 </section>""")
 
-    # 10 checklist
+    band_html = "".join(f"<tr class='step'><td>{e(lbl)}</td><td>{pct(share)}</td><td><b>{pct(acc)}</b></td></tr>" for lbl, share, acc in band_rows)
+    slides.append(f"""<section>
+<h2>Jev knows when it's right</h2>
+<table class="cost big"><thead><tr><th>Jev's confidence</th><th>share of messages</th><th>correct</th></tr></thead><tbody>{band_html}</tbody></table>
+<p class="note step"><b>Jev first, Sonnet for the rest</b> (confidence below {CASCADE_T}, a threshold set before this data):
+{pct(casc_right)} correct, {pct(casc_harm, 1)} harmful, {pct(len(sent) / len(ids))} of messages sent to Sonnet,
+${casc_cost:.2f} per 1,000 instead of ${S['sonnet']['cost_per_1000']:.2f}.</p>
+</section>""")
+
+    def top_intents(sel):
+        c: dict[str, int] = {}
+        for i in sel:
+            c[R["jev"][i]["intent"]] = c.get(R["jev"][i]["intent"], 0) + 1
+        return ", ".join(f"{k.replace('_', ' ')} ({v})" for k, v in sorted(c.items(), key=lambda kv: -kv[1])[:3])
+    slides.append(f"""<section>
+<h2>They fail in different places</h2>
+<div class="two">
+<div class="step"><div class="num" style="color:{COL['jev']}">{len(only_j)}</div><p>messages only Jev got right<br><small>{e(top_intents(only_j))}</small></p></div>
+<div class="step"><div class="num" style="color:{COL['sonnet']}">{len(only_s)}</div><p>messages only Sonnet got right<br><small>{e(top_intents(only_s))}</small></p></div>
+</div>
+<p class="note step">Jev is the more cautious: when it's unsure it hands off. Sonnet more often asks the customer a question first.</p>
+</section>""")
+
     slides.append("""<section>
-<h2>Measuring tool selection</h2>
+<h2>What it takes to measure this</h2>
 <ol class="check">
-<li class="step">Real tool text, not tools written to fit your test set.</li>
-<li class="step">Sets of acceptable answers, and <b>“no tool”</b> as a class.</li>
-<li class="step">Report <b>wrong calls</b> next to accuracy. A hand-off and a bluff are not the same miss.</li>
-<li class="step">Paired comparisons on the same messages (McNemar), not two accuracies.</li>
-<li class="step">Write the policy down and put it in the prompt. Then you're measuring the model.</li>
-<li class="step">Publish the labels. They decide the winner.</li>
+<li class="step"><b>Write the policy down</b> and give it to every model: who the assistant serves, when to hand off.</li>
+<li class="step"><b>Describe tools in your customers' words</b>, not the vendor's.</li>
+<li class="step"><b>Audit your answer key.</b> Ours had nine mistakes; fixing them moved the winner.</li>
+<li class="step">Split wrong answers into <b>benign</b> and <b>harmful</b>.</li>
+<li class="step">Compare on the <b>same messages</b>, with a paired test.</li>
 </ol>
-<p class="punch step">The score is a labelling decision. Make it on purpose.</p>
+<p class="punch step">The score is a design decision. Make it on purpose.</p>
 </section>""")
 
-    # appendix
-    srv = sorted(tok.items(), key=lambda kv: -kv[1])
+    # ---------------------------------------------------------------- appendix
+    tok = tp.tool_tokens_by_server()
     tot = sum(tok.values())
-    srv_rows = "".join(f"<tr><td>{e(s)}</td><td>{sum(1 for t in tp.catalog() if t['server'] == s)}</td><td>{pct(c / tot)}</td></tr>" for s, c in srv)
-    gepa_html = ""
-    if gepa and gepa_run:
-        gepa_html = f"""<section class="appendix">
-<h2>A4 · Can an optimiser find the policy?</h2>
-<p>DSPy GEPA rewrote the router preamble for DeepSeek on a 200-message development split (Claude Sonnet 5.5 as the reflection model),
-scored once on the 400 held-out messages.</p>
-<table class="cost"><thead><tr><th>DeepSeek router prompt</th><th>right (held-out 400)</th><th>wrong calls</th></tr></thead><tbody>
-<tr><td>plain</td><td>{pct(tp.summarise([r for r in tp.scored_rows('router_deepseek') if r['id'] in set(gepa['held_ids'])])['right'], 1)}</td><td>{pct(tp.summarise([r for r in tp.scored_rows('router_deepseek') if r['id'] in set(gepa['held_ids'])])['wrong_call'], 1)}</td></tr>
-<tr><td>hand-written policy</td><td>{pct(tp.summarise([r for r in tp.scored_rows('router_deepseek_policy') if r['id'] in set(gepa['held_ids'])])['right'], 1)}</td><td>{pct(tp.summarise([r for r in tp.scored_rows('router_deepseek_policy') if r['id'] in set(gepa['held_ids'])])['wrong_call'], 1)}</td></tr>
-<tr><td>GEPA-found</td><td>{pct(gepa_run['right'], 1)}</td><td>{pct(gepa_run['wrong_call'], 1)}</td></tr></tbody></table>
-<details><summary>The found preamble</summary><pre>{e(gepa['instruction'])}</pre></details>
-</section>"""
-
+    srv_rows = "".join(f"<tr><td>{e(s)}</td><td>{sum(1 for t in tp.catalog() if t['server'] == s)}</td><td>{pct(c / tot)}</td></tr>"
+                       for s, c in sorted(tok.items(), key=lambda kv: -kv[1]))  # fmt: skip
     slides.append(f"""<section class="appendix">
-<h2>Appendix · A1 · The data</h2>
+<h2>Appendix · A1 · Data and tools</h2>
 <ul>
-<li><b>Messages:</b> 600 from Bitext's customer-support dataset (26,872 rows, 27 intents, hybrid synthetic with deliberate noise; CDLA-Sharing-1.0). 12–32 per intent.</li>
-<li><b>Tools:</b> {len(tp.catalog())} from 7 official servers, by running the vendor's package or docker image and calling <code>tools/list</code> (Stripe 0.2.5, GitHub 2.0.3, Notion 2.5.2), by <code>tools/list</code> on a live public Shopify store (storefront, UCP, customer account), or from official docs (Intercom). Plus <code>hand_off_to_human</code>.</li>
-<li><b>Stripe caveat:</b> the 22 per-task tools are the last per-task release (Oct 2025); the hosted server now exposes generic read/write tools.</li>
+<li><b>Messages:</b> Bitext customer-support dataset (26,872 rows, 27 intents; template-generated with deliberate noise; CDLA-Sharing-1.0). The main results use 600 <b>fresh</b> messages (22–23 per intent), drawn after the study was designed, sharing no message and at most 58% of words with the 600 used during development.</li>
+<li><b>Tools:</b> {len(tp.catalog())} from 7 official servers: by running the vendor's package and calling <code>tools/list</code> (Stripe 0.2.5, GitHub 2.0.3, Notion 2.5.2), by <code>tools/list</code> on a live public Shopify store (storefront, UCP, customer account), or from official docs (Intercom). Plus <code>hand_off_to_human</code>. Stripe's hosted server now exposes generic read/write tools instead of these 22.</li>
 </ul>
-<table class="cost small"><thead><tr><th>server</th><th>tools</th><th>share of tool JSON</th></tr></thead><tbody>{srv_rows}</tbody></table>
+<table class="cost small"><thead><tr><th>server</th><th>tools</th><th>share of the tool JSON</th></tr></thead><tbody>{srv_rows}</tbody></table>
 </section>""")
 
+    words = "".join(f"<li><code>{e(k.split('.')[-1])}</code>: {e(v)}</li>" for k, v in tp.data.CUSTOMER_WORDS.items())
     slides.append(f"""<section class="appendix">
-<h2>A2 · Labels and scoring</h2>
+<h2>A2 · The setup</h2>
 <ul>
-<li>A research pass mapped each intent to <b>acceptable</b> tools (a clean fit) and <b>partial</b> tools (a defensible first step). Four author overrides, each with a stated reason. {n_gap} intents have no acceptable tool: only <code>hand_off_to_human</code> is right.</li>
-<li><b>Revised labels (v2)</b> also accept the store-FAQ search on the {n_gap} gap intents, a hand-off on <code>payment_issue</code>, and the refund-policy FAQ on <code>get_refund</code>.</li>
-<li><b>Outcomes:</b> right · defensible · handed off (a tool could have done it) · asked (no tool call) · wrong · bluffed. Only <em>right</em> scores. Wrong + bluffed = the wrong-call rate.</li>
-<li><b>Statistics:</b> exact McNemar on paired right/wrong; 4,000-sample bootstrap for the difference; Wilson intervals for rates.</li>
-<li><b>Prompts:</b> identical text for the three LLMs; Jev gets the same question as a <code>choice</code> over names and descriptions. Temperature 0. Sonnet 5.5 can't disable reasoning, so it ran at low effort.</li>
+<li><b>LLMs as real agents:</b> the 91 tools in the API's <code>tools</code> parameter (names as <code>server__tool</code>), <code>tool_choice: auto</code>, temperature 0, prompt caching on. Scored on the first turn: the first tool call, or a question back.</li>
+<li><b>Jev:</b> one <code>choice</code> question whose options are the tool names and descriptions; it returns a probability per option.</li>
+<li><b>Same routing policy for all four:</b></li>
+</ul>
+<pre>{e(tp.prompts.POLICY.strip())}</pre>
+<ul><li><b>Customer wording</b> added to six real descriptions (the rest are verbatim):<ul>{words}</ul></li></ul>
+</section>""")
+
+    first = tp.labels("first_pass")
+    changes = "".join(f"<li><code>{e(k)}</code>: {e(' '.join(v['changes'][-2:]))}</li>" for k, v in lab.items()
+                      if v["changes"] and (v["acceptable"] != first[k]["acceptable"] or v["ask_ok"]))  # fmt: skip
+    changes += f"<li><b>Every request type:</b> {e(tp.data.AUDIT_READ_ONLY)}</li>"
+    slides.append(f"""<section class="appendix">
+<h2>A3 · The answer key</h2>
+<p>Per request type: the tools that are <b>correct</b>; <b>benign</b> answers (handing off where a tool existed, asking a question, or reading the customer's own records or the store's public information); and <b>harmful</b> ones (a write that wasn't asked for, or a tool in the wrong system). Handing off is correct on the {27 - n_cov} types no tool covers and benign elsewhere; asking a question back is correct where the tool needs details the message lacks. Every failure in the development runs was checked by hand; these changes came out of it:</p>
+<ul class="tight">{changes}</ul>
+</section>""")
+
+    def dev(name, version="audited", ids_=None):
+        rows = tp.scored_rows(name, version)
+        if ids_ is not None:
+            rows = [r for r in rows if r["id"] in ids_]
+        return tp.summarise(rows)["correct"] if rows else float("nan")
+    g = json.loads((ROOT / "data" / "gepa_deepseek.json").read_text())
+    held = set(g["held_ids"])
+    journey = [
+        ("Plain prompt", dev("jev"), dev("router_sonnet"), dev("native_sonnet")),
+        ("+ routing policy", dev("jev_policy"), dev("router_sonnet_policy"), dev("native_sonnet_policy")),
+        ("+ customer wording (held-out)", dev("experiments/jev_descriptions_held"), dev("experiments/sonnet_policy_descriptions_held"), None),
+    ]
+    jrows = "".join(f"<tr><td>{e(a)}</td><td>{pct(b)}</td><td>{pct(c)}</td><td>{'–' if d is None else pct(d)}</td></tr>" for a, b, c, d in journey)
+    slides.append(f"""<section class="appendix">
+<h2>A4 · How we got here (development runs, first 600)</h2>
+<table class="cost"><thead><tr><th>correct, audited key</th><th>Jev</th><th>Sonnet, told to name a tool</th><th>Sonnet, real agent</th></tr></thead><tbody>{jrows}</tbody></table>
+<ul>
+<li>With the first-pass answer key and a plain prompt, Jev led ({pct(dev('jev', 'first_pass'))} against {pct(dev('router_sonnet', 'first_pass'))}). Auditing the key and adding the policy turned that into a Sonnet lead.</li>
+<li>Jev over-used the hand-off because tool descriptions are written for developers; one line of customer wording fixed it. Tool order and the GitHub/Notion distractors made little difference (A5).</li>
+<li>DSPy GEPA rewrote DeepSeek's prompt from 200 messages: {pct(dev('router_deepseek_gepa', 'first_pass', held))} correct on the 399 it never saw, against {pct(dev('router_deepseek_policy', 'first_pass', held))} for the hand-written policy (first-pass key).</li>
 </ul>
 </section>""")
 
-    nat_rows = "".join(
-        f"<tr><td>{e(SHORT[a])}</td><td>{pct(nat[a]['right'])} → {pct(nat_p[a]['right'])}</td><td>{pct(nat[a]['wrong_call'])} → {pct(nat_p[a]['wrong_call'])}</td>"
-        f"<td>{pct(nat[a]['asked'])} → {pct(nat_p[a]['asked'])}</td></tr>" for a in ARMS[1:])
+    variants = [("rerun, unchanged", "baseline"), ("hand-off option listed first", "handoff_first"), ("options shuffled", "shuffled"),
+                ("GitHub and Notion removed", "no_distractors"), ("no “pick hand_off if…” line", "no_handoff_line"),
+                ("narrower hand-off description", "handoff_desc"), ("customer wording on six tools", "descriptions")]  # fmt: skip
+    vrows_html = "".join(
+        f"<tr><td>{e(lbl)}</td><td>{pct(tp.summarise(tp.scored_rows(f'experiments/jev_{v}_dev'))['correct'])}</td>"
+        f"<td>{pct(tp.summarise(tp.scored_rows(f'experiments/jev_{v}_dev'))['handoff'])}</td></tr>" for lbl, v in variants)
     slides.append(f"""<section class="appendix">
-<h2>A3 · Router against native tool calling</h2>
-<p>The router condition pastes the tool JSON into the prompt and asks for a name; it's the like-for-like test against Jev. Native tool calling puts the tools in the API's <code>tools</code> parameter with <code>tool_choice: auto</code>, which is how an agent really works, and it may answer in text instead.</p>
-<table class="cost"><thead><tr><th>native</th><th>right (plain → policy)</th><th>wrong calls</th><th>asked a question</th></tr></thead><tbody>{nat_rows}</tbody></table>
-<p>Scoring the first tool call only; a second turn after a clarifying question was out of scope, so native accuracy is a lower bound. Tool names were sent as <code>server__tool</code> (dots aren't allowed).</p>
+<h2>A5 · Why Jev handed off too often</h2>
+<table class="cost"><thead><tr><th>Jev, one change at a time (200 development messages)</th><th>correct</th><th>hands off</th></tr></thead><tbody>{vrows_html}</tbody></table>
+<p>Jev matches the customer's words to the tool descriptions. “Download my bill” doesn't match “This tool will fetch a list of Invoices from Stripe”, so the option described as “none of the other tools” wins. Order and distractors are not the cause; run-to-run noise moves about 8 of 200 answers.</p>
 </section>""")
-
-    slides.append(gepa_html)
 
     slides.append("""<section class="appendix">
-<h2>A5 · Caveats and links</h2>
+<h2>A6 · Caveats</h2>
 <ul>
-<li>“No tool” means none in this catalogue. Shopify's customer-account server may expose more once a customer signs in; a store can add servers.</li>
 <li>Bitext messages are template-generated and often vague; real tickets are longer and messier.</li>
-<li>Jev sees names and descriptions; the LLMs also see schemas. That is how each is used, but it isn't identical information.</li>
-<li>The routing policy lists example gap intents, which partly hands the models the labels. The GEPA appendix is the version that only saw a development split.</li>
-<li>Costs are OpenRouter's billed prices with caching; Jev at US$0.042 per million input tokens.</li>
+<li>The customer wording and the routing policy were written while looking at the development messages; the fresh 600 test them on new messages from the same dataset, not on real traffic.</li>
+<li>“No tool” means none in this catalogue: Shopify's customer-account server may expose more once a customer signs in, and a store can add servers.</li>
+<li>The answer key is a judgement. It's published with a reason for every decision (<code>src/toolpick/data.py</code>), and the explorer re-scores everything if you change it.</li>
+<li>Scored on the first turn only. Sonnet 5.5 can't disable reasoning, so it ran at low effort. Costs are OpenRouter's billed prices; Jev at US$0.042 per million input tokens.</li>
+<li>Jev reads names and descriptions; the LLMs also read schemas. That is how each is used.</li>
 </ul>
-<p>Code, data and every run: <code>talks/measurecamp-2026</code> · marimo explorer: <code>uv run marimo edit notebooks/explore.py</code></p>
+<p>Code, data and every run: <code>github.com/roger-yu-ds/jev-tool-selection</code> (private) · explorer: <code>uv run marimo edit notebooks/explore.py</code></p>
 </section>""")
 
     body = "\n".join(s for s in slides if s)
@@ -363,6 +434,16 @@ small {{ color:var(--dim); font-size:.75em; }}
 .morph.on .val {{ transform: translateX(var(--x2)); }}
 .morph.on .va {{ opacity:0; }} .morph.on .vb {{ opacity:1; }}
 .morph .cb {{ display:none; }} .morph.on .ca {{ display:none; }} .morph.on .cb {{ display:inline; }}
+.verdicts {{ display:grid; grid-template-columns: repeat(3, 1fr); gap:1.2em; }}
+.verdicts > div {{ border-radius:.6em; padding:1em 1.2em; background:#fff; border-top:6px solid; }}
+.verdicts h3 {{ margin:0 0 .5em; font-size:1.1em; }}
+.verdicts p {{ margin:.3em 0; font-size:.85em; }}
+.verdicts .who {{ color:var(--dim); }}
+.v-ok {{ border-color:#2a9d8f !important; }} .v-benign {{ border-color:#c9c0ac !important; }} .v-harm {{ border-color:#c1121f !important; }}
+.two {{ display:grid; grid-template-columns: repeat(2, 1fr); gap:3em; }}
+.two p {{ margin:.3em 0 0; }}
+table.big {{ font-size:1.15em; }}
+ul.tight li {{ margin:.1em 0; font-size:.9em; }}
 .cap {{ text-align:center; color:var(--dim); font-size:.8em; margin:.2em 0 0; }}
 table.cost {{ border-collapse:collapse; font-size:.95em; width:100%; max-width:40em; }}
 table.cost th, table.cost td {{ text-align:left; padding:.45em .8em; border-bottom:1px solid var(--rule); }}
@@ -422,15 +503,11 @@ FEEDBACK = """
 <p>Annotate any slide above (select text or click an element), or answer here. Queue, then press Send in the Lavish bar.</p>
 <form data-lavish-question="deck" onsubmit="event.preventDefault(); const f = new FormData(this); const a = [...f.entries()].filter(([k, v]) => v).map(([k, v]) => k + ': ' + v).join(' | '); if (a) window.lavish?.queuePrompt('Deck decisions: ' + a, {tag: 'choice', text: 'Deck decisions', element: this, queueKey: 'deck'});">
 <p><b>Length.</b> <label><input type="radio" name="length" value="10 slides is right"> 10 slides is right</label>
-<label><input type="radio" name="length" value="cut to 8"> cut to 8</label>
-<label><input type="radio" name="length" value="allow 12"> allow 12</label></p>
-<p><b>Native tool calling.</b> <label><input type="radio" name="native" value="keep in slide 6 only"> keep it in slide 6 only</label>
-<label><input type="radio" name="native" value="give it its own slide"> give it its own slide</label>
-<label><input type="radio" name="native" value="appendix only"> appendix only</label></p>
-<p><b>GEPA.</b> <label><input type="radio" name="gepa" value="appendix only"> appendix only</label>
-<label><input type="radio" name="gepa" value="promote to main deck"> promote to the main deck</label></p>
-<p><b>Vendor names.</b> <label><input type="radio" name="names" value="name all"> name Jev, DeepSeek, Claude and the MCP vendors</label>
-<label><input type="radio" name="names" value="anonymise MCP vendors"> anonymise the MCP vendors</label></p>
+<label><input type="radio" name="length" value="cut to 8"> cut to 8</label></p>
+<p><b>Hook message.</b> <label><input type="radio" name="hook" value="keep"> keep</label>
+<label><input type="radio" name="hook" value="pick another"> pick another</label></p>
+<p><b>The journey (A4, A5).</b> <label><input type="radio" name="journey" value="appendix only"> appendix only, for questions</label>
+<label><input type="radio" name="journey" value="one slide in the main deck"> one slide in the main deck</label></p>
 <p><label>Anything else: <input type="text" name="other" size="60"></label></p>
 <p><button type="submit">Queue answers</button></p>
 </form>

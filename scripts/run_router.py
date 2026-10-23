@@ -141,12 +141,19 @@ def main() -> None:
     ap = argparse.ArgumentParser()
     ap.add_argument("--arm", choices=["jev", *MODELS], required=True)
     ap.add_argument("--limit", type=int, default=None)
+    ap.add_argument("--sample", choices=["first", "fresh"], default="first",
+                    help="fresh = the final setup (policy prompt + customer-worded tools) on data/requests_fresh.jsonl, into runs/fresh/")
     ap.add_argument("--policy", action="store_true", help="add the routing policy to the prompt")
     args = ap.parse_args()
-    tool_list = tools()
-    reqs = requests()[: args.limit] if args.limit else requests()
-    name = ("jev" if args.arm == "jev" else f"router_{args.arm}") + ("_policy" if args.policy else "")
+    fresh = args.sample == "fresh"
+    if fresh:
+        args.policy = True
+    tool_list = tools(customer_words=fresh)
+    reqs = requests(args.sample)[: args.limit] if args.limit else requests(args.sample)
+    base = "jev" if args.arm == "jev" else f"router_{args.arm}"
+    name = f"fresh/{base}" if fresh else base + ("_policy" if args.policy else "")
     out = RUNS / f"{name}.jsonl"
+    out.parent.mkdir(parents=True, exist_ok=True)
     todo = [r for r in reqs if r.id not in done_ids(out)]
     print(f"{name}: {len(todo)} to run", flush=True)
     t0 = time.perf_counter()
