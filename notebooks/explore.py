@@ -77,7 +77,7 @@ def _(mo):
 def _(mo, tp):
     sample = mo.ui.radio(options={"fresh 600 (final setup)": "fresh", "first 600 (development)": "first"}, value="fresh 600 (final setup)", label="Messages")
     label_version = mo.ui.radio(options={"audited (final)": "audited", "first pass": "first_pass"}, value="audited (final)", label="Answer key")
-    prompt_filter = mo.ui.multiselect(options=["final", "base", "policy", "gepa"], value=["final", "base", "policy"], label="Prompt")
+    prompt_filter = mo.ui.multiselect(options=["final", "final_ask", "final_params", "final_ask_params", "base", "policy", "gepa"], value=["final", "final_ask", "final_params", "final_ask_params", "base", "policy"], label="Prompt")
     detail = mo.ui.switch(value=False, label="Detail: six outcomes instead of correct / benign / harmful")
     mode_filter = mo.ui.multiselect(options=["jev", "router", "native"], value=["jev", "router", "native"], label="Mode")
     mo.hstack([sample, label_version, prompt_filter, mode_filter, detail], justify="start", gap=2, wrap=True)

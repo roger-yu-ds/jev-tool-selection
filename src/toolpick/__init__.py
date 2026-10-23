@@ -1,6 +1,6 @@
 """toolpick: measuring tool selection on real MCP servers."""
 
-from .data import DATA, FAQ, HAND, RUNS, Request, catalog, labels, requests, tool_tokens_by_server, tools
+from .data import ASK, DATA, FAQ, HAND, RUNS, Request, catalog, labels, requests, tool_tokens_by_server, tools
 from .scoring import (
     MODEL_NAMES,
     OUTCOMES,
@@ -21,6 +21,7 @@ from .scoring import (
 )
 
 __all__ = [
+    "ASK",
     "DATA",
     "FAQ",
     "HAND",

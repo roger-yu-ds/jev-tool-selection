@@ -24,6 +24,16 @@ HANDOFF_TOOL = {
     "inputSchema": {"type": "object", "properties": {"reason": {"type": "string"}}, "required": ["reason"]},
 }
 
+# Jev's equivalent of a native agent replying with a question (`tools(ask=True)`). In production the
+# agent reads it and asks the customer; it is scored exactly like an LLM's text reply.
+ASK = "need_more_information"
+ASK_TOOL = {
+    "name": ASK,
+    "description": "The customer wants something one of the tools can do, but hasn't given the details it "
+    "needs (for example which order, which item, or what went wrong). Ask the customer for them first.",
+    "inputSchema": {"type": "object", "properties": {"question": {"type": "string"}}, "required": ["question"]},
+}
+
 # One line in customers' words, appended to six real descriptions (`tools(customer_words=True)`).
 # Real descriptions are written for developers ("This tool will fetch a list of Invoices from
 # Stripe"); customers say "download my bill". Written while looking at the first sample's misses,
@@ -67,15 +77,52 @@ def catalog() -> list[dict]:
     return json.loads((DATA / "catalog.json").read_text())
 
 
-def tools(customer_words: bool = False) -> list[dict]:
-    """The 91 tools a selector chooses from: ``{name, description, inputSchema}``."""
+def tools(customer_words: bool = False, ask: bool = False, params: bool = False) -> list[dict]:
+    """The 91 tools a selector chooses from: ``{name, description, inputSchema}`` (92 with ``ask``).
+    ``params`` appends a short "Inputs:" summary of the input schema to each description: for Jev,
+    which reads only names and descriptions (the LLMs get the full schema anyway)."""
     out = []
     for t in catalog():
         desc = t["description"]
         if customer_words and t["qualified_name"] in CUSTOMER_WORDS:
             desc = desc.rstrip() + "\n" + CUSTOMER_WORDS[t["qualified_name"]]
         out.append({"name": t["qualified_name"], "description": desc, "inputSchema": t["input_schema"] or {"type": "object"}})
-    return out + [HANDOFF_TOOL]
+    out += [HANDOFF_TOOL] + ([ASK_TOOL] if ask else [])
+    if params:
+        out = [{**t, "description": t["description"].rstrip() + "\n" + inputs_text(t["inputSchema"])} for t in out]
+    return out
+
+
+def _clip(text: str, n: int) -> str:
+    text = " ".join(str(text).split())
+    return text if len(text) <= n else text[: n - 1].rsplit(" ", 1)[0] + "…"
+
+
+def inputs_text(schema: dict, desc_chars: int = 90) -> str:
+    """One line per tool: each top-level input with its type, whether it is required, a clipped
+    description, and its fields or allowed values. UCP's ``meta`` is left out: the harness fills it in."""
+    props = {k: v for k, v in (schema.get("properties") or {}).items() if k != "meta"}
+    if not props:
+        return "Inputs: none."
+    required = set(schema.get("required") or [])
+    parts = []
+    for name, p in props.items():
+        kind = p.get("type", "object")
+        items = p.get("items") or {}
+        if kind == "array":
+            kind = f"list of {items.get('type', 'object')}"
+        bits = [kind, "required" if name in required else "optional"]
+        line = f"{name} ({', '.join(bits)})"
+        if p.get("description"):
+            line += ": " + _clip(p["description"], desc_chars).rstrip(".")
+        enum = p.get("enum") or items.get("enum")
+        fields = (p.get("properties") or items.get("properties") or {}).keys()
+        if enum:
+            line += " [one of " + ", ".join(map(str, enum[:10])) + "]"
+        elif fields:
+            line += " [fields: " + ", ".join(list(fields)[:8]) + "]"
+        parts.append(line)
+    return "Inputs: " + "; ".join(parts) + "."
 
 
 # -- labels -------------------------------------------------------------------------------------

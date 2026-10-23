@@ -36,12 +36,14 @@ from __future__ import annotations
 import json
 import math
 import random
+import re
 import statistics
 from collections import Counter
 from collections.abc import Sequence
 from functools import cache
 
-from .data import HAND, RUNS, Request, all_requests_by_id, labels
+from .arguments import check
+from .data import ASK, HAND, RUNS, Request, all_requests_by_id, labels, tools
 
 OUTCOMES = ["right", "defensible", "handed_off", "asked", "wrong", "bluffed"]
 WRONG_CALL = {"wrong", "bluffed"}
@@ -63,7 +65,7 @@ def outcome(pick: str | None, lab: dict, kind: str = "tool_call", calls: Sequenc
         if "right" in outs and all(o in ("right", "defensible") for o in outs):
             return "right"
         return outs[0]
-    if kind == "text" or pick is None:
+    if kind == "text" or pick is None or pick == ASK:
         return "right" if lab.get("ask_ok") else "asked"
     if pick in lab["acceptable"]:
         return "right"
@@ -78,6 +80,11 @@ def parse_run_name(name: str) -> dict[str, str]:
     """``native_sonnet_policy`` -> mode native, model sonnet, prompt policy (or gepa, or base);
     ``fresh/native_sonnet`` -> the same with sample fresh and prompt final."""
     sample, _, name = name.rpartition("/")
+    if name == "jev" or name.startswith("jev_"):  # jev, jev_policy, jev_ask, jev_params, jev_ask_params
+        variant = name.removeprefix("jev").strip("_")
+        if sample == "fresh":
+            return {"mode": "jev", "model": "jev", "prompt": "final" + (f"_{variant}" if variant else ""), "sample": "fresh"}
+        return {"mode": "jev", "model": "jev", "prompt": variant or "base", "sample": "first"}
     if sample == "fresh":
         out = parse_run_name(name)
         return {**out, "prompt": "final", "sample": "fresh"}
@@ -112,21 +119,40 @@ def available_runs(sample: str = "first") -> list[str]:
     return sorted(p.stem for p in RUNS.glob("*.jsonl"))
 
 
+# Jev only picks a tool; a second call fills in its arguments (scripts/run_jev_fill.py). For the final
+# run, that call's cost, latency and tokens are added to Jev's, and its arguments are Jev's arguments.
+FILLS = {"fresh/jev": "fill/jev_fresh", "fresh/jev_ask": "fill/jev_ask_fresh", "fresh/jev_params": "fill/jev_params_fresh",
+         "fresh/jev_ask_params": "fill/jev_ask_params_fresh"}  # fmt: skip
+
+
 def scored_rows(name: str, version: str = "audited") -> list[dict]:
-    """One dict per request the run answered: request fields + pick + outcome + usage."""
+    """One dict per request the run answered: request fields + pick + outcome + usage. ``cost_usd``,
+    ``latency_s`` and the token counts include the argument-filling call where there is one
+    (``pick_*`` and ``fill_*`` give the two parts)."""
     lab, by_id = labels(version), all_requests_by_id()
+    fills = load_run(FILLS[name]) if name in FILLS else {}
     rows = []
     for rid, r in load_run(name).items():
         req = by_id[rid]
         calls = [c["name"] for c in r.get("tool_calls") or []]
-        o = outcome(r["pick"], lab[req.intent], r.get("kind", "tool_call"), calls)
+        kind = r.get("kind", "tool_call")
+        o = outcome(r["pick"], lab[req.intent], kind, calls)
+        f = fills.get(rid) or {}
+        src = f if fills else r  # only native runs and filled Jev rows have arguments
+        args = (src.get("tool_calls") or [{}])[0].get("arguments")
+        chk = check(r["pick"], args, req.text, req.intent) if src.get("tool_calls") else None
+        pick_cost, fill_cost = r.get("cost_usd", 0.0), f.get("cost_usd", 0.0)
         rows.append({"id": rid, "intent": req.intent, "gap": lab[req.intent]["gap"], "text": req.text, "run": name,
-                     **parse_run_name(name), "pick": r["pick"], "kind": r.get("kind", "tool_call"), "outcome": o,
+                     **parse_run_name(name), "pick": r["pick"], "kind": kind, "outcome": o,
                      "right": o == "right", "wrong_call": o in WRONG_CALL, "verdict": VERDICT[o], "confidence": r.get("confidence"),
-                     "latency_s": r["latency_s"], "input_tokens": r.get("input_tokens"),
-                     "cached_tokens": r.get("cached_tokens", 0), "output_tokens": r.get("output_tokens", 0),
-                     "cost_usd": r.get("cost_usd", 0.0), "reply": r.get("raw") or r.get("text") or "",
-                     "arguments": (r.get("tool_calls") or [{}])[0].get("arguments"), "n_calls": max(1, len(calls))})  # fmt: skip
+                     "latency_s": r["latency_s"] + f.get("latency_s", 0.0),
+                     "input_tokens": (r.get("input_tokens") or 0) + f.get("input_tokens", 0),
+                     "cached_tokens": r.get("cached_tokens", 0) + f.get("cached_tokens", 0),
+                     "output_tokens": r.get("output_tokens", 0) + f.get("output_tokens", 0),
+                     "cost_usd": pick_cost + fill_cost, "pick_cost_usd": pick_cost, "fill_cost_usd": fill_cost,
+                     "pick_latency_s": r["latency_s"], "fill_latency_s": f.get("latency_s", 0.0),
+                     "reply": r.get("raw") or r.get("text") or "", "arguments": args, "n_calls": max(1, len(calls)),
+                     "args_ok": chk["ok"] if chk else None, "args_problems": "; ".join(chk["problems"]) if chk else ""})  # fmt: skip
     return rows
 
 
@@ -225,3 +251,26 @@ def gate_curve(name: str = "jev", version: str = "audited", thresholds: Sequence
 
 def requests_by_id() -> dict[str, Request]:
     return all_requests_by_id()
+
+
+# The "ask first" stipulation (a sensitivity check, applied to every selector alike): on a request
+# where a question back is right (refunds, placing an order, payment problems) and the message gives
+# no order number, invoice number or amount, the only correct answers are asking, handing off where
+# the key accepts it, or a tool that needs nothing from the customer. Acting straight away (a return,
+# a refund, a cart) needs details the customer hasn't given, so it drops to benign.
+DETAILS = re.compile(r"ORD-\d+|#\s?\d{3,}|INV-[\d-]+|\$\s?\d+|\d{5,}", re.IGNORECASE)
+
+
+@cache
+def _required_inputs() -> dict[str, set[str]]:
+    return {t["name"]: set(t["inputSchema"].get("required") or []) - {"meta"} for t in tools(customer_words=True, ask=True)}
+
+
+def stipulated_right(row: dict) -> bool:
+    """``row["right"]`` under the ask-first stipulation (rows from ``scored_rows``, audited key)."""
+    lab = labels()[row["intent"]]
+    if not lab["ask_ok"] or DETAILS.search(row["text"]):
+        return row["right"]
+    if row["kind"] == "text" or row["pick"] in (None, ASK):
+        return True
+    return row["pick"] in lab["acceptable"] and (row["pick"] == HAND or not _required_inputs().get(row["pick"]))

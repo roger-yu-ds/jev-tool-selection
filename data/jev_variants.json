@@ -1,0 +1,92 @@
+{
+ "fresh": {
+  "Jev": {
+   "correct": 0.9533333333333334,
+   "strict": 0.9033333333333333,
+   "harmful": 0.0016666666666666668,
+   "handoff": 0.61,
+   "asks": 0.0,
+   "cost_per_1000": 0.3373414006666667,
+   "latency_median_s": 1.39065,
+   "input_tokens_median": 7736.0,
+   "p_vs_sonnet": 0.16188140552559765,
+   "p_vs_sonnet_strict": 0.10113634213880453,
+   "confidence_median": 0.93
+  },
+  "Jev + need more information": {
+   "correct": 0.875,
+   "strict": 0.8583333333333333,
+   "harmful": 0.0033333333333333335,
+   "handoff": 0.52,
+   "asks": 0.16,
+   "cost_per_1000": 0.340310726,
+   "latency_median_s": 1.6204999999999998,
+   "input_tokens_median": 7791.0,
+   "p_vs_sonnet": 0.00015455941078329165,
+   "p_vs_sonnet_strict": 7.348549184628526e-06,
+   "confidence_median": 0.83
+  },
+  "Jev + inputs": {
+   "correct": 0.9333333333333333,
+   "strict": 0.905,
+   "harmful": 0.0,
+   "handoff": 0.6216666666666667,
+   "asks": 0.0,
+   "cost_per_1000": 0.5248929606666667,
+   "latency_median_s": 1.5716,
+   "input_tokens_median": 12243.5,
+   "p_vs_sonnet": 1.0,
+   "p_vs_sonnet_strict": 0.11927366831176445,
+   "confidence_median": 0.95
+  },
+  "Jev + inputs + need more information": {
+   "correct": 0.845,
+   "strict": 0.835,
+   "harmful": 0.0,
+   "handoff": 0.5,
+   "asks": 0.19666666666666666,
+   "cost_per_1000": 0.5296923473333334,
+   "latency_median_s": 1.61575,
+   "input_tokens_median": 12307.0,
+   "p_vs_sonnet": 8.534327680773061e-08,
+   "p_vs_sonnet_strict": 1.4622475248231132e-08,
+   "confidence_median": 0.84
+  },
+  "Sonnet 5.5": {
+   "correct": 0.9333333333333333,
+   "strict": 0.93,
+   "harmful": 0.0,
+   "handoff": 0.52,
+   "asks": 0.10833333333333334,
+   "cost_per_1000": 9.070692666666668,
+   "latency_median_s": 1.7890000000000001,
+   "input_tokens_median": 76222.0,
+   "p_vs_sonnet": 1.0,
+   "p_vs_sonnet_strict": 1.0,
+   "confidence_median": null
+  }
+ },
+ "dev": {
+  "Jev": {
+   "correct": 0.9683333333333334,
+   "strict": 0.9033333333333333,
+   "p_vs_jev": null
+  },
+  "Jev + need more information": {
+   "correct": 0.91,
+   "strict": 0.8833333333333333,
+   "p_vs_jev": 1.7716986633331544e-07
+  },
+  "Jev + inputs": {
+   "correct": 0.95,
+   "strict": 0.9066666666666666,
+   "p_vs_jev": 0.00738525390625
+  },
+  "Jev + inputs + need more information": {
+   "correct": 0.89,
+   "strict": 0.8716666666666667,
+   "p_vs_jev": 6.401865149108232e-11
+  }
+ },
+ "n_fresh": 600
+}

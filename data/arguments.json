@@ -1,0 +1,110 @@
+{
+ "jev": {
+  "calls_scored": 232,
+  "args_ok": 219,
+  "args_ok_rate": 0.9439655172413793,
+  "valid": "232/232 (100%)",
+  "grounded": "219/232 (94%)",
+  "carried": "29/29 (100%)",
+  "amount": "2/4 (50%)",
+  "policy_type": "111/111 (100%)",
+  "right_end_to_end": 0.9316666666666666,
+  "right_tool": 0.9533333333333334,
+  "problems": [
+   [
+    "not in the message: line_item_id",
+    9
+   ],
+   [
+    "not in the message: payment_intent",
+    4
+   ],
+   [
+    "amount 14000 (cents) does not match nothing in the message",
+    1
+   ],
+   [
+    "amount 4200 (cents) does not match nothing in the message",
+    1
+   ]
+  ],
+  "by_tool": {
+   "shopify_customer_account.get_most_recent_order_status": "31/31 (100%)",
+   "shopify_customer_account.get_order_status": "29/29 (100%)",
+   "shopify_customer_account.request_return": "2/11 (18%)",
+   "shopify_storefront.search_shop_policies_and_faqs": "111/111 (100%)",
+   "shopify_ucp.create_cart": "1/1 (100%)",
+   "shopify_ucp.get_order": "1/1 (100%)",
+   "shopify_ucp.search_catalog": "16/16 (100%)",
+   "stripe.create_refund": "0/4 (0%)",
+   "stripe.list_invoices": "28/28 (100%)"
+  }
+ },
+ "deepseek": {
+  "calls_scored": 185,
+  "args_ok": 180,
+  "args_ok_rate": 0.972972972972973,
+  "valid": "185/185 (100%)",
+  "grounded": "180/185 (97%)",
+  "carried": "21/21 (100%)",
+  "amount": "n/a",
+  "policy_type": "94/94 (100%)",
+  "right_end_to_end": 0.4633333333333333,
+  "right_tool": 0.4716666666666667,
+  "problems": [
+   [
+    "not in the message: email",
+    5
+   ]
+  ],
+  "by_tool": {
+   "shopify_customer_account.get_most_recent_order_status": "39/39 (100%)",
+   "shopify_customer_account.get_order_status": "22/22 (100%)",
+   "shopify_customer_account.get_store_credit_balances": "1/1 (100%)",
+   "shopify_storefront.search_shop_policies_and_faqs": "94/94 (100%)",
+   "stripe.list_customers": "5/10 (50%)",
+   "stripe.list_invoices": "19/19 (100%)"
+  }
+ },
+ "haiku": {
+  "calls_scored": 200,
+  "args_ok": 200,
+  "args_ok_rate": 1.0,
+  "valid": "200/200 (100%)",
+  "grounded": "200/200 (100%)",
+  "carried": "26/26 (100%)",
+  "amount": "n/a",
+  "policy_type": "94/95 (99%)",
+  "right_end_to_end": 0.8216666666666667,
+  "right_tool": 0.8216666666666667,
+  "problems": [],
+  "by_tool": {
+   "shopify_customer_account.get_most_recent_order_status": "40/40 (100%)",
+   "shopify_customer_account.get_order_status": "27/27 (100%)",
+   "shopify_storefront.search_shop_policies_and_faqs": "107/107 (100%)",
+   "stripe.list_invoices": "26/26 (100%)"
+  }
+ },
+ "sonnet": {
+  "calls_scored": 215,
+  "args_ok": 215,
+  "args_ok_rate": 1.0,
+  "valid": "215/215 (100%)",
+  "grounded": "215/215 (100%)",
+  "carried": "32/32 (100%)",
+  "amount": "n/a",
+  "policy_type": "94/94 (100%)",
+  "right_end_to_end": 0.9333333333333333,
+  "right_tool": 0.9333333333333333,
+  "problems": [],
+  "by_tool": {
+   "shopify_customer_account.get_most_recent_order_status": "44/44 (100%)",
+   "shopify_customer_account.get_order_status": "33/33 (100%)",
+   "shopify_storefront.search_shop_policies_and_faqs": "118/118 (100%)",
+   "shopify_ucp.search_catalog": "2/2 (100%)",
+   "stripe.list_customers": "5/5 (100%)",
+   "stripe.list_invoices": "12/12 (100%)",
+   "stripe.list_payment_intents": "1/1 (100%)"
+  }
+ }
+}

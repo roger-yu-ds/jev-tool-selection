@@ -35,17 +35,8 @@ sys.path.insert(0, str(ROOT / "scripts"))
 from run_router import BUDGET_USD, CONCURRENCY, MODELS, done_ids
 
 from toolpick import RUNS, requests, tools
+from toolpick.live import native_request, parse_native
 from toolpick.prompts import native_system
-
-
-def native_tools(tool_list: list[dict]) -> tuple[list[dict], dict[str, str]]:
-    out, back = [], {}
-    for t in tool_list:
-        name = t["name"].replace(".", "__")
-        back[name] = t["name"]
-        out.append({"type": "function", "function": {"name": name, "description": t["description"],
-                                                      "parameters": t["inputSchema"]}})  # fmt: skip
-    return out, back
 
 
 def run_native(arm: str, reqs, tool_list, out: Path, policy: bool, system_text: str | None = None) -> None:
@@ -53,12 +44,7 @@ def run_native(arm: str, reqs, tool_list, out: Path, policy: bool, system_text: 
 
     client = openai.OpenAI(base_url="https://openrouter.ai/api/v1", api_key=os.environ["OPENROUTER_API_KEY"],
                            max_retries=6, timeout=180)  # fmt: skip
-    model = MODELS[arm]
-    fn_tools, back = native_tools(tool_list)
-    system_block = {"type": "text", "text": system_text or native_system(policy), "cache_control": {"type": "ephemeral"}}
-    extra: dict = {"usage": {"include": True}, "reasoning": {"effort": "low" if arm == "sonnet" else "none"}}
-    if arm == "deepseek":
-        extra["provider"] = {"order": ["deepinfra/fp8", "deepinfra/fp8/priority"], "allow_fallbacks": True}
+    system_text = system_text or native_system(policy)
     spent = [0.0]
     lock = threading.Lock()
 
@@ -69,11 +55,8 @@ def run_native(arm: str, reqs, tool_list, out: Path, policy: bool, system_text: 
         for attempt in range(4):
             try:
                 t0, ts = time.perf_counter(), datetime.now(tz=UTC).isoformat()
-                resp = client.chat.completions.create(
-                    model=model, max_tokens=400, temperature=0,
-                    messages=[{"role": "system", "content": [system_block]}, {"role": "user", "content": r.text}],
-                    tools=fn_tools, tool_choice="auto", extra_body=extra,
-                )  # fmt: skip
+                kwargs, back = native_request(arm, r.text, tool_list, system_text)
+                resp = client.chat.completions.create(**kwargs)
                 break
             except Exception as exc:  # noqa: BLE001
                 print(f"{r.id}: attempt {attempt + 1} failed: {type(exc).__name__}: {str(exc)[:160]}", flush=True)
@@ -81,23 +64,8 @@ def run_native(arm: str, reqs, tool_list, out: Path, policy: bool, system_text: 
         else:
             return
         lat = time.perf_counter() - t0
-        ch, u = resp.choices[0], resp.usage
-        d = getattr(u, "prompt_tokens_details", None)
-        cached = int(getattr(d, "cached_tokens", 0) or 0)
-        cost = getattr(u, "cost", None) or (getattr(u, "model_extra", None) or {}).get("cost") or 0.0
-        calls = []
-        for tc in ch.message.tool_calls or []:
-            try:
-                args = json.loads(tc.function.arguments or "{}")
-            except json.JSONDecodeError:
-                args = {"_unparsed": tc.function.arguments}
-            calls.append({"name": back.get(tc.function.name, tc.function.name), "arguments": args})
-        row = {"id": r.id, "pick": calls[0]["name"] if calls else None, "kind": "tool_call" if calls else "text",
-               "tool_calls": calls, "text": ch.message.content or "", "finish_reason": ch.finish_reason,
-               "latency_s": round(lat, 3), "input_tokens": u.prompt_tokens, "cached_tokens": cached,
-               "output_tokens": u.completion_tokens, "cost_usd": float(cost),
-               "provider": getattr(resp, "provider", None) or (getattr(resp, "model_extra", None) or {}).get("provider"),
-               "ts": ts, "response": resp.model_dump(mode="json")}  # fmt: skip
+        row = {"id": r.id, **parse_native(resp, back), "latency_s": round(lat, 3), "ts": ts}
+        cost = row["cost_usd"]
         with lock:
             spent[0] += float(cost)
             with out.open("a") as f:

@@ -9,6 +9,15 @@ and reply with a name. Rows go to runs/jev[_policy].jsonl or runs/router_<arm>[_
 with the full API response, the start timestamp, usage, billed cost and latency. Re-running skips
 ids already done.
 
+`--ask` (Jev only) adds a 92nd option, need_more_information: Jev's equivalent of a native agent
+replying with a question. It runs the final setup and is scored like a question.
+
+    uv run python scripts/run_router.py --arm jev --ask --sample fresh     # runs/fresh/jev_ask.jsonl
+    uv run python scripts/run_router.py --arm jev --ask                    # runs/experiments/jev_ask_first.jsonl
+
+`--params` appends a one-line summary of each tool's inputs (name, type, required, short description,
+fields or allowed values) to the description Jev reads (`toolpick.data.inputs_text`); combine with `--ask`.
+
 Needs TYPESAFE_API_KEY (Jev) and OPENROUTER_API_KEY (the LLMs) in .env.
 """
 
@@ -144,14 +153,24 @@ def main() -> None:
     ap.add_argument("--sample", choices=["first", "fresh"], default="first",
                     help="fresh = the final setup (policy prompt + customer-worded tools) on data/requests_fresh.jsonl, into runs/fresh/")
     ap.add_argument("--policy", action="store_true", help="add the routing policy to the prompt")
+    ap.add_argument("--ask", action="store_true",
+                    help="Jev only: the final setup plus a need_more_information option (fresh/jev_ask, or experiments/jev_ask_first)")
+    ap.add_argument("--params", action="store_true",
+                    help="Jev only: the final setup with each tool's inputs summarised in its description (fresh/jev_params ...)")
     args = ap.parse_args()
     fresh = args.sample == "fresh"
-    if fresh:
+    if (args.ask or args.params) and args.arm != "jev":
+        ap.error("--ask and --params are for Jev; the LLMs already get the full schemas and can reply with a question")
+    final = fresh or args.ask or args.params
+    if final:
         args.policy = True
-    tool_list = tools(customer_words=fresh)
+    tool_list = tools(customer_words=final, ask=args.ask, params=args.params)
     reqs = requests(args.sample)[: args.limit] if args.limit else requests(args.sample)
     base = "jev" if args.arm == "jev" else f"router_{args.arm}"
     name = f"fresh/{base}" if fresh else base + ("_policy" if args.policy else "")
+    if args.ask or args.params:
+        variant = "jev" + ("_ask" if args.ask else "") + ("_params" if args.params else "")
+        name = f"fresh/{variant}" if fresh else f"experiments/{variant}_first"
     out = RUNS / f"{name}.jsonl"
     out.parent.mkdir(parents=True, exist_ok=True)
     todo = [r for r in reqs if r.id not in done_ids(out)]

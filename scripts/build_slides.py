@@ -10,8 +10,11 @@ runs on the first 600.
 
 from __future__ import annotations
 
+import base64
 import html
 import json
+import re
+import statistics
 import sys
 from pathlib import Path
 
@@ -132,6 +135,8 @@ def scatter(points: list[dict], *, width=760, height=460) -> str:
 
 
 FRESH = {"jev": "fresh/jev", "deepseek": "fresh/native_deepseek", "haiku": "fresh/native_haiku", "sonnet": "fresh/native_sonnet"}
+# US$ per million tokens: input, cached read, output (OpenRouter list prices for the providers used).
+PRICES = {"deepseek": (0.14, 0.0042, 0.42), "haiku": (0.10, 0.01, 0.5), "sonnet": (2.0, 0.10, 10.0)}
 CASCADE_T = 0.8  # chosen on the first 600 (development) messages, applied unchanged to the fresh 600
 
 
@@ -143,10 +148,19 @@ def frows(arm: str) -> dict[str, dict]:
     return {r["id"]: r for r in tp.scored_rows(FRESH[arm])}
 
 
+def question(reply: str, limit: int = 110) -> str:
+    """The first question in a text reply, shortened: what the model actually asked."""
+    text = re.sub(r"[*_`#]", "", " ".join(reply.split()))
+    m = re.search(r"[^.?!:]*\?", text)
+    q = (m.group(0) if m else text).strip(" -–")
+    return q if len(q) <= limit else q[: limit - 1].rsplit(" ", 1)[0] + "…"
+
+
 def say(arm: str, r: dict) -> str:
     """What a selector did, in words."""
     if r["kind"] == "text" or r["pick"] is None:
-        return "asks the customer a question"
+        q = question(r.get("reply") or "")
+        return f"asks the customer: <i>“{e(q)}”</i>" if q else "asks the customer a question"
     p = r["pick"]
     if p == tp.HAND:
         return "hands off to a person"
@@ -199,7 +213,9 @@ def build() -> str:
     sent = [i for i in ids if conf[i] < CASCADE_T]
     casc_right = sum((R["sonnet"][i] if conf[i] < CASCADE_T else R["jev"][i])["right"] for i in ids) / len(ids)
     casc_harm = sum((R["sonnet"][i] if conf[i] < CASCADE_T else R["jev"][i])["wrong_call"] for i in ids) / len(ids)
-    casc_cost = 1000 * sum((R["sonnet"][i]["cost_usd"] if conf[i] < CASCADE_T else 0) + R["jev"][i]["cost_usd"] for i in ids) / len(ids)
+    # Jev's pick is always paid for; its argument-filling call only when Jev's answer is used
+    casc_cost = 1000 * sum(R["jev"][i]["pick_cost_usd"] + (R["sonnet"][i]["cost_usd"] if conf[i] < CASCADE_T else R["jev"][i]["fill_cost_usd"])
+                           for i in ids) / len(ids)  # fmt: skip
 
     # where Jev and Sonnet disagree
     only_j = [i for i in ids if R["jev"][i]["right"] and not R["sonnet"][i]["right"]]
@@ -211,6 +227,25 @@ def build() -> str:
 <h1>Who picks the tool?</h1>
 <p class="sub">Measuring AI tool selection on real MCP servers</p>
 <p class="by">Roger Yu</p>
+</section>""")
+
+    # about me: bullets drafted from career/career-facts.md (swap in the LinkedIn wording); photos in slides/img
+    def photo(name: str) -> str:
+        return "data:image/jpeg;base64," + base64.b64encode((ROOT / "slides" / "img" / f"{name}.jpg").read_bytes()).decode()
+    slides.append(f"""<section>
+<h2>About me</h2>
+<div class="about">
+<ul class="about-list">
+<li>Data scientist turned AI engineer, based in Sydney</li>
+<li>At THE ICONIC, built a multimodal search service that grew into a shared service used by many teams</li>
+<li>Since then, AI roles at Heatseeker.ai and Dovetail, building and evaluating LLM features</li>
+<li>Most interested in how to measure AI systems, which is where this talk comes from</li>
+</ul>
+<div class="photos">
+<figure><img src="{photo('naomi_mochi')}" alt="A toddler sitting with a white Samoyed"><figcaption>Naomi and Mochi</figcaption></figure>
+<figure><img src="{photo('cactus')}" alt="Pots of cacti and living stones"><figcaption>The cactus collection</figcaption></figure>
+</div>
+</div>
 </section>""")
 
     picks = "".join(f'<div class="pick step"><span class="who" style="color:{COL[a]}">{e(SHORT[a])}</span>{say(a, R[a][hook])}</div>' for a in ARMS)
@@ -244,9 +279,9 @@ For {pct(gap_share)} of messages the right answer is <b>“hand off to a person�
 <div class="verdicts">
 <div class="step v-ok"><h3>Correct</h3><p>“{e(ex_ok['text'])}”</p><p class="who">{e(SHORT[ex_ok_a])} {say(ex_ok_a, ex_ok)}</p></div>
 <div class="step v-benign"><h3>Wrong, but benign</h3><p>“{e(ex_benign['text'])}”</p><p class="who">{e(SHORT[ex_benign_a])} {say(ex_benign_a, ex_benign)}: the customer waits, nothing breaks</p></div>
-<div class="step v-harm"><h3>Wrong, and harmful</h3><p>“{e(ex_harm['text'])}”</p><p class="who">{e(SHORT[ex_harm_a])} {say(ex_harm_a, ex_harm)}: a record created in the wrong system</p></div>
+<div class="step v-harm"><h3>Wrong, and harmful</h3><p>“{e(ex_harm['text'])}”</p><p class="who">{e(SHORT[ex_harm_a])} {say(ex_harm_a, ex_harm)}: it creates a customer in Stripe, the payments system, instead of a store account</p></div>
 </div>
-<p class="note step">Benign: handing off, asking a question, or reading the customer's own records. Harmful: changing something it shouldn't, or reaching into the wrong system.
+<p class="note step">Benign: handing off, asking a question, or reading the customer's own records. Harmful: changing something it shouldn't, or using a tool built for something else, such as GitHub's issue tracker or the helpdesk's internal records.
 In the final runs, harmful answers were rare: {n_harm} in {len(ids) * len(ARMS):,}.</p>
 </section>""")
 
@@ -258,23 +293,41 @@ In the final runs, harmful answers were rare: {n_harm} in {len(ids) * len(ARMS):
 (only Jev right on {pairs[best]['only_a']} messages, only {e(SHORT[best])} on {pairs[best]['only_b']}; p = {pairs[best]['p']:.2g}).</p>
 </section>""")
 
+    fills = list(tp.load_run("fill/jev_fresh").values())
+    fill_tok = statistics.median(f["input_tokens"] + f["output_tokens"] for f in fills)
+    fill_lat = statistics.median(f["latency_s"] for f in fills)
+    fill_cost = 1000 * sum(f["cost_usd"] for f in fills) / len(fills)
+    tok_ratio = S["haiku"]["input_tokens_median"] / S["deepseek"]["input_tokens_median"]
+
+    def uncached(a):
+        if a == "jev":
+            return S[a]["cost_per_1000"]
+        p_in, _, p_out = PRICES[a]
+        return 1000 * (S[a]["input_tokens_median"] * p_in + S[a]["output_tokens_median"] * p_out) / 1e6
     cost_rows = "".join(
         f"<tr class='step'><td style='color:{COL[a]};font-weight:600'>{e(SHORT[a])}</td><td>{S[a]['input_tokens_median']:,.0f}</td>"
-        f"<td>{S[a]['latency_median_s']:.1f} s</td><td>${S[a]['cost_per_1000']:.2f}</td></tr>" for a in ARMS)
+        f"<td>{S[a]['latency_median_s']:.1f} s</td><td>${S[a]['cost_per_1000']:.2f}</td><td>${uncached(a):,.2f}</td></tr>" for a in ARMS)
     slides.append(f"""<section>
-<h2>What it costs to decide</h2>
-<table class="cost big"><thead><tr><th></th><th>input tokens</th><th>median time</th><th>per 1,000 messages</th></tr></thead>
+<h2>What it costs</h2>
+<table class="cost big"><thead><tr><th></th><th>tokens read per message</th><th>median time</th><th>per 1,000 messages</th><th>without caching</th></tr></thead>
 <tbody>{cost_rows}</tbody></table>
-<p class="note step">Billed prices with prompt caching on. Jev reads names and descriptions; the LLMs read every tool's full schema.</p>
+<p class="note step">Jev only picks the tool, reading each tool's name and description (about 7,200 tokens). A second, small
+call to DeepSeek then fills in the chosen tool's arguments; Jev's row includes it ({fill_tok:,.0f} tokens, {fill_lat:.1f} s,
+${fill_cost:.3f} per 1,000). The LLMs pick and fill in one call, so they read every tool's full input schema: the same text for all three, which
+Claude's tokeniser counts as about {tok_ratio:.1f} times as many tokens as DeepSeek's.</p>
+<p class="note step">The tool list is the same on every call, so the providers cache it and bill repeat reads at 3–5% of the
+normal price; Jev bills every token at $0.042 per million. That is why cached DeepSeek costs about the same as Jev. Without a
+warm cache (quiet traffic, or tool lists that change per customer) the LLMs cost 25 to 500 times more.</p>
 </section>""")
 
     band_html = "".join(f"<tr class='step'><td>{e(lbl)}</td><td>{pct(share)}</td><td><b>{pct(acc)}</b></td></tr>" for lbl, share, acc in band_rows)
     slides.append(f"""<section>
 <h2>Jev knows when it's right</h2>
 <table class="cost big"><thead><tr><th>Jev's confidence</th><th>share of messages</th><th>correct</th></tr></thead><tbody>{band_html}</tbody></table>
-<p class="note step"><b>Jev first, Sonnet for the rest</b> (confidence below {CASCADE_T}, a threshold set before this data):
-{pct(casc_right)} correct, {pct(casc_harm, 1)} harmful, {pct(len(sent) / len(ids))} of messages sent to Sonnet,
-${casc_cost:.2f} per 1,000 instead of ${S['sonnet']['cost_per_1000']:.2f}.</p>
+<p class="note step"><b>Use both.</b> Every message goes to Jev first. If Jev's confidence is {CASCADE_T} or higher, use its answer;
+otherwise send the message on to Sonnet and use Sonnet's answer. Only {pct(len(sent) / len(ids))} of messages reach Sonnet.</p>
+<p class="note step">Result: {pct(casc_right)} correct ({pct(S['sonnet']['correct'])} for Sonnet alone), {pct(casc_harm, 1)} harmful,
+${casc_cost:.2f} per 1,000 messages instead of ${S['sonnet']['cost_per_1000']:.2f}. The {CASCADE_T} cut-off was chosen on the development messages, before this data.</p>
 </section>""")
 
     def top_intents(sel):
@@ -282,24 +335,69 @@ ${casc_cost:.2f} per 1,000 instead of ${S['sonnet']['cost_per_1000']:.2f}.</p>
         for i in sel:
             c[R["jev"][i]["intent"]] = c.get(R["jev"][i]["intent"], 0) + 1
         return ", ".join(f"{k.replace('_', ' ')} ({v})" for k, v in sorted(c.items(), key=lambda kv: -kv[1])[:3])
+
+    def examples(sel, k=3):
+        seen, out = set(), []
+        for i in sel:
+            if R["jev"][i]["intent"] in seen:
+                continue
+            seen.add(R["jev"][i]["intent"])
+            out.append(i)
+            if len(out) == k:
+                break
+        return "".join(
+            f'<div class="ex step"><p class="q">“{e(R["jev"][i]["text"])}”</p>'
+            f'<p><span style="color:{COL["jev"]}">Jev</span> {say("jev", R["jev"][i])} · '
+            f'<span style="color:{COL["sonnet"]}">Sonnet</span> {say("sonnet", R["sonnet"][i])}</p></div>' for i in out)
+
+    def unneeded_handoffs(rows):
+        covered = [r for r in rows if not r["gap"]]
+        return sum(r["outcome"] == "handed_off" for r in covered) / len(covered)
+    dev_ho = unneeded_handoffs(tp.scored_rows("jev_policy"))
+    fresh_ho = unneeded_handoffs([R["jev"][i] for i in ids])
+    son_ho = unneeded_handoffs([R["sonnet"][i] for i in ids])
+    jev_miss = sum(not R["jev"][i]["right"] for i in ids)
+    jev_ho_miss = sum(R["jev"][i]["outcome"] == "handed_off" for i in ids)
+    ho = [R["jev"][i] for i in ids if R["jev"][i]["pick"] == tp.HAND]
+    ho_ok = sorted(r["confidence"] for r in ho if r["right"])
+    ho_bad = sorted(r["confidence"] for r in ho if not r["right"])
     slides.append(f"""<section>
 <h2>They fail in different places</h2>
 <div class="two">
-<div class="step"><div class="num" style="color:{COL['jev']}">{len(only_j)}</div><p>messages only Jev got right<br><small>{e(top_intents(only_j))}</small></p></div>
-<div class="step"><div class="num" style="color:{COL['sonnet']}">{len(only_s)}</div><p>messages only Sonnet got right<br><small>{e(top_intents(only_s))}</small></p></div>
+<div><div class="num" style="color:{COL['jev']}">{len(only_j)}</div><p>messages only Jev got right<br><small>{e(top_intents(only_j))}</small></p>{examples(only_j)}</div>
+<div><div class="num" style="color:{COL['sonnet']}">{len(only_s)}</div><p>messages only Sonnet got right<br><small>{e(top_intents(only_s))}</small></p>{examples(only_s)}</div>
 </div>
-<p class="note step">Jev is the more cautious: when it's unsure it hands off. Sonnet more often asks the customer a question first.</p>
+<p class="note step">Jev wins where nothing can be done but pass the customer to a person; Sonnet asks a question instead.
+Sonnet wins where a tool can do it; Jev hands off. Customer wording cut Jev's unneeded hand-offs from {pct(dev_ho)} (development messages) to {pct(fresh_ho)}
+of the messages a tool could handle ({pct(son_ho)} for Sonnet), but they are still {jev_ho_miss} of its {jev_miss} mistakes.
+They come with low confidence: a median of {ho_bad[len(ho_bad) // 2]:.2f}, against {ho_ok[len(ho_ok) // 2]:.2f} for its right
+hand-offs, which is what the 0.8 cut-off catches.</p>
 </section>""")
 
-    slides.append("""<section>
-<h2>What it takes to measure this</h2>
-<ol class="check">
-<li class="step"><b>Write the policy down</b> and give it to every model: who the assistant serves, when to hand off.</li>
-<li class="step"><b>Describe tools in your customers' words</b>, not the vendor's.</li>
-<li class="step"><b>Audit your answer key.</b> Ours had nine mistakes; fixing them moved the winner.</li>
-<li class="step">Split wrong answers into <b>benign</b> and <b>harmful</b>.</li>
-<li class="step">Compare on the <b>same messages</b>, with a paired test.</li>
-</ol>
+    def dev_correct(name, ids_=None):
+        rows = tp.scored_rows(name)
+        if ids_ is not None:
+            rows = [r for r in rows if r["id"] in ids_]
+        return tp.summarise(rows)["correct"]
+    held_ids = set(json.loads((ROOT / "data" / "gepa_deepseek.json").read_text())["held_ids"])
+    lessons = [
+        ("Write down when to pass a customer to a person, and give it to every model.",
+         f"Three sentences of policy took Sonnet from {pct(dev_correct('router_sonnet'))} to {pct(dev_correct('router_sonnet_policy'))} on the development messages."),
+        ("Describe each tool the way customers talk.",
+         ("“Download my bill”, not “This tool will fetch a list of Invoices from Stripe”. One extra line on six tools took Jev from "
+          f"{pct(dev_correct('jev_policy', held_ids))} to {pct(dev_correct('experiments/jev_descriptions_held'))}.")),
+        ("Check the answer key against every failure.",
+         (f"We found nine mistakes in ours. With the original key, Jev led Sonnet {pct(tp.summarise(tp.scored_rows('jev', 'first_pass'))['correct'])} to "
+          f"{pct(tp.summarise(tp.scored_rows('router_sonnet', 'first_pass'))['correct'])}; after the fixes and the policy, Sonnet led.")),
+        ("Count harmless and harmful mistakes separately.",
+         "Passing a customer to a person, or asking a question, is not the same as doing the wrong thing."),
+        ("Test on messages you didn't build with.",
+         "Every number on the earlier slides comes from 600 fresh messages, drawn after all of the above was fixed."),
+    ]
+    items = "".join(f'<li class="step"><b>{e(a)}</b><br><small>{e(b)}</small></li>' for a, b in lessons)
+    slides.append(f"""<section>
+<h2>What we learned about measuring this</h2>
+<ol class="check">{items}</ol>
 <p class="punch step">The score is a design decision. Make it on purpose.</p>
 </section>""")
 
@@ -311,8 +409,9 @@ ${casc_cost:.2f} per 1,000 instead of ${S['sonnet']['cost_per_1000']:.2f}.</p>
     slides.append(f"""<section class="appendix">
 <h2>Appendix · A1 · Data and tools</h2>
 <ul>
-<li><b>Messages:</b> Bitext customer-support dataset (26,872 rows, 27 intents; template-generated with deliberate noise; CDLA-Sharing-1.0). The main results use 600 <b>fresh</b> messages (22–23 per intent), drawn after the study was designed, sharing no message and at most 58% of words with the 600 used during development.</li>
-<li><b>Tools:</b> {len(tp.catalog())} from 7 official servers: by running the vendor's package and calling <code>tools/list</code> (Stripe 0.2.5, GitHub 2.0.3, Notion 2.5.2), by <code>tools/list</code> on a live public Shopify store (storefront, UCP, customer account), or from official docs (Intercom). Plus <code>hand_off_to_human</code>. Stripe's hosted server now exposes generic read/write tools instead of these 22.</li>
+<li><b>Messages:</b> from Bitext's customer-support dataset (26,872 rows; template-generated with deliberate typos; CDLA-Sharing-1.0). Bitext supplies only the customer messages and a label for the request type (27 types, such as “track order”); it knows nothing about tools. Which tools fit each request type is our answer key (A3). The main results use 600 <b>fresh</b> messages (22–23 per type), drawn after the study was designed, sharing no message and at most 58% of words with the 600 used during development.</li>
+<li><b>Tools:</b> {len(tp.catalog())} tools copied word for word from 7 official MCP servers. An MCP server is how a company lets an AI assistant use its product: it publishes a list of tools, each with a name, a description and the arguments it takes. We collected the lists three ways. Stripe (22 tools), GitHub (10) and Notion (24) publish their servers as software anyone can run, so we ran the official version and asked it for its list. Shopify's servers run on every Shopify store, so we asked a live public store (20 tools across three servers). Intercom's needs a login, so we copied its 14 tools from its documentation. The 91st tool, <code>hand_off_to_human</code>, is ours.</li>
+<li>Stripe's hosted server has since replaced these 22 tools with generic read and write tools; we used the last version with one tool per task.</li>
 </ul>
 <table class="cost small"><thead><tr><th>server</th><th>tools</th><th>share of the tool JSON</th></tr></thead><tbody>{srv_rows}</tbody></table>
 </section>""")
@@ -321,12 +420,13 @@ ${casc_cost:.2f} per 1,000 instead of ${S['sonnet']['cost_per_1000']:.2f}.</p>
     slides.append(f"""<section class="appendix">
 <h2>A2 · The setup</h2>
 <ul>
-<li><b>LLMs as real agents:</b> the 91 tools in the API's <code>tools</code> parameter (names as <code>server__tool</code>), <code>tool_choice: auto</code>, temperature 0, prompt caching on. Scored on the first turn: the first tool call, or a question back.</li>
-<li><b>Jev:</b> one <code>choice</code> question whose options are the tool names and descriptions; it returns a probability per option.</li>
+<li><b>Every selector chooses from the same 91 tools:</b> the 90 real ones plus <code>hand_off_to_human</code>, the one we added.</li>
+<li><b>The LLMs work as real agents:</b> the tools go in the API's tools setting, the way an AI app normally gives a model its tools, and the model decides by itself whether to call one or reply in text. Least-random setting (temperature 0), prompt caching on. Tool names are written <code>server__tool</code> because the API doesn't allow dots. Scored on the model's first move: its first tool call, or a question back to the customer.</li>
+<li><b>Jev:</b> one multiple-choice question whose 91 options are the tool names and descriptions; it returns a probability for every option.</li>
 <li><b>Same routing policy for all four:</b></li>
 </ul>
 <pre>{e(tp.prompts.POLICY.strip())}</pre>
-<ul><li><b>Customer wording</b> added to six real descriptions (the rest are verbatim):<ul>{words}</ul></li></ul>
+<ul><li><b>Customer wording.</b> Every tool comes with a short description written by the company that makes it, for example Stripe's <code>list_invoices</code>: “This tool will fetch a list of Invoices from Stripe.” We kept 84 of the 90 exactly as published. For six, we added one line at the end in the words customers use:<ul>{words}</ul></li></ul>
 </section>""")
 
     first = tp.labels("first_pass")
@@ -335,7 +435,7 @@ ${casc_cost:.2f} per 1,000 instead of ${S['sonnet']['cost_per_1000']:.2f}.</p>
     changes += f"<li><b>Every request type:</b> {e(tp.data.AUDIT_READ_ONLY)}</li>"
     slides.append(f"""<section class="appendix">
 <h2>A3 · The answer key</h2>
-<p>Per request type: the tools that are <b>correct</b>; <b>benign</b> answers (handing off where a tool existed, asking a question, or reading the customer's own records or the store's public information); and <b>harmful</b> ones (a write that wasn't asked for, or a tool in the wrong system). Handing off is correct on the {27 - n_cov} types no tool covers and benign elsewhere; asking a question back is correct where the tool needs details the message lacks. Every failure in the development runs was checked by hand; these changes came out of it:</p>
+<p>Per request type: the tools that are <b>correct</b>; <b>benign</b> answers (handing off where a tool existed, asking a question, or reading the customer's own records or the store's public information); and <b>harmful</b> ones (a change that wasn't asked for, or a tool built for something else: GitHub, Notion, the helpdesk's internal conversations and contacts, Stripe's developer docs). Handing off is correct on the {27 - n_cov} types no tool covers and benign elsewhere; asking a question back is correct where the tool needs details the message lacks. Every failure in the development runs was checked by hand; these changes came out of it:</p>
 <ul class="tight">{changes}</ul>
 </section>""")
 
@@ -357,31 +457,120 @@ ${casc_cost:.2f} per 1,000 instead of ${S['sonnet']['cost_per_1000']:.2f}.</p>
 <table class="cost"><thead><tr><th>correct, audited key</th><th>Jev</th><th>Sonnet, told to name a tool</th><th>Sonnet, real agent</th></tr></thead><tbody>{jrows}</tbody></table>
 <ul>
 <li>With the first-pass answer key and a plain prompt, Jev led ({pct(dev('jev', 'first_pass'))} against {pct(dev('router_sonnet', 'first_pass'))}). Auditing the key and adding the policy turned that into a Sonnet lead.</li>
-<li>Jev over-used the hand-off because tool descriptions are written for developers; one line of customer wording fixed it. Tool order and the GitHub/Notion distractors made little difference (A5).</li>
+<li>Jev over-used the hand-off because tool descriptions are written for developers; one line of customer wording fixed it. Tool order and the GitHub/Notion distractors made little difference (A6).</li>
 <li>DSPy GEPA rewrote DeepSeek's prompt from 200 messages: {pct(dev('router_deepseek_gepa', 'first_pass', held))} correct on the 399 it never saw, against {pct(dev('router_deepseek_policy', 'first_pass', held))} for the hand-written policy (first-pass key).</li>
 </ul>
 </section>""")
 
-    variants = [("rerun, unchanged", "baseline"), ("hand-off option listed first", "handoff_first"), ("options shuffled", "shuffled"),
-                ("GitHub and Notion removed", "no_distractors"), ("no “pick hand_off if…” line", "no_handoff_line"),
-                ("narrower hand-off description", "handoff_desc"), ("customer wording on six tools", "descriptions")]  # fmt: skip
-    vrows_html = "".join(
-        f"<tr><td>{e(lbl)}</td><td>{pct(tp.summarise(tp.scored_rows(f'experiments/jev_{v}_dev'))['correct'])}</td>"
-        f"<td>{pct(tp.summarise(tp.scored_rows(f'experiments/jev_{v}_dev'))['handoff'])}</td></tr>" for lbl, v in variants)
+    inv = next(t for t in tp.tools() if t["name"] == "stripe.list_invoices")["description"].strip()
+    inv_words = tp.data.CUSTOMER_WORDS["stripe.list_invoices"]
     slides.append(f"""<section class="appendix">
-<h2>A5 · Why Jev handed off too often</h2>
-<table class="cost"><thead><tr><th>Jev, one change at a time (200 development messages)</th><th>correct</th><th>hands off</th></tr></thead><tbody>{vrows_html}</tbody></table>
-<p>Jev matches the customer's words to the tool descriptions. “Download my bill” doesn't match “This tool will fetch a list of Invoices from Stripe”, so the option described as “none of the other tools” wins. Order and distractors are not the cause; run-to-run noise moves about 8 of 200 answers.</p>
+<h2>A5 · The three versions, side by side</h2>
+<div class="versions">
+<div><h3>1 · Plain prompt</h3><p>What the LLM agents were told:</p><pre>{e(tp.prompts.NATIVE_SYSTEM)}</pre>
+<p>Jev's question:</p><pre>{e(tp.prompts.JEV_INSTRUCTIONS)}</pre></div>
+<div><h3>2 · + routing policy</h3><p>The same, with these three rules added for every model:</p><pre>{e(tp.prompts.POLICY.strip())}</pre></div>
+<div><h3>3 · + customer wording</h3><p>The same prompts; six tool descriptions get one extra line. Stripe's <code>list_invoices</code>, before:</p>
+<pre>{e(inv)}</pre><p>after:</p><pre>{e(inv)}
+{e(inv_words)}</pre></div>
+</div>
+</section>""")
+
+    variants = [
+        ("Re-run, nothing changed", "baseline", "The same setup sent again, to see how much the answers move on their own."),
+        ("Hand-off listed first", "handoff_first", "The hand-off option moved from last of the 91 options to first. Does position matter?"),
+        ("Options shuffled", "shuffled", "All 91 options in random order."),
+        ("GitHub and Notion removed", "no_distractors", "The 34 tools a support assistant wouldn't need, taken out. Do irrelevant tools confuse it?"),
+        ("No hand-off sentence in the question", "no_handoff_line", "Removed “pick hand_off_to_human if no tool can do it” from Jev's question. Is the question nudging it?"),
+        ("Narrower hand-off description", "handoff_desc", "Hand-off described by what it's for (complaints, account changes…) instead of “none of the other tools can do this”."),
+        ("Customer wording on six tools", "descriptions", "One line in customers' words added to six tool descriptions, e.g. “download my bill #123” on Stripe's invoices tool."),
+    ]  # fmt: skip
+    dev_ids = set(json.loads((ROOT / "data" / "gepa_deepseek.json").read_text())["dev_ids"])
+    need_handoff = sum(lab[tp.data.all_requests_by_id()[i].intent]["gap"] for i in dev_ids) / len(dev_ids)
+    vrows_html = "".join(
+        f"<tr><td><b>{e(lbl)}</b><br><small>{e(why)}</small></td><td>{pct(tp.summarise(tp.scored_rows(f'experiments/jev_{v}_dev'))['correct'])}</td>"
+        f"<td>{pct(tp.summarise(tp.scored_rows(f'experiments/jev_{v}_dev'))['handoff'])}</td></tr>" for lbl, v, why in variants)
+    slides.append(f"""<section class="appendix">
+<h2>A6 · Why Jev handed off too often</h2>
+<p>We changed one thing at a time and asked Jev again about the same 200 development messages. <b>Correct</b>: share of answers that were right. <b>Hands off</b>: share of messages Jev passed to a person; about {pct(need_handoff)} of these messages really need that, so anything far above it is over-handing-off.</p>
+<table class="cost small vtable"><thead><tr><th>what we changed</th><th>correct</th><th>hands off</th></tr></thead><tbody>{vrows_html}</tbody></table>
+<p>Only the customer wording made a big difference: Jev matches the customer's words to the tool descriptions, and “download my bill” doesn't match “fetch a list of Invoices from Stripe”. Re-running alone changes about 8 of 200 answers.</p>
+</section>""")
+
+    ds_r, ds_n = tp.summarise(tp.scored_rows("fresh/router_deepseek")), S["deepseek"]
+    p_ds = tp.paired(FRESH["jev"], "fresh/router_deepseek")
+    slides.append(f"""<section class="appendix">
+<h2>A7 · Same model, two ways of asking</h2>
+<table class="cost"><thead><tr><th>DeepSeek V4.1 Flash, fresh 600</th><th>correct</th><th>asks a question</th><th>hands off</th><th>median time</th><th>per 1,000</th></tr></thead><tbody>
+<tr><td>as an agent (tools in the API, free to reply)</td><td>{pct(ds_n['correct'], 1)}</td><td>{pct(ds_n['asked'])}</td><td>{pct(ds_n['handoff'])}</td><td>{ds_n['latency_median_s']:.1f} s</td><td>${ds_n['cost_per_1000']:.2f}</td></tr>
+<tr><td>as a picker (“name the one tool”, like Jev)</td><td>{pct(ds_r['correct'], 1)}</td><td>{pct(ds_r['asked'])}</td><td>{pct(ds_r['handoff'])}</td><td>{ds_r['latency_median_s']:.1f} s</td><td>${ds_r['cost_per_1000']:.2f}</td></tr>
+</tbody></table>
+<p>As an agent, DeepSeek ignores the policy's “hand off” rule and asks a clarifying question instead. Made to pick, it hands off like the others and scores {pct(ds_r['correct'])}, still behind Jev's {pct(S['jev']['correct'])} on the same messages (only Jev right {p_ds['only_a']}, only DeepSeek {p_ds['only_b']}; p = {p_ds['p']:.1g}); most of its misses are hand-offs on cancellation-fee and refund questions.</p>
+</section>""")
+
+    # argument checks: data/arguments.json, written by scripts/check_arguments.py
+    def e2e(a):
+        return [R[a][i]["right"] and R[a][i]["args_ok"] is not False for i in ids]
+    argj_p = tp.mcnemar(e2e("jev"), e2e("sonnet"))["p"]
+    argj = json.loads((ROOT / "data" / "arguments.json").read_text())
+    arg_rows = "".join(
+        f"<tr><td style='color:{COL[a]};font-weight:600'>{e(SHORT[a])}</td><td>{pct(argj[a]['right_tool'], 1)}</td>"
+        f"<td>{argj[a]['args_ok']} of {argj[a]['calls_scored']}</td><td><b>{pct(argj[a]['right_end_to_end'], 1)}</b></td></tr>" for a in ARMS)
+    slides.append(f"""<section class="appendix">
+<h2>A8 · Right tool, right arguments?</h2>
+<p>There is no answer key for argument values, so we checked what can be checked by rule, on every call to a correct tool
+other than a hand-off: the arguments match the tool's schema; every order number, ID or email comes from the message (none made up);
+an order number in the message is passed on; refund amounts are in cents. Free text (search queries, hand-off reasons) isn't scored.
+Jev's arguments come from its second, filling call.</p>
+<table class="cost small"><thead><tr><th></th><th>right tool</th><th>arguments pass</th><th>right tool and arguments</th></tr></thead><tbody>{arg_rows}</tbody></table>
+<p>Jev's misses: when it picks the return or refund tool for “I want my money back”, the filling call must invent the order line or
+payment it doesn't have (<code>line_item_id: "unknown"</code>); on those messages the LLMs mostly ask the customer or look the order up first. DeepSeek made up emails such as
+<code>dev@example.com</code> from a first name. Jev and Sonnet are now level (p = {argj_p:.2g}).</p>
+</section>""")
+
+    # Jev with a need_more_information option, and the ask-first stipulation (both keys, every selector)
+    from toolpick.scoring import stipulated_right
+    ask_runs = [("Jev", "fresh/jev", "jev"), ("Jev + “need more information”", "fresh/jev_ask", "jev"),
+                ("Jev + inputs in the descriptions", "fresh/jev_params", "jev"), ("Jev + both", "fresh/jev_ask_params", "jev"),
+                ("DeepSeek", FRESH["deepseek"], "deepseek"),
+                ("Haiku 5.5", FRESH["haiku"], "haiku"), ("Sonnet 5.5", FRESH["sonnet"], "sonnet")]  # fmt: skip
+    AR = {run: {r["id"]: r for r in tp.scored_rows(run)} for _, run, _ in ask_runs}
+    ask_rows = "".join(
+        f"<tr><td style='color:{COL[c]};font-weight:600'>{e(lbl)}</td><td>{pct(sum(r['right'] for r in AR[run].values()) / len(AR[run]), 1)}</td>"
+        f"<td>{pct(sum(map(stipulated_right, AR[run].values())) / len(AR[run]), 1)}</td></tr>" for lbl, run, c in ask_runs)
+    ja = AR["fresh/jev_ask"]
+    asks = [r for r in ja.values() if r["pick"] == tp.ASK]
+    ask_ok_n = sum(r["right"] for r in asks)
+    ask_conf = statistics.median(r["confidence"] for r in asks)
+    dev_a = {r["id"]: r for r in tp.scored_rows("experiments/jev_ask_first")}
+    dev_b = {r["id"]: r for n in ("dev", "held") for r in tp.scored_rows(f"experiments/jev_descriptions_{n}")}
+    dev_ids = sorted(dev_a.keys() & dev_b.keys())
+    jv = json.loads((ROOT / "data" / "jev_variants.json").read_text())  # scripts/compare_jev_variants.py
+    dev_p, cost_p = jv["dev"]["Jev + inputs"]["correct"], jv["fresh"]["Jev + inputs"]["cost_per_1000"]
+    p_ask = tp.mcnemar([stipulated_right(AR["fresh/jev"][i]) for i in ids], [stipulated_right(AR[FRESH["sonnet"]][i]) for i in ids])["p"]
+    slides.append(f"""<section class="appendix">
+<h2>A9 · Two changes to Jev's options</h2>
+<p>The LLMs can always reply with a question; Jev couldn't. We added a 92nd option, <code>need_more_information</code>, which an agent
+would turn into a question, and scored it exactly like an LLM's question. Separately, we added each tool's inputs (name, type,
+required or not) to the descriptions Jev reads, as the LLMs see the full input schemas. <b>Ask-first rule</b>: on refund, order and payment
+requests that give no order number or amount (like “I want my money back”), only a question, a hand-off or a lookup that needs
+nothing from the customer counts as correct, for every model.</p>
+<table class="cost small"><thead><tr><th>fresh 600</th><th>answer key as is</th><th>ask-first rule</th></tr></thead><tbody>{ask_rows}</tbody></table>
+<p>Jev used the new option on {pct(len(asks) / len(ja))} of messages, at low confidence (median {ask_conf:.2f}). {ask_ok_n} were right
+(refunds, orders, payment problems); the rest replaced a correct invoice lookup, refund check or hand-off. On the development
+messages it also lowered Jev's score ({pct(sum(dev_b[i]['right'] for i in dev_ids) / len(dev_ids))} → {pct(sum(dev_a[i]['right'] for i in dev_ids) / len(dev_ids))}).
+Listing the inputs didn't help either ({pct(jv["dev"]["Jev"]["correct"])} → {pct(dev_p)} on the development messages), and cost more (${cost_p:.2f} per 1,000).
+Under the ask-first rule Sonnet leads Jev, but not significantly (p = {p_ask:.2f}).</p>
 </section>""")
 
     slides.append("""<section class="appendix">
-<h2>A6 · Caveats</h2>
+<h2>A10 · Caveats</h2>
 <ul>
 <li>Bitext messages are template-generated and often vague; real tickets are longer and messier.</li>
 <li>The customer wording and the routing policy were written while looking at the development messages; the fresh 600 test them on new messages from the same dataset, not on real traffic.</li>
 <li>“No tool” means none in this catalogue: Shopify's customer-account server may expose more once a customer signs in, and a store can add servers.</li>
 <li>The answer key is a judgement. It's published with a reason for every decision (<code>src/toolpick/data.py</code>), and the explorer re-scores everything if you change it.</li>
-<li>Scored on the first turn only. Sonnet 5.5 can't disable reasoning, so it ran at low effort. Costs are OpenRouter's billed prices; Jev at US$0.042 per million input tokens.</li>
+<li>Each message is scored on its own, as the first message of a chat from a signed-in customer with no order in view. With the conversation history, asking versus acting and the arguments would change (A8, A9). Argument values are checked by rule, not against an answer key. Sonnet 5.5 can't disable reasoning, so it ran at low effort. Costs are OpenRouter's billed prices; Jev at US$0.042 per million input tokens.</li>
 <li>Jev reads names and descriptions; the LLMs also read schemas. That is how each is used.</li>
 </ul>
 <p>Code, data and every run: <code>github.com/roger-yu-ds/jev-tool-selection</code> (private) · explorer: <code>uv run marimo edit notebooks/explore.py</code></p>
@@ -403,6 +592,14 @@ h2 {{ font-size: 1.9em; margin:0 0 .2em; letter-spacing:-0.01em; }}
 .title {{ align-items:flex-start; }}
 .sub {{ font-size:1.4em; color:var(--dim); margin:0; }}
 .by {{ margin-top:2em; color:var(--dim); }}
+.about {{ display:grid; grid-template-columns: 1.1fr 1fr; gap:2.2em; align-items:center; }}
+.about-list {{ margin:0; padding-left:1.1em; line-height:1.5; font-size:.95em; }}
+.about-list li {{ margin:.45em 0; }}
+.photos {{ display:grid; grid-template-columns: 3fr 4fr; gap:.8em; align-items:end; }}
+.photos figure {{ margin:0; }}
+.photos img {{ width:100%; border-radius:10px; display:block; }}
+.photos figcaption {{ font-size:.55em; color:var(--dim); margin-top:.35em; }}
+@media (max-width: 700px) {{ .about {{ grid-template-columns: 1fr; }} }}
 .kicker {{ text-transform:uppercase; letter-spacing:.12em; font-size:.7em; color:var(--dim); margin:0; }}
 .dim {{ color:var(--dim); font-weight:400; font-size:.7em; }}
 blockquote.big {{ font-size:1.8em; margin:0; font-weight:500; line-height:1.25; max-width: 22em; }}
@@ -441,7 +638,7 @@ small {{ color:var(--dim); font-size:.75em; }}
 .verdicts .who {{ color:var(--dim); }}
 .v-ok {{ border-color:#2a9d8f !important; }} .v-benign {{ border-color:#c9c0ac !important; }} .v-harm {{ border-color:#c1121f !important; }}
 .two {{ display:grid; grid-template-columns: repeat(2, 1fr); gap:3em; }}
-.two p {{ margin:.3em 0 0; }}
+.two p {{ margin:.3em 0 0; }}\n.vtable td {{ padding:.25em .8em; }} .vtable small {{ font-size:.85em; }}\n.versions {{ display:grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap:1em; }}\n.versions h3 {{ margin:0 0 .3em; font-size:1em; }}\n.versions p {{ margin:.3em 0; font-size:.85em; }}\n.versions pre {{ font-size:.62em; max-height:none; }}\n.ex {{ margin-top:.8em; padding:.5em .8em; background:#fff; border:1px solid var(--rule); border-radius:.5em; font-size:.72em; }}\n.ex .q {{ font-size:1.05em; font-weight:500; }}\nol.check small {{ font-size:.72em; line-height:1.35; display:inline-block; margin-top:.15em; }}
 table.big {{ font-size:1.15em; }}
 ul.tight li {{ margin:.1em 0; font-size:.9em; }}
 .cap {{ text-align:center; color:var(--dim); font-size:.8em; margin:.2em 0 0; }}
@@ -506,7 +703,7 @@ FEEDBACK = """
 <label><input type="radio" name="length" value="cut to 8"> cut to 8</label></p>
 <p><b>Hook message.</b> <label><input type="radio" name="hook" value="keep"> keep</label>
 <label><input type="radio" name="hook" value="pick another"> pick another</label></p>
-<p><b>The journey (A4, A5).</b> <label><input type="radio" name="journey" value="appendix only"> appendix only, for questions</label>
+<p><b>The journey (A4–A6).</b> <label><input type="radio" name="journey" value="appendix only"> appendix only, for questions</label>
 <label><input type="radio" name="journey" value="one slide in the main deck"> one slide in the main deck</label></p>
 <p><label>Anything else: <input type="text" name="other" size="60"></label></p>
 <p><button type="submit">Queue answers</button></p>
