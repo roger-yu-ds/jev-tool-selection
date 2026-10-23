@@ -33,6 +33,7 @@ uv run python scripts/check_arguments.py                                # rule-b
 uv run python scripts/run_router.py --arm jev --ask --sample fresh     # Jev with a need_more_information option
 uv run python scripts/run_router.py --arm jev --params --sample fresh  # Jev with each tool's inputs in its description
 uv run python scripts/compare_jev_variants.py                          # the Jev versions side by side (free)
+uv run python scripts/baseline_intent_nb.py                            # always-hand-off and naive Bayes intent→tool baselines (free)
 uv run python scripts/run_router.py --arm deepseek --policy             # a development run: router mode, first 600
 uv run python scripts/jev_experiments.py --split dev                    # why Jev handed off too often
 uv run python scripts/optimise_prompt.py --arm deepseek            # DSPy GEPA on the router preamble
