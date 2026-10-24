@@ -50,7 +50,8 @@ WRONG_CALL = {"wrong", "bluffed"}
 VERDICTS = ["correct", "benign", "harmful"]
 VERDICT = {"right": "correct", "defensible": "benign", "handed_off": "benign", "asked": "benign",
            "wrong": "harmful", "bluffed": "harmful"}  # fmt: skip
-MODEL_NAMES = {"jev": "Jev", "deepseek": "DeepSeek V4.1 Flash", "haiku": "Claude Haiku 5.5", "sonnet": "Claude Sonnet 5.5"}
+MODEL_NAMES = {"jev": "Jev", "clm": "CLM-8B (local)", "deepseek": "DeepSeek V4.1 Flash", "haiku": "Claude Haiku 5.5",
+               "sonnet": "Claude Sonnet 5.5"}  # fmt: skip
 
 
 SEVERITY = {"bluffed": 0, "wrong": 1, "handed_off": 2, "asked": 3, "defensible": 4, "right": 5}
@@ -80,6 +81,8 @@ def parse_run_name(name: str) -> dict[str, str]:
     """``native_sonnet_policy`` -> mode native, model sonnet, prompt policy (or gepa, or base);
     ``fresh/native_sonnet`` -> the same with sample fresh and prompt final."""
     sample, _, name = name.rpartition("/")
+    if name == "clm" or name.startswith("clm_"):  # CLM-8B answers Jev's final-setup question: fresh/clm, experiments/clm_first
+        return {"mode": "clm", "model": "clm", "prompt": "final", "sample": "fresh" if sample == "fresh" else "first"}
     if name == "jev" or name.startswith("jev_"):  # jev, jev_policy, jev_ask, jev_params, jev_ask_params
         variant = name.removeprefix("jev").strip("_")
         if sample == "fresh":

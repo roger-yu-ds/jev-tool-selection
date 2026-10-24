@@ -58,6 +58,7 @@ used during development.
 | DeepSeek V4.1 Flash | 47.2% | 52.5% | 0.3% | 36% | 2.0 s | 51,609 | 0.28 |
 | Claude Haiku 5.5 | 82.2% | 17.8% | 0.0% | 13% | 1.7 s | 76,221 | 0.85 |
 | Claude Sonnet 5.5 | 93.3% | 6.7% | 0.0% | 4% | 1.8 s | 76,222 | 9.07 |
+| CLM-8B, zero-shot (local, Q8_0) | 35.3% | 47.0% | 17.7% | 0% | 1.1 s (pick only) | 182 | 0 (local) |
 
 *Correct*: an acceptable tool, or a question back where the tool needs details the message lacks.
 *Benign*: handed off where a tool existed, asked a question, or read the customer's own records.
@@ -66,6 +67,16 @@ used during development.
 tool's arguments (`scripts/run_jev_fill.py`, `runs/fill/jev_fresh.jsonl`), and Jev's time, tokens and cost
 include it. On its own Jev's pick takes 0.26 s (median), reads 7,207 tokens and costs $0.30 per 1,000; the
 filling call adds 1.1 s, about 600 tokens and $0.035.
+
+*CLM-8B* (Stanford/NVIDIA "Contrastive Language Model", 2026-09-23, Apache-2.0; `contrastive-lm` 0.1.0 with
+the released `CLM-v0.1-8B` head) answers Jev's exact final-setup question through its System-One-compatible
+API, served locally: Qwen3-8B Q8_0 in llama.cpp with last-token pooling (16 of 36 layers on the GTX 1080 Ti),
+validated against HF transformers (0.6B parity cosine ≥ 0.999) and against the README's reference playground
+request. Setup, validation and caveats: `clm/NOTES.md`; runner `scripts/run_clm.py`; scorer `clm/score_clm.py`.
+Zero-shot it lands below always-hand-off (59.2%): it uses 10 of the 91 tools, never the FAQ tool, and its
+harmful picks are mostly `request_return` writes; picks are near-ties (median top-two margin 0.47 logits).
+Against Jev: only CLM right 5, only Jev right 365 (p ≈ 5e-101); first 600: 42.2% correct. The README's best
+numbers come from fine-tuned heads, so this measures the released head on a new task, not the architecture.
 
 Paired (exact McNemar, same messages): Jev against Sonnet 95.3% vs 93.3%
 (only Jev right 37, only Sonnet 25, p = 0.16: a tie);

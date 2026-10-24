@@ -30,7 +30,8 @@ def run_meta(name: str) -> dict:
     if name.startswith("experiments/"):
         stem = name.split("/", 1)[1]
         model = "jev" if stem.startswith("jev_") else stem.split("_")[0]
-        return {"sample": "experiments", "model": model, "mode": "jev" if model == "jev" else "router", "prompt": stem}
+        mode = model if model in ("jev", "clm") else "router"
+        return {"sample": "experiments", "model": model, "mode": mode, "prompt": stem}
     m = tp.parse_run_name(name)
     return {"sample": m["sample"], "model": m["model"], "mode": m["mode"], "prompt": m["prompt"]}
 
