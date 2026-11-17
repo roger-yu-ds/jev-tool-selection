@@ -219,6 +219,20 @@ def paired(name_a: str, name_b: str, version: str = "audited", seed: int = 0, bo
             "right_a": statistics.fmean(ra), "right_b": statistics.fmean(rb)}  # fmt: skip
 
 
+def paired_by_intent(name_a: str, name_b: str, version: str = "audited", seed: int = 0, boots: int = 4000) -> tuple[float, float]:
+    """A 95% bootstrap CI on the accuracy difference that resamples whole intents, not messages.
+    Messages of one intent share a template and one answer-key entry, so they aren't independent."""
+    a = {r["id"]: r for r in scored_rows(name_a, version)}
+    b = {r["id"]: r for r in scored_rows(name_b, version)}
+    by_intent: dict[str, list[int]] = {}
+    for i in a.keys() & b.keys():
+        by_intent.setdefault(a[i]["intent"], []).append(int(a[i]["right"]) - int(b[i]["right"]))
+    groups = [by_intent[k] for k in sorted(by_intent)]
+    rng = random.Random(seed)
+    bs = sorted(statistics.fmean(d for g in rng.choices(groups, k=len(groups)) for d in g) for _ in range(boots))
+    return bs[int(0.025 * boots)], bs[int(0.975 * boots) - 1]
+
+
 def per_intent(name: str, version: str = "audited") -> dict[str, dict]:
     out: dict[str, dict] = {}
     for r in scored_rows(name, version):

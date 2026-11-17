@@ -59,7 +59,6 @@ cell with the defaults is roughly $0.40. Set `LIVE = False` to browse the sample
 code("""
 import os
 import sys
-from collections import Counter
 from pathlib import Path
 
 import pandas as pd

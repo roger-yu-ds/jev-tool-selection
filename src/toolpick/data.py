@@ -132,7 +132,7 @@ def inputs_text(schema: dict, desc_chars: int = 90) -> str:
 #
 # Two versions. `first_pass` is the research map plus four early overrides. `audited` (the default)
 # is the result of reviewing every failure by hand: each change below has its reason, and every
-# number in the talk uses it.
+# reported number uses it.
 
 FIRST_PASS_OVERRIDES: dict[str, tuple[list[str], list[str], str]] = {
     "place_order": (["shopify_ucp.search_catalog", "shopify_ucp.lookup_catalog", "shopify_ucp.get_product"], [],
@@ -188,8 +188,9 @@ def _intent_map() -> dict[str, dict]:
 
 def labels(version: str = "audited") -> dict[str, dict]:
     """Per intent: ``gap``, ``acceptable``, ``partial``, ``ask_ok``, the research ``note`` and the
-    ``changes`` made to it (with reasons)."""
-    if version not in ("audited", "first_pass"):
+    ``changes`` made to it (with reasons). ``audited_strict`` is the audited key without the
+    read-only rule (READ_ONLY_BENIGN), to measure what that rule does to the harmful counts."""
+    if version not in ("audited", "audited_strict", "first_pass"):
         raise ValueError(version)
     out = {}
     for intent, v in _intent_map().items():
@@ -204,7 +205,7 @@ def labels(version: str = "audited") -> dict[str, dict]:
             part = [t for t in part if t not in add_acc] + [t for t in add_part if t not in part]
             changes.append(why)
         ask_ok = False
-        if version == "audited":
+        if version != "first_pass":
             for a_intent, add_acc, add_part, a_gap, why in AUDIT:
                 if a_intent != intent:
                     continue
@@ -213,7 +214,8 @@ def labels(version: str = "audited") -> dict[str, dict]:
                 acc += [t for t in add_acc if t not in acc]
                 part += [t for t in add_part if t not in part]
                 changes.append(why)
-            part += [t for t in READ_ONLY_BENIGN if t not in acc and t not in part]
+            if version == "audited":
+                part += [t for t in READ_ONLY_BENIGN if t not in acc and t not in part]
             ask_ok = intent in ASK_OK
             if ask_ok:
                 changes.append(ASK_OK[intent])

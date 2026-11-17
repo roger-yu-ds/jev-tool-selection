@@ -9,3 +9,5 @@ runs/logs/
 .ruff_cache/
 data/cache/
 __marimo__/
+runs/live/
+runs/rerun/
