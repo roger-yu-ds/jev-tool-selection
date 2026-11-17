@@ -2,6 +2,22 @@
 
 **Measuring tool selection on 90 real MCP tools: a small choice model against LLM agents.**
 
+## TL;DR
+
+**Jev can replace the tool-selection step of an agent, not the agent.** On 600 customer messages and 90 real
+tools it picked the right tool as often as Claude Sonnet 5.5 running as a tool-calling agent (95.3% against
+93.3%, a statistical tie) at about one twenty-seventh of the cost (US$0.34 against US$9.07 per 1,000 messages).
+But it can't ask a question or fill in a tool's arguments, so an LLM still has to do the rest.
+
+- **Where it fits:** many tools, clear requests, high volume. Reading 76,000 tokens of tool schemas to pick one
+  is the expensive part of an agent's call, and a small model did that part as well.
+- **The catch:** Jev's lead came from requests no tool can do, where it hands off almost perfectly. On requests
+  a tool can handle the two are level too (90.7% against 92.7%), and Jev's misses are needless hand-offs, which
+  cost staff time. Whether the saving holds depends on how many requests your tools cover and what a hand-off
+  costs.
+- **Read with care:** the messages are synthetic and single-turn, and a naive Bayes intent classifier scores
+  the same 95%. This measures recognising a clear request and routing it, not holding a conversation.
+
 ## Background
 
 I built this for a talk at MeasureCamp Sydney in October 2026. I was curious about Jev, TypeSafe's small
@@ -257,13 +273,6 @@ The parts that hold the study's logic. Slides, the ledger page and the local-mod
 ├── tests                        <- Scoring, data and request checks; test_results.py pins the published numbers.
 └── docs/RESULTS.md              <- Every table in full, and the command behind each.
 ```
-
-## Licences and provenance
-
-Code: MIT (see `LICENSE`). Messages: Bitext customer-support dataset (CDLA-Sharing-1.0). Tool text: Stripe
-(`@stripe/mcp` 0.2.5, MIT), GitHub (`github-mcp-server` 2.0.3, MIT), Notion (`@notionhq/notion-mcp-server`
-2.5.2, MIT); Shopify (live `tools/list` on a public store) and Intercom (docs summaries) are the vendors' own
-text, reproduced here for research. See `data/REPORT.md`.
 
 ## Deep dive: when an agent asks instead of handing off
 
@@ -663,3 +672,10 @@ Message `F0073`, Bitext intent `contact_human_agent`. The judge: *The customer i
 </details>
 
 <!-- examples:end -->
+
+## Licences and provenance
+
+Code: MIT (see `LICENSE`). Messages: Bitext customer-support dataset (CDLA-Sharing-1.0). Tool text: Stripe
+(`@stripe/mcp` 0.2.5, MIT), GitHub (`github-mcp-server` 2.0.3, MIT), Notion (`@notionhq/notion-mcp-server`
+2.5.2, MIT); Shopify (live `tools/list` on a public store) and Intercom (docs summaries) are the vendors' own
+text, reproduced here for research. See `data/REPORT.md`.

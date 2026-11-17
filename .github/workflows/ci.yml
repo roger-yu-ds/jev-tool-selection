@@ -1,9 +1,9 @@
 name: ci
 
+# Manual runs only for now: GitHub won't start jobs on this account until its Actions billing is fixed.
+# To run on every push again, put back:  push: {branches: [main]}  and  pull_request:
 on:
-  push:
-    branches: [main]
-  pull_request:
+  workflow_dispatch:
 
 jobs:
   test:
