@@ -98,6 +98,27 @@ at $0.52 per 1,000. `scripts/compare_jev_variants.py` prints all four Jev versio
 are unchanged: they could already reply with a question. The filling call for this run
 (`run_jev_fill.py --run fresh/jev_ask`) writes the question; its cost and time are included.
 
+### Asking about an unclear message (a second scoring)
+
+On a request no tool can handle, the answer key accepts only a hand-off, so every question back is a miss.
+Claude Opus 5.5 (`scripts/judge_asks.py`, `src/toolpick/judge.py`) read each of the 180 different messages the
+agents asked about, alone, and labelled it *unclear* (29), *no tool* (149) or *tool* (2). Under
+`toolpick.right_if_asking_when_unclear` a question on an unclear message also counts as correct; a hand-off
+stays correct. Labels and reasons: `runs/judge/messages_opus.jsonl`. The README's deep dive has the method,
+its weaknesses and examples.
+
+| fresh 600 | questions on no-tool requests | on an unclear message | answer key as is | asking about an unclear message counts |
+|---|---|---|---|---|
+| Jev | 0 | 0 | 95.3% | 95.3% |
+| Claude Sonnet 5.5 | 15 | 8 | 93.3% | 94.7% |
+| Claude Haiku 5.5 | 62 | 23 | 82.2% | 86.0% |
+| DeepSeek V4.1 Flash | 174 | 29 | 47.2% | 52.0% |
+
+Jev against Sonnet under this scoring: 29 vs 25 messages only one got right, p = 0.68. The judging cost
+US$0.77 (180 calls; the 9,728-token prompt written to the cache once and read on the other 179). A first
+version of the judge that also saw the agent's reply is kept in `runs/judge/calibration_replies.jsonl`: on
+15 messages judged beside two different replies, the label changed with the reply on 2.
+
 ## Development runs, first 600 messages (how the setup got there)
 
 | development run (first 600, audited key) | correct | harmful |
@@ -122,7 +143,7 @@ by hand (every failure checked; `toolpick.data.AUDIT`), writing the routing poli
 adding customer wording to six tool descriptions after finding that Jev over-used the hand-off because real
 descriptions are written for developers (`scripts/jev_experiments.py`, results in `runs/experiments/`).
 DSPy GEPA (`scripts/optimise_prompt.py`) rewrote DeepSeek's router prompt from 200 messages and scored
-84.2% on the 399 it never saw (first-pass key). All runs together: about US$28 of billed calls.
+84.2% on the 399 it never saw (first-pass key). All runs together: about US$31 of billed calls.
 
 ## Commands
 
@@ -152,4 +173,5 @@ uv run python scripts/run_router.py --arm deepseek --policy             # a deve
 uv run python scripts/jev_experiments.py --split dev                    # why Jev handed off too often
 uv run python scripts/optimise_prompt.py --arm deepseek            # DSPy GEPA on the router preamble
 uv run python scripts/log_langfuse.py                              # one Langfuse trace per call
+uv run python scripts/judge_asks.py --dry-run                      # the judge: plan and cost estimate (free); drop --dry-run to run it (ANTHROPIC_API_KEY)
 ```

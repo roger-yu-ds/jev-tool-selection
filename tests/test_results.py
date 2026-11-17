@@ -44,3 +44,16 @@ def test_the_read_only_rule_only_lowers_harm():
         with_rule = sum(r["wrong_call"] for r in tp.scored_rows(name))
         without = sum(r["wrong_call"] for r in tp.scored_rows(name, "audited_strict"))
         assert without >= with_rule
+
+
+def test_the_judge_labelled_every_message_an_agent_asked_about():
+    asked = {r["id"] for n in ("fresh/native_sonnet", "fresh/native_haiku", "fresh/native_deepseek")
+             for r in tp.scored_rows(n) if r["outcome"] == "asked" and r["gap"]}  # fmt: skip
+    assert asked == set(tp.judgements()) and len(asked) == 180
+    assert sum(j["label"] == "unclear" for j in tp.judgements().values()) == 29
+
+
+@pytest.mark.parametrize(("name", "right"), [("fresh/jev", 572), ("fresh/native_sonnet", 568), ("fresh/native_haiku", 516),
+                                             ("fresh/native_deepseek", 312)])  # fmt: skip
+def test_correct_counts_when_asking_about_an_unclear_message_counts(name, right):
+    assert sum(tp.right_if_asking_when_unclear(r) for r in tp.scored_rows(name)) == right

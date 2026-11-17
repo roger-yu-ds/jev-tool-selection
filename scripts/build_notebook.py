@@ -824,7 +824,113 @@ instead", so a stricter reader could disagree. Either way, "3 in 2,400" depends 
 with the results in view. What doesn't depend on it: Jev's count is 1 under both, and only one answer in 2,400
 was a write nobody asked for (DeepSeek creating a Stripe customer).
 
-## 5. What else limits it
+## 5. Is a question back really a miss?
+
+On a request no tool can handle, the answer key accepts one answer: hand off. The agents often replied with a
+question instead, and every one of those replies is scored as a miss. Here is one such message, with what all
+four selectors did.
+""")
+
+code("""
+def show_all(rid: str) -> None:
+    \"\"\"Print one message and what each selector did with it.\"\"\"
+    print(f"{rid} [{fresh_by_id.loc[rid].intent}]  {fresh_by_id.loc[rid].text!r}\\n")
+    for name, d in scored.items():
+        r = d.set_index("id").loc[rid]
+        if r.outcome == "asked":
+            print(f"{name} replied ({r.outcome}):\\n   " + r.reply.replace("\\n", "\\n   ") + "\\n")
+        else:
+            print(f"{name} picked {short([r['pick']])} ({r.outcome})\\n")
+
+
+show_all("F0177")
+""")
+
+md("""
+"Using pro account" doesn't say what the customer wants, and those questions are what a good human agent
+would ask. Marking them wrong is harsh. But a blanket rule that any question is fine would also reward asking
+for an order number in order to change an address that no tool can change.
+
+So I had a judge draw the line. Claude Opus 5.5 read each message the agents had asked about, with the same
+policy and tool list the agents had, and labelled it:
+
+- **unclear**: no reading stands out, so a question back is justified;
+- **no_tool**: a clear request that no tool can do, so the right move is to hand off;
+- **tool**: a clear request that a tool can do.
+
+The judge reads the customer's message and nothing else: not the reply, not which model wrote it, not Bitext's
+intent. `scripts/judge_asks.py` made the calls (US$0.77 for 180 messages, with the 9,728-token prompt read
+from the cache on 179 of them). The labels are committed in `runs/judge/`, so this cell is free.
+""")
+
+code("""
+judged = pd.DataFrame(tp.judgements()).T
+print(f"{len(judged)} messages judged: {judged.label.value_counts().to_dict()}")
+second = {}
+for name, run in RUNS.items():
+    rows = tp.scored_rows(run)
+    asks = [r for r in rows if r["outcome"] == "asked" and r["gap"]]
+    second[name] = {"questions on no-tool requests": len(asks),
+                    "on an unclear message": sum(judged.label.get(r["id"]) == "unclear" for r in asks),
+                    "correct as scored": sum(r["right"] for r in rows) / len(rows),
+                    "correct if those count": sum(map(tp.right_if_asking_when_unclear, rows)) / len(rows)}
+second = pd.DataFrame(second).T
+by_id = {name: {r["id"]: tp.right_if_asking_when_unclear(r) for r in tp.scored_rows(run)} for name, run in RUNS.items()}
+m = tp.mcnemar([by_id["Jev"][i] for i in fresh.id], [by_id["Claude Sonnet 5.5"][i] for i in fresh.id])
+print(f"Jev against Sonnet under this scoring: only Jev right {m['only_a']}, only Sonnet right {m['only_b']}, p = {m['p']:.2f}")
+second.style.format({"questions on no-tool requests": "{:.0f}", "on an unclear message": "{:.0f}", "correct as scored": "{:.1%}",
+                     "correct if those count": "{:.1%}"})
+""")
+
+md("""
+The agents' 251 questions were to 180 different messages, and the judge found 29 of them unclear. Counting a
+question on those as correct lifts Sonnet to 94.7%, Haiku to 86.0% and DeepSeek to 52.0%. **The top is still a
+tie** (p = 0.68). Most of the questions, 145 of DeepSeek's 174, were on requests the judge found clear, where
+the policy the model was given says to hand off.
+
+Jev handed off on all 29 unclear messages. The key counts that as correct and it is the safe move, but it also
+means this test never asks whether Jev can tell a vague message from a clear one. It has no way to ask.
+
+Here is where the judge drew the line: three messages it called unclear and three it called clear.
+""")
+
+code("""
+line = ["F0177", "F0336", "F0185", "F0229", "F0118", "F0352"]
+pd.DataFrame([{"message": fresh_by_id.loc[i].text, "Bitext intent": fresh_by_id.loc[i].intent, "judge": judged.label[i],
+               "why": judged.reason[i]} for i in line])
+""")
+
+md("""
+"register" is the contested one. All three agents asked what the customer meant; the judge says the natural
+reading is creating an account, so they should have handed off. How strict that line is comes from the judge's
+prompt, and the first version of the prompt was looser. It also showed the judge the agent's reply, which
+turned out to be a mistake. The calibration run is committed, so both effects can be measured.
+""")
+
+code("""
+cal = pd.DataFrame([json.loads(line) for line in (tp.RUNS / "judge" / "calibration_replies.jsonl").read_text().splitlines()])
+twice = cal.groupby("id")["message_clarity"].agg(["size", "nunique"]).query("size > 1")
+print(f"first version (saw the reply): {len(twice)} messages judged beside two different replies; "
+      f"the clarity label changed with the reply on {(twice['nunique'] > 1).sum()}")
+print(f"Sonnet's 15 questions judged justified: {(cal[cal.agent == 'sonnet'].verdict == 'ask_justified').sum()} by the first version, "
+      f"{second.loc['Claude Sonnet 5.5', 'on an unclear message']:.0f} by the final one")
+""")
+
+md("""
+Two lessons about LLM judges, both measured here:
+
+- **Don't show the judge more than the label depends on.** Whether a message is clear shouldn't depend on who
+  replied to it, yet the label moved with the reply on 2 of 15 messages. The final judge sees the message only,
+  which also means a Claude judge can't favour a Claude reply.
+- **The standard is in the prompt.** A tie-break rule ("if one reading is clearly the most natural, judge by
+  it") and eight worked examples from the development sample took Sonnet's justified questions from 14 to 8.
+  Neither number is the truth. The examples are in `src/toolpick/judge.py`, where anyone can move the line.
+
+This scoring was added after seeing the final results, from one run of one judge, and a few labels near the
+line are inconsistent ("I want assistance lodging a reclamation" is judged clear, "lodge reclamation" unclear).
+That is why it sits beside the headline and doesn't replace it.
+
+## 6. What else limits it
 
 - **The policy and the answer key say the same thing.** The three policy rules were written from the key. A
   selector that follows instructions well is therefore scored well, which is the point, but it means the test
@@ -872,7 +978,7 @@ reads names and descriptions only, about a tenth as much, at a much lower token 
 month the difference is about US$900 against US$35.
 
 For a sense of scale, everything in this repository (every development run, experiment and the final runs)
-cost about US$30 in API calls.
+cost about US$31 in API calls.
 
 ## What I would take to production
 

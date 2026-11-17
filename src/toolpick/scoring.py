@@ -291,3 +291,28 @@ def stipulated_right(row: dict) -> bool:
     if row["kind"] == "text" or row["pick"] in (None, ASK):
         return True
     return row["pick"] in lab["acceptable"] and (row["pick"] == HAND or not _required_inputs().get(row["pick"]))
+
+
+# The "ask about an unclear message" rule (a second scoring, applied to every selector alike). The
+# answer key accepts only a hand-off on a request no tool can handle. Some of those messages are too
+# vague to act on, so a judge (Claude Opus 5.5, scripts/judge_asks.py) read each message the agents
+# asked about, alone, and labelled it unclear, no_tool or tool. Under this rule a question back is
+# also correct when the message is unclear. A hand-off stays correct.
+JUDGED = RUNS / "judge" / "messages_opus.jsonl"
+
+
+@cache
+def judgements() -> dict[str, dict]:
+    """The judge's label and reason per message id (the latest row for each; no API response)."""
+    out = {}
+    for line in JUDGED.read_text().splitlines():
+        if line.strip():
+            r = json.loads(line)
+            out[r["id"]] = {"label": r["label"], "reason": r["reason"]}
+    return out
+
+
+def right_if_asking_when_unclear(row: dict) -> bool:
+    """``row["right"]``, or a question back on a no-tool request whose message the judge found unclear."""
+    asked_when_unclear = row["outcome"] == "asked" and row["gap"] and judgements().get(row["id"], {}).get("label") == "unclear"
+    return row["right"] or asked_when_unclear
