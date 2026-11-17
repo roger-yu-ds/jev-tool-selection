@@ -15,8 +15,8 @@ But it can't ask a question or fill in a tool's arguments, so an LLM still has t
   a tool can handle the two are level too (90.7% against 92.7%), and Jev's misses are needless hand-offs, which
   cost staff time. Whether the saving holds depends on how many requests your tools cover and what a hand-off
   costs.
-- **Read with care:** the messages are synthetic and single-turn, and a naive Bayes intent classifier scores
-  the same 95%. This measures recognising a clear request and routing it, not holding a conversation.
+- **Read with care:** the messages are synthetic and single-turn, and the answer key is per intent. This
+  measures recognising a clear request and routing it, not holding a conversation.
 
 ## Background
 
@@ -61,9 +61,6 @@ at the bottom has the method and examples from all four selectors.
 4. **The setup moved the scores more than the models did.** Writing the routing policy into the prompt added
    7 to 33 points. One line of customer wording on six tool descriptions added 11. Auditing the answer key
    moved scores by up to 15 points and reordered the selectors.
-5. **A word-counting baseline ties the leaders.** A naive Bayes intent classifier that looks the tool up in
-   the answer key scores 95.2%. That says what this benchmark mostly measures, and it is the first limitation
-   below.
 
 ![Where each selector is right](docs/img/split.png)
 
@@ -93,14 +90,14 @@ Jev's time and cost in every table include both calls (`scripts/run_jev_fill.py`
 
 ## What weakens the result
 
-I checked the headline against itself. Each of these is measured in the notebook (Part 5).
+I looked for ways the headline could be wrong and measured each one. They are all in the notebook (Part 5).
 
-- **It is mostly intent recognition.** That is what I set out to test, and Jev did it with no training data:
-  from tool descriptions and a three-rule policy it matched a naive Bayes classifier trained on 22,317
-  labelled messages. But it limits what the result proves. The answer key is per intent, so a selector can
-  score well without weighing one tool description against another, and the test can't show how the selectors
-  compare when the right tool depends on the details of a message, on requests outside the 27 intents, or on
-  tools that change.
+- **It is mostly intent recognition.** That is what I set out to test, and Jev did it with no training data,
+  from tool descriptions and a three-rule policy. But it limits what the result proves. The answer key is per
+  intent, so a selector can score well by recognising which of 27 kinds of request it is reading, without
+  weighing one tool description against another. The test can't show how the selectors compare when the right
+  tool depends on the details of a message, on requests outside the 27 intents, or on tools that change.
+  Always handing off already scores 59%.
 - **The ranking depends on the mix of requests.** Half the messages have no tool that fits. Jev is better on
   those (99.7% against 93.9%), Sonnet on the rest (92.7% against 90.7%). Below about 26% no-tool requests,
   Sonnet leads.
@@ -254,7 +251,6 @@ The parts that hold the study's logic. Slides, the ledger page and the local-mod
 │   ├── run_native.py            <- Runs an LLM as a tool-calling agent.
 │   ├── run_jev_fill.py          <- The second call that fills in the arguments of Jev's pick.
 │   ├── jev_experiments.py       <- Eight variations of Jev's question, on a dev and held-out split.
-│   ├── baseline_intent_nb.py    <- Always-hand-off and naive Bayes baselines.
 │   ├── check_arguments.py       <- Runs the argument check over the final runs.
 │   ├── judge_asks.py            <- Runs the judge over the messages the agents asked about.
 │   └── build_notebook.py        <- Generates the notebook; other build_* scripts make the charts and examples.

@@ -727,32 +727,28 @@ md("""
 A result is only as good as the checks it survived. These are the ones I ran against this one, each with its
 number. Several of them weaken the headline, and they should.
 
-## 1. Is this tool selection, or intent classification?
+## 1. How much of this is recognising the intent?
 
-The answer key is per intent. So a system that recognises the intent and looks the tool up in the key would
-score well without reading a single tool description. Two baselines measure how far that goes
-(`scripts/baseline_intent_nb.py`; no API calls): always hand off, and a bag-of-words naive Bayes classifier
-trained on the rest of Bitext that guesses the intent and then reads the answer key.
+The answer key is per intent: every message of one intent has the same right answers. And Bitext wrote the
+messages from templates for 27 intents. So a selector can score well by recognising which of 27 kinds of
+request it is reading, without weighing one tool description against another. This test can't tell those two
+skills apart. To separate them you would need messages where the right tool depends on the details, or a
+tool list that changes between development and test.
+
+One baseline needs no model at all: hand off every message.
 """)
 
 code("""
-base = json.loads((tp.DATA / "baselines.json").read_text())
-ref = pd.Series({"Always hand off": base["always_hand_off"],
-                 "Naive Bayes intent, then look up the key": base["nb_tool_correct"], **table["correct"].to_dict()})
-print(f"naive Bayes gets the intent right on {base['nb_intent_accuracy']:.1%} of fresh messages, trained on {base['train_rows']:,} others")
-print(f"naive Bayes vs Jev: p = {base['nb_vs_jev']['p']:.2f}; vs Sonnet: p = {base['nb_vs_sonnet']['p']:.2f}")
-charts.ranked_bars(ref, "A word-counting baseline matches the best selectors", "Correct on the 600 fresh messages", "correct", ".1%")
+always = pd.Series([tp.outcome(tp.HAND, lab[r.intent]) == "right" for r in tp.requests("fresh")]).mean()
+ref = pd.Series({"Always hand off": always, **table["correct"].to_dict()})
+print(f"always handing off is correct on {always:.1%} of the fresh messages")
+charts.ranked_bars(ref, "Handing off every message already scores 59%", "Correct on the 600 fresh messages", "correct", ".1%")
 """)
 
 md("""
-**A word-counting classifier from the 1960s ties with both leaders.** It isn't a fair rival: it is trained on 22,000 labelled messages
-from the same templates and it reads the answer key, while Jev and the agents see only tool descriptions. But
-it shows what this benchmark mostly measures: recognising a templated intent. If you have labelled history and
-a fixed set of intents, you may not need a model to pick tools at all. The zero-shot selectors earn their keep
-when the tools change and there is no history, which this data can't test.
-
-And always handing off scores 59%, because half the requests have no tool. Any accuracy here should be read
-against 59%, not against zero.
+Half the requests have no tool, and two more intents accept a hand-off, so doing nothing clever gets 59%. Any
+accuracy here should be read against 59%, not against zero. DeepSeek as an agent scores below it, because it
+asks questions where the policy says to hand off.
 
 ## 2. The ranking depends on the mix of requests
 
@@ -991,10 +987,7 @@ cost about US$31 in API calls.
    accuracy number can't tell them apart.
 5. **Decide how the model may answer before comparing models.** Router against agent was a 44-point swing for
    the same model, larger than any difference between models.
-6. **Run the cheap baseline first.** A naive Bayes classifier tied the leaders. With labelled history and
-   stable intents, that may be the right answer. A model that reads tool descriptions pays off when the tools
-   change faster than the labels.
-7. **Compare on the same messages, with a paired test, on data the setup has never seen**, and say plainly
+6. **Compare on the same messages, with a paired test, on data the setup has never seen**, and say plainly
    when the answer is a tie.
 
 ## What I would do next
@@ -1003,8 +996,8 @@ cost about US$31 in API calls.
 - Three full repeats, to put a run-to-run noise figure next to every number.
 - Real, multi-turn conversations with a tool list from one actual store, scored on the outcome of the whole
   conversation and not the first call.
-- A test where the tools change between development and test, which is where zero-shot selection should beat
-  a trained classifier.
+- A test where the tools change between development and test, to see whether the selectors read the tool
+  descriptions or only recognise the kind of request.
 
 The other notebook here, `rerun_failures.ipynb`, re-sends sampled failures of each selector to see which ones
 repeat. `ledger/index.html` lets you filter and read every one of the decisions scored above.

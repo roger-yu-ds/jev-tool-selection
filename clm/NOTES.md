@@ -93,8 +93,7 @@ Fresh 600 (`runs/fresh/clm.jsonl`), Jev's final setup exactly (same options, sam
 | Claude Sonnet 5.5 | 93.3% | 6.7% | 0.0% | 52.0% | 93.0% | 1.79 s |
 | Claude Haiku 5.5 | 82.2% | 17.8% | 0.0% | 41.7% | 81.8% | 1.65 s |
 | DeepSeek V4.1 Flash | 47.2% | 52.5% | 0.3% | 7.5% | 47.0% | 2.02 s |
-| *always hand off (`data/baselines.json`)* | *59.2%* | | | | | |
-| *naive Bayes intent -> tool* | *95.2%* | | | | | |
+| *always hand off* | *59.2%* | | | | | |
 
 Exact McNemar on the same 600: CLM vs Jev only-CLM-right 5, only-Jev-right 365, p = 5e-101 (difference
 -60.0 points, bootstrap 95% CI -64.0 to -56.2); vs Sonnet 13 / 361, p = 2e-89 (-58.0, CI -62.3 to -53.7).
