@@ -45,12 +45,40 @@ is committed, so every number below can be recomputed without an API key.
 
 ![Where each selector is right](docs/img/split.png)
 
+## Jev only picks the tool
+
+Jev answers one question: which of the 91 options? It doesn't write the tool's arguments and it can't reply
+to the customer. An LLM agent does all of that in one call. So the Jev row above is a two-call pipeline:
+
+| step | model | what it reads | median time | US$ per 1,000 |
+|---|---|---|---|---|
+| 1. pick the tool | Jev 1.14.0 | the message, the policy, and 91 tool names and descriptions (7,207 tokens) | 0.26 s | 0.30 |
+| 2. fill in the arguments | DeepSeek V4.1 Flash (through OpenRouter, served by DeepInfra) | the message, the agents' system prompt, and only the one tool Jev picked, which it is forced to call (526 tokens) | 1.1 s | 0.035 |
+
+Jev's time and cost in every table include both calls (`scripts/run_jev_fill.py`, `runs/fill/jev_fresh.jsonl`).
+
+- **Jev doesn't remove the LLM.** It removes the expensive part of the LLM's job: reading 76,000 tokens of
+  tool schemas to decide. The second call reads about 500.
+- **DeepSeek was chosen because it was the cheapest model in the study.** I didn't compare other models for
+  this step.
+- **The second call ran for every pick, including hand-offs.** 61% of Jev's picks were hand-offs, where the
+  call only writes a one-line reason. A production build could use a fixed reason there and skip the call,
+  which would save more than half of the second step's cost.
+- **A picker that can't ask is the weak point.** On "I want my money back" Jev picks a return or refund tool,
+  and the second call, forced to call it, invents the order line it needs (13 of 232 checked calls). Letting
+  the second call ask instead made it override Jev: it asked on 208 of 600 messages, 136 of them correct
+  hand-offs. With arguments counted, Jev scores 93.2% and Sonnet 93.3%.
+
 ## What weakens the result
 
 I checked the headline against itself. Each of these is measured in the notebook (Part 5).
 
-- **It is close to intent classification.** The answer key is per intent, so recognising a templated intent
-  is most of the task. The naive Bayes baseline above shows how far that goes.
+- **It is mostly intent recognition.** That is what I set out to test, and Jev did it with no training data:
+  from tool descriptions and a three-rule policy it matched a naive Bayes classifier trained on 22,317
+  labelled messages. But it limits what the result proves. The answer key is per intent, so a selector can
+  score well without weighing one tool description against another, and the test can't show how the selectors
+  compare when the right tool depends on the details of a message, on requests outside the 27 intents, or on
+  tools that change.
 - **The ranking depends on the mix of requests.** Half the messages have no tool that fits. Jev is better on
   those (99.7% against 93.9%), Sonnet on the rest (92.7% against 90.7%). Below about 26% no-tool requests,
   Sonnet leads.
@@ -63,6 +91,56 @@ I checked the headline against itself. Each of these is measured in the notebook
   deployed, but it is not a like-for-like comparison of models.
 - **Synthetic, short, single-turn messages** (Bitext, template-generated), one run per selector, one store's
   tool list, and only the first call is scored.
+
+## How a real deployment would differ
+
+The study isolates one decision: the first tool call for one message, with nothing else known. A production
+assistant differs in ways that would move these numbers. They are ordered by how much I think they matter,
+which is a judgement and not a measurement.
+
+1. **The store would have tools for the gaps.** Here 52% of messages have no tool, because no official
+   customer-side server can cancel an order or change an address. A real store would add its own tools for
+   those. Jev's lead came entirely from hand-offs (99.7% against Sonnet's 93.9%), and below about 26% no-tool
+   requests Sonnet leads. This is probably the biggest change, and it favours the agents.
+2. **Conversations have more than one turn.** Only the first call is scored, so a question back counts as a
+   miss. If every question had been followed by the right call, Sonnet would reach at most 97.8%, Haiku 95.2%
+   and DeepSeek 83.5%. Those are ceilings: most of the questions were on requests where the right move was to
+   hand off, so the question only delays it. Jev can't ask at all, and giving it a "need more information"
+   option cost it eight points (95.3% to 87.5%). In a conversation Jev would also need the earlier turns in
+   its input, which I didn't test.
+3. **The system already knows the customer.** A logged-in customer's recent orders, payments and open
+   tickets can go in the system prompt. Here 86% of messages carry no order number, invoice number or amount,
+   so the selectors had to look something up or ask. With that context, "I want my money back" points at a
+   known order: lookups stop being the right first call, questions are needed less often, and the invented
+   order lines in Jev's second call should mostly disappear. The answer key would need rewriting, and whether
+   Jev uses that kind of context well is untested.
+4. **Tools run, return results and fail.** No tool was executed here. A real request is often a chain (look
+   up the order, then request the return), with empty results and errors along the way, and something has to
+   run that loop and write the reply. That something is an LLM. So Jev would replace the selection step inside
+   an agent loop, not the agent, and whether it picks well on the second step, given a tool's result, is
+   untested.
+5. **Some messages need no tool.** "Thanks", a greeting, a general question. This study has no "just reply"
+   option: every message gets a tool or a hand-off. An agent replies on its own. A picker needs that added as
+   another option, or it hands "thanks" to a person.
+6. **Real traffic is skewed and messier.** Every intent has 22 or 23 messages here. In a real queue a few
+   intents dominate, so overall accuracy depends on the mix. Real messages are also longer, ask for two things
+   at once, come in other languages and sometimes try to manipulate the assistant. Bitext has none of that.
+7. **Mistakes have prices.** Jev's misses are almost all needless hand-offs (26 of 28), which cost staff
+   time. Sonnet's are mostly questions (27 of 40), which cost the customer a turn. Jev makes 35 more needless
+   hand-offs per 1,000 messages than Sonnet, and Sonnet costs US$8.73 more per 1,000 in model fees. So if a
+   needless hand-off costs the business more than about 25 US cents, Sonnet is the cheaper choice on this mix,
+   before counting what its extra questions cost. Real systems also confirm before a refund or other write,
+   which makes a wrong call less harmful and a needless hand-off relatively more expensive.
+8. **Things change.** The runs used Jev 1.14.0 through the `jev-latest` alias, which moves. Vendors rewrite
+   tool descriptions, and the store's policy changes. The customer wording was tuned on one sample's misses
+   and needs upkeep. The pipeline also has two vendors in its path, so two sets of rate limits and outages,
+   and two places the customer's text is sent.
+
+**What I expect to survive.** Most of these favour the agents: fewer gaps, more turns and more context all
+play to a model that can read, ask and act. What should hold up is narrower: choosing among many tools is the
+expensive part of an agent's call, a small model can do that part about as well on clear requests, and misses
+are mostly safe once there is a written policy and a hand-off. Whether that is worth a two-call pipeline
+depends on the price of a hand-off and on how often the request is one a tool can handle.
 
 ## Look around
 
