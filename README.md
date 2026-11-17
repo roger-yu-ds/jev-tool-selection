@@ -2,6 +2,14 @@
 
 **Measuring tool selection on 90 real MCP tools: a small choice model against LLM agents.**
 
+## Background
+
+I built this for a talk at MeasureCamp Sydney in October 2026. I was curious about Jev, TypeSafe's small
+choice model: how well it could classify intent, and whether it could replace the tool-selection step of an
+LLM with native tool calling, which can be expensive.
+
+## The question
+
 A customer writes to an online store's AI assistant. The assistant has 91 options: 90 tools copied word for
 word from seven official MCP servers (Shopify, Stripe, Intercom, GitHub, Notion) and one that hands the
 conversation to a person. Which should it pick first, and what happens when it picks wrong?
@@ -104,7 +112,8 @@ uv run python scripts/build_ledger.py      # ledger/index.html
 - **Outcomes, not only accuracy.** Each answer is one of six outcomes that fold into correct, benign and
   harmful, because a hand-off and a wrong refund are not the same miss.
 - **Everything is on disk.** One JSON line per call with the pick, usage, billed cost, latency, timestamp and
-  the full API response. Runs append as they go and resume where they stopped.
+  the full API response. Runs append as they go and resume where they stopped. All the API calls together cost
+  about US$30.
 
 ![Correct against cost](docs/img/cost.png)
 
@@ -120,13 +129,7 @@ uv run python scripts/build_ledger.py      # ledger/index.html
 | `runs/*.jsonl`, `runs/experiments/` | development runs and the experiments on Jev's question |
 | `scripts/run_*.py` | the runners; `scripts/build_*.py` generate the notebook, charts, ledger and slides |
 | `clm/` | setup notes for running the CLM-8B contrastive model locally as a fifth selector |
-| `slides/` | the draft deck (see below) |
-
-## Background
-
-I built this for a talk at MeasureCamp Sydney in October 2026. A late review of the draft turned up the
-limitations listed above, and there wasn't time to do them justice, so I withdrew the talk and wrote the study
-up instead. The draft deck is still in `slides/`. All the API calls together cost about US$30.
+| `slides/` | the draft deck for the talk |
 
 ## Licences and provenance
 
