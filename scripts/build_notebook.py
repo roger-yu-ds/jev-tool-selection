@@ -34,7 +34,8 @@ md("""
 
 An online store runs an AI support assistant. A customer writes *"can uhelp me requesting reimbursements of my money"*.
 The assistant has 91 things it could do next: 90 tools from the store's real systems (Shopify, Stripe,
-Intercom, GitHub, Notion) and one more that says "give this to a person". Which one should it pick first?
+Intercom, GitHub, Notion) and one more for when none of them fits, which hands the conversation to a person.
+Which one should it pick first?
 
 Getting it wrong has three very different prices. A needless hand-off costs a few minutes of staff time.
 A question back costs the customer a turn. A wrong *call* (a refund nobody asked for, or a tool that can't

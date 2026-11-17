@@ -11,8 +11,9 @@ LLM with native tool calling, which can be expensive.
 ## The question
 
 A customer writes to an online store's AI assistant. The assistant has 91 options: 90 tools copied word for
-word from seven official MCP servers (Shopify, Stripe, Intercom, GitHub, Notion) and one that hands the
-conversation to a person. Which should it pick first, and what happens when it picks wrong?
+word from seven official MCP servers (Shopify, Stripe, Intercom, GitHub, Notion) and one more for when none
+of them fits, which hands the conversation to a person. Which should it pick first, and what happens when it
+picks wrong?
 
 This study runs four selectors on the same 600 customer messages and scores every answer against an answer
 key audited by hand: TypeSafe's **Jev** (a small model that answers one multiple-choice question) and
